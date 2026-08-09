@@ -15,42 +15,14 @@
     --white:#FFFFFF;
   }
   *{box-sizing:border-box;}
-  body{
+  html, body{
     margin:0;
     font-family:'IBM Plex Sans', Arial, sans-serif;
-    background:
-      linear-gradient(180deg, transparent 0, transparent 27px, var(--line) 27px, var(--line) 28px) 0 40px/100% 28px repeat-y,
-      var(--paper);
+    background:transparent;
     min-height:100vh;
     position:relative;
   }
   @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&family=Lora:ital,wght@0,500;0,600;1,500&display=swap');
-
-  .page-demo{
-    max-width:640px;
-    margin:0 auto;
-    padding:64px 32px 200px 72px;
-    color:var(--ink);
-  }
-  .page-demo h1{
-    font-family:'Lora', serif;
-    font-weight:600;
-    font-size:2rem;
-    margin-bottom:6px;
-  }
-  .page-demo p{
-    color:var(--ink-soft);
-    line-height:1.6;
-    font-size:0.95rem;
-  }
-  .eyebrow{
-    font-family:'IBM Plex Mono', monospace;
-    font-size:0.72rem;
-    letter-spacing:0.08em;
-    text-transform:uppercase;
-    color:var(--marigold-deep);
-    margin-bottom:10px;
-  }
 
   /* Launcher */
   #launcher{
@@ -260,14 +232,6 @@
 </head>
 <body>
 
-<div class="page-demo">
-  <div class="eyebrow">Widget preview</div>
-  <h1>Your site, with the assistant docked bottom-right</h1>
-  <p>This is a working demo of the chat widget — it opens automatically after 30 seconds, or click the mark icon in the corner anytime. It answers course/pricing questions and doubles as a conversation partner: when a student writes a sentence with a mistake, it marks the error and shows the fix inline, like a teacher's note in the margin.</p>
-  <p style="margin-top:20px;">Use the <strong>TR / EN / RU</strong> switcher inside the widget to change the interface and explanation language (Turkish first, and the default). English practice sentences and corrections always stay in English — only the assistant's own explanations and support answers switch, so a Turkish or Russian-speaking student gets help in their own language.</p>
-  <p style="margin-top:20px;"><strong>Note on embedding:</strong> this widget calls <code>/api/chat</code>, a small backend function that holds your free Gemini API key. Deploy the whole project (this repo) to Vercel, then either host your full site there, or point the fetch URL at your deployed Vercel domain if the widget lives on a different site. See README.md for the full setup.</p>
-</div>
-
 <button id="launcher" aria-label="Open chat assistant">
   <svg viewBox="0 0 24 24"><path class="mark" d="M4 18 L10 6 L14 14 L20 5"/></svg>
 </button>
@@ -352,11 +316,11 @@ const UI = {
 function buildSystemPrompt(lang){
   return `You are the assistant embedded on an English-teaching website. You have two jobs, and you switch between them naturally based on what the student sends:
 
-1. SITE SUPPORT: answer questions about courses, levels (Beginner A1 to Advanced C1), pricing (group classes $15/session, private $40/hour, monthly packages available), scheduling, and how lessons work. If you don't know a specific detail, say the teacher will confirm it — don't invent exact numbers beyond the ones given here.
+1. SITE SUPPORT: answer questions about courses, levels (Beginner A1 to Advanced C1), scheduling, and how lessons work. If you don't know a specific detail, say the teacher will confirm it — don't invent numbers or facts.
 
 2. CONVERSATION PRACTICE: if the student writes a sentence or is clearly practicing English, respond warmly and naturally to what they said, AND check their grammar. If there's an error, show it using this exact format inline: [WRONG]their original wrong phrase[/WRONG][RIGHT]the corrected phrase[/RIGHT]. Only mark real errors, not stylistic choices. If the sentence is correct, briefly say so and keep the conversation going with a follow-up question.
 
-3. PRICING → EMAIL COLLECTION: whenever pricing or fees come up, after your short answer, ask the student for their email address so the teacher can send them the full, detailed pricing table. Ask this only once per conversation — if they already gave an email earlier, don't ask again. If the student's message contains something that looks like a real email address (e.g. name@domain.com), thank them, confirm the pricing table will be sent to that address, and include this exact hidden marker once anywhere in your reply: [EMAIL]their@address.com[/EMAIL] — put their actual detected email inside it. This marker is stripped out automatically before the student ever sees your message, so don't reference it or explain it to them.
+3. PRICING → NEVER STATE A NUMBER, ALWAYS COLLECT EMAIL INSTEAD: if the student asks about price, fees, or cost in any way, do NOT give any number or price range, not even a rough one. Instead, briefly say the teacher will send the exact pricing directly, and ask for their email address. Ask this only once per conversation — if they already gave an email earlier, don't ask again. If the student's message contains something that looks like a real email address (e.g. name@domain.com), thank them, confirm the pricing table will be sent to that address, and include this exact hidden marker once anywhere in your reply: [EMAIL]their@address.com[/EMAIL] — put their actual detected email inside it. This marker is stripped out automatically before the student ever sees your message, so don't reference it or explain it to them.
 
 IMPORTANT — LANGUAGE: the student's interface is set to ${UI[lang].langName}. Write ALL of your own explanations, greetings, and support answers in ${UI[lang].langName}. Example English sentences being taught or corrected stay in English (inside the [WRONG]/[RIGHT] tags), but everything else you say should be in ${UI[lang].langName}.
 
