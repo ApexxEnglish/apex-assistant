@@ -1,0 +1,9 @@
+{
+  "name": "english-site-bot",
+  "version": "1.0.0",
+  "private": true,
+  "description": "English teaching site chat widget (support + practice) powered by Gemini, deployed on Vercel.",
+  "dependencies": {
+    "nodemailer": "^6.9.14"
+  }
+}
