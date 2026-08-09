@@ -1,2030 +1,318 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>Apex AI English Assistant</title>
-
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-
-<link
-  href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Lora:wght@500;600&display=swap"
-  rel="stylesheet"
->
-
+<title>English Site Assistant — Widget Demo</title>
 <style>
-:root{
-  --paper:#EFEDE6;
-  --ink:#202A44;
-  --ink-soft:#4A5570;
-  --marigold:#E8B930;
-  --marigold-deep:#C9971A;
-  --correct:#3F7859;
-  --line:#C9C2B4;
-  --white:#FFFFFF;
-  --soft-blue:#EAF2F8;
-}
-
-*{
-  box-sizing:border-box;
-}
-
-html,
-body{
-  margin:0;
-  padding:0;
-  width:100%;
-  min-height:100%;
-}
-
-body{
-  font-family:'IBM Plex Sans', Arial, sans-serif;
-
-  background:
-    linear-gradient(
-      180deg,
-      transparent 0,
-      transparent 27px,
-      var(--line) 27px,
-      var(--line) 28px
-    ) 0 40px/100% 28px repeat-y,
-    var(--paper);
-
-  color:var(--ink);
-}
-
-/* =========================================================
-   PAGE INTRO
-   ========================================================= */
-
-.page-intro{
-  width:100%;
-  max-width:900px;
-  margin:0 auto;
-  padding:70px 28px 180px;
-  text-align:center;
-}
-
-.eyebrow{
-  font-family:'IBM Plex Mono', monospace;
-  font-size:0.72rem;
-  letter-spacing:0.12em;
-  text-transform:uppercase;
-  color:var(--marigold-deep);
-  margin-bottom:16px;
-}
-
-.page-intro h1{
-  font-family:'Lora', serif;
-  font-size:clamp(2rem,5vw,3.4rem);
-  line-height:1.1;
-  font-weight:600;
-  margin:0 auto 18px;
-  color:var(--ink);
-}
-
-.page-intro .lead{
-  max-width:680px;
-  margin:0 auto;
-  color:var(--ink-soft);
-  font-size:1rem;
-  line-height:1.7;
-}
-
-.ai-badge{
-  display:inline-flex;
-  align-items:center;
-  gap:8px;
-  margin-top:24px;
-  padding:8px 14px;
-  border:1px solid var(--line);
-  border-radius:100px;
-  background:rgba(255,255,255,0.75);
-  font-family:'IBM Plex Mono', monospace;
-  font-size:0.72rem;
-  color:var(--ink-soft);
-}
-
-.ai-dot{
-  width:8px;
-  height:8px;
-  border-radius:50%;
-  background:var(--correct);
-}
-
-.features{
-  display:flex;
-  justify-content:center;
-  flex-wrap:wrap;
-  gap:8px;
-  margin-top:28px;
-}
-
-.feature{
-  padding:8px 13px;
-  border-radius:100px;
-  background:var(--white);
-  border:1px solid var(--line);
-  font-size:0.78rem;
-  color:var(--ink-soft);
-}
-
-.start-ai{
-  margin-top:32px;
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  gap:8px;
-
-  background:var(--ink);
-  color:var(--white);
-
-  border:0;
-  border-radius:10px;
-
-  padding:13px 22px;
-
-  font-family:'IBM Plex Sans', sans-serif;
-  font-size:0.9rem;
-  font-weight:600;
-
-  cursor:pointer;
-
-  box-shadow:0 8px 24px rgba(32,42,68,0.18);
-
-  transition:
-    transform 0.2s ease,
-    box-shadow 0.2s ease;
-}
-
-.start-ai:hover{
-  transform:translateY(-2px);
-  box-shadow:0 12px 30px rgba(32,42,68,0.24);
-}
-
-.start-ai span{
-  color:var(--marigold);
-}
-
-
-/* =========================================================
-   CHAT LAUNCHER
-   ========================================================= */
-
-#launcher{
-  position:fixed;
-
-  bottom:28px;
-  right:28px;
-
-  width:60px;
-  height:60px;
-
-  border-radius:50%;
-
-  background:var(--ink);
-
-  border:none;
-
-  cursor:pointer;
-
-  box-shadow:
-    0 6px 20px rgba(32,42,68,0.35);
-
-  display:flex;
-  align-items:center;
-  justify-content:center;
-
-  z-index:1000;
-
-  transition:transform 0.2s ease;
-}
-
-#launcher:hover{
-  transform:scale(1.06);
-}
-
-#launcher svg{
-  width:27px;
-  height:27px;
-}
-
-#launcher .mark{
-  stroke:var(--marigold);
-  stroke-width:3;
-  fill:none;
-  stroke-linecap:round;
-}
-
-
-/* =========================================================
-   CHAT PANEL
-   ========================================================= */
-
-#panel{
-  position:fixed;
-
-  bottom:100px;
-  right:28px;
-
-  width:390px;
-  max-width:calc(100vw - 32px);
-
-  height:590px;
-  max-height:calc(100vh - 120px);
-
-  background:var(--white);
-
-  border-radius:16px;
-
-  box-shadow:
-    0 20px 60px rgba(32,42,68,0.28);
-
-  display:none;
-
-  flex-direction:column;
-
-  overflow:hidden;
-
-  z-index:1000;
-
-  border:1px solid var(--line);
-}
-
-#panel.open{
-  display:flex;
-}
-
-
-/* =========================================================
-   CHAT HEADER
-   ========================================================= */
-
-#panel header{
-  background:var(--ink);
-  color:var(--white);
-
-  padding:17px 18px;
-
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-}
-
-#panel header .title{
-  font-family:'Lora', serif;
-  font-weight:600;
-  font-size:1.05rem;
-}
-
-#panel header .sub{
-  font-family:'IBM Plex Mono', monospace;
-  font-size:0.68rem;
-  color:var(--marigold);
-  margin-top:3px;
-  letter-spacing:0.03em;
-}
-
-#close-btn{
-  background:none;
-  border:none;
-
-  color:var(--white);
-
-  font-size:1.15rem;
-
-  cursor:pointer;
-
-  opacity:0.7;
-
-  line-height:1;
-}
-
-#close-btn:hover{
-  opacity:1;
-}
-
-
-/* =========================================================
-   LANGUAGE SWITCH
-   ========================================================= */
-
-#lang-switch{
-  display:flex;
-  gap:5px;
-
-  padding:9px 16px;
-
-  background:var(--paper);
-
-  border-bottom:1px solid var(--line);
-}
-
-.lang-btn{
-  font-family:'IBM Plex Mono', monospace;
-  font-size:0.68rem;
-  letter-spacing:0.03em;
-
-  background:none;
-
-  border:1px solid var(--line);
-
-  border-radius:100px;
-
-  padding:4px 10px;
-
-  cursor:pointer;
-
-  color:var(--ink-soft);
-}
-
-.lang-btn.active{
-  background:var(--ink);
-  border-color:var(--ink);
-  color:var(--marigold);
-}
-
-
-/* =========================================================
-   MESSAGES
-   ========================================================= */
-
-#messages{
-  flex:1;
-
-  overflow-y:auto;
-
-  padding:17px;
-
-  display:flex;
-  flex-direction:column;
-
-  gap:12px;
-
-  background:var(--paper);
-}
-
-.msg{
-  max-width:88%;
-
-  padding:11px 13px;
-
-  border-radius:12px;
-
-  font-size:0.88rem;
-
-  line-height:1.55;
-
-  white-space:pre-wrap;
-}
-
-.msg.user{
-  align-self:flex-end;
-
-  background:var(--marigold);
-
-  color:var(--ink);
-
-  border-bottom-right-radius:3px;
-}
-
-.msg.bot{
-  align-self:flex-start;
-
-  background:var(--white);
-
-  color:var(--ink);
-
-  border:1px solid var(--line);
-
-  border-bottom-left-radius:3px;
-}
-
-.msg.bot .wrong{
-  color:#A14444;
-
-  text-decoration:line-through;
-
-  text-decoration-thickness:1.5px;
-
-  opacity:0.78;
-}
-
-.msg.bot .right{
-  color:var(--correct);
-
-  font-weight:600;
-}
-
-.msg.typing{
-  align-self:flex-start;
-
-  background:var(--white);
-
-  border:1px solid var(--line);
-
-  color:var(--ink-soft);
-
-  font-family:'IBM Plex Mono', monospace;
-
-  font-size:0.78rem;
-}
-
-
-/* =========================================================
-   QUICK START BUTTONS
-   ========================================================= */
-
-.starter-row{
-  display:flex;
-
-  flex-wrap:wrap;
-
-  gap:6px;
-
-  padding:0 16px 12px;
-
-  background:var(--paper);
-}
-
-.starter{
-  font-family:'IBM Plex Mono', monospace;
-
-  font-size:0.68rem;
-
-  background:var(--white);
-
-  border:1px solid var(--line);
-
-  border-radius:100px;
-
-  padding:6px 10px;
-
-  cursor:pointer;
-
-  color:var(--ink-soft);
-
-  transition:
-    border-color 0.15s ease,
-    color 0.15s ease,
-    background 0.15s ease;
-}
-
-.starter:hover{
-  border-color:var(--marigold-deep);
-
-  color:var(--ink);
-
-  background:#FFFDF7;
-}
-
-
-/* =========================================================
-   INPUT
-   ========================================================= */
-
-#input-row{
-  display:flex;
-
-  gap:8px;
-
-  padding:12px;
-
-  background:var(--white);
-
-  border-top:1px solid var(--line);
-}
-
-#input-row input{
-  flex:1;
-
-  min-width:0;
-
-  border:1px solid var(--line);
-
-  border-radius:8px;
-
-  padding:10px 12px;
-
-  font-family:'IBM Plex Sans', sans-serif;
-
-  font-size:0.88rem;
-
-  outline:none;
-
-  color:var(--ink);
-
-  background:var(--white);
-}
-
-#input-row input:focus{
-  border-color:var(--marigold-deep);
-}
-
-#input-row button{
-  background:var(--ink);
-
-  color:var(--white);
-
-  border:none;
-
-  border-radius:8px;
-
-  padding:0 16px;
-
-  font-weight:600;
-
-  font-size:0.85rem;
-
-  cursor:pointer;
-}
-
-#input-row button:hover{
-  background:#172038;
-}
-
-#input-row button:disabled{
-  opacity:0.5;
-
-  cursor:default;
-}
-
-
-/* =========================================================
-   MOBILE
-   ========================================================= */
-
-@media(max-width:600px){
-
-  .page-intro{
-    padding:
-      48px
-      20px
-      140px;
+  :root{
+    --paper:#EFEDE6;
+    --ink:#202A44;
+    --ink-soft:#4A5570;
+    --marigold:#E8B930;
+    --marigold-deep:#C9971A;
+    --correct:#3F7859;
+    --line:#C9C2B4;
+    --white:#FFFFFF;
   }
-
-  .page-intro h1{
-    font-size:2rem;
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:'IBM Plex Sans', Arial, sans-serif;
+    background:
+      linear-gradient(180deg, transparent 0, transparent 27px, var(--line) 27px, var(--line) 28px) 0 40px/100% 28px repeat-y,
+      var(--paper);
+    min-height:100vh;
+    position:relative;
   }
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&family=Lora:ital,wght@0,500;0,600;1,500&display=swap');
 
-  .page-intro .lead{
-    font-size:0.92rem;
-  }
+.page-demo{max-width:640px;margin:0 auto;padding:64px 32px 200px 72px;color(--ink);}.page-demo h1{font-family:'Lora', serif;font-weight:600;font-size:2rem;margin-bottom:6px;}.page-demo p{color(--ink-soft);line-height:1.6;font-size:0.95rem;}.eyebrow{font-family:'IBM Plex Mono', monospace;font-size:0.72rem;letter-spacing:0.08em;text-transform;color(--marigold-deep);margin-bottom:10px;}
 
-  #launcher{
-    right:18px;
-    bottom:18px;
-  }
+/* Launcher */#launcher{position;bottom:28px;right:28px;width:60px;height:60px;border-radius:50%;background(--ink);border;cursor;box-shadow:0 6px 20px rgba(32,42,68,0.35);display;align-items;justify-content;z-index:1000;transition 0.2s ease;}#launcher{ transform(1.06); }#launcher svg{ width:26px; height:26px; }#launcher .mark{stroke(--marigold);stroke-width:3;fill;stroke-linecap;}
 
-  #panel{
-    right:12px;
-    bottom:88px;
+/* Panel */#panel{position;bottom:100px;right:28px;width:360px;max-width(100vw - 40px);height:520px;max-height(100vh - 140px);background(--white);border-radius:14px;box-shadow:0 20px 60px rgba(32,42,68,0.28);display;flex-direction;overflow;z-index:1000;border:1px solid var(--line);}#panel.open{ display; }
 
-    width:calc(100vw - 24px);
+#panel header{background(--ink);color(--white);padding:16px 18px;display;align-items;justify-content;}#panel header .title{font-family:'Lora', serif;font-weight:600;font-size:1rem;}#panel header .sub{font-family:'IBM Plex Mono', monospace;font-size:0.68rem;color(--marigold);margin-top:2px;letter-spacing:0.03em;}#close-btn{background;border;color(--white);font-size:1.1rem;cursor;opacity:0.7;line-height:1;}#close-btn{ opacity:1; }
 
-    height:
-      calc(100vh - 110px);
+#lang-switch{display;gap:4px;padding:8px 16px;background(--paper);border-bottom:1px solid var(--line);}.lang-btn{font-family:'IBM Plex Mono', monospace;font-size:0.68rem;letter-spacing:0.03em;background;border:1px solid var(--line);border-radius:100px;padding:4px 10px;cursor;color(--ink-soft);}.lang-btn.active{background(--ink);border-color(--ink);color(--marigold);}
 
-    max-height:none;
+#messages{flex:1;overflow-y;padding:16px;display;flex-direction;gap:12px;background(--paper);}.msg{max-width:84%;padding:10px 13px;border-radius:12px;font-size:0.88rem;line-height:1.5;white-space;}.msg.user{align-self;background(--marigold);color(--ink);border-bottom-right-radius:3px;}.msg.bot{align-self;background(--white);color(--ink);border:1px solid var(--line);border-bottom-left-radius:3px;}.msg.bot .wrong{color:#A14444;text-decoration;text-decoration-thickness:1.5px;opacity:0.75;}.msg.bot .right{color(--correct);font-weight:600;}.msg.typing{align-self;background(--white);border:1px solid var(--line);color(--ink-soft);font-family:'IBM Plex Mono', monospace;font-size:0.78rem;}
 
-    border-radius:14px;
-  }
+#input-row{display;gap:8px;padding:12px;background(--white);border-top:1px solid var(--line);}#input-row input{flex:1;border:1px solid var(--line);border-radius:8px;padding:10px 12px;font-family:'IBM Plex Sans', sans-serif;font-size:0.88rem;outline;color(--ink);}#input-row input{border-color(--marigold-deep);}#input-row button{background(--ink);color(--white);border;border-radius:8px;padding:0 16px;font-weight:600;font-size:0.85rem;cursor;}#input-row button{opacity:0.5;cursor;}
 
-  .msg{
-    max-width:92%;
-  }
+.starter-row{display;flex-wrap;gap:6px;padding:0 16px 12px;background(--paper);}.starter{font-family:'IBM Plex Mono', monospace;font-size:0.7rem;background(--white);border:1px solid var(--line);border-radius:100px;padding:5px 10px;cursor;color(--ink-soft);}.starter{ border-color(--marigold-deep); color(--ink); }</style>
 
-  .starter{
-    font-size:0.64rem;
-  }
-}
-</style>
 </head>
-
-
 <body>
 
-
-<!-- =======================================================
-     APEX AI INTRO
-     ======================================================= -->
-
-<section class="page-intro">
-
-  <div class="eyebrow">
-    APEX ENGLISH
-  </div>
-
-  <h1 id="page-title">
-    Apex AI English Assistant
-  </h1>
-
-  <p class="lead" id="page-description">
-    Your AI-powered English learning assistant.
-    Ask questions, practise English, check grammar,
-    learn vocabulary and improve your communication skills.
-  </p>
-
-  <div class="ai-badge">
-    <span class="ai-dot"></span>
-    <span id="ai-status">AI English Learning Assistant</span>
-  </div>
-
-  <div class="features">
-
-    <div class="feature" id="feature-grammar">
-      Grammar
-    </div>
-
-    <div class="feature" id="feature-vocabulary">
-      Vocabulary
-    </div>
-
-    <div class="feature" id="feature-speaking">
-      Speaking Practice
-    </div>
-
-    <div class="feature" id="feature-interview">
-      Interview English
-    </div>
-
-  </div>
-
-  <button class="start-ai" id="start-ai">
-    <span>✦</span>
-    <span id="start-ai-text">Start Apex AI</span>
-  </button>
-
-</section>
-
-
-<!-- =======================================================
-     CHAT LAUNCHER
-     ======================================================= -->
-
-<button
-  id="launcher"
-  aria-label="Open Apex AI English Assistant"
->
-
-  <svg viewBox="0 0 24 24" aria-hidden="true">
-    <path
-      class="mark"
-      d="M4 18 L10 6 L14 14 L20 5"
-    />
-  </svg>
-
-</button>
-
-
-<!-- =======================================================
-     CHAT PANEL
-     ======================================================= -->
-
-<div id="panel">
-
-  <header>
-
-    <div>
-
-      <div
-        class="title"
-        id="header-title"
-      >
-        Apex AI English Assistant
-      </div>
-
-      <div
-        class="sub"
-        id="header-sub"
-      >
-        AI-powered English learning
-      </div>
-
-    </div>
-
-    <button
-      id="close-btn"
-      aria-label="Close"
-    >
-      ✕
-    </button>
-
-  </header>
-
-
-  <!-- LANGUAGE -->
-
-  <div id="lang-switch">
-
-    <button
-      class="lang-btn active"
-      data-lang="tr"
-    >
-      TR
-    </button>
-
-    <button
-      class="lang-btn"
-      data-lang="en"
-    >
-      EN
-    </button>
-
-    <button
-      class="lang-btn"
-      data-lang="ru"
-    >
-      RU
-    </button>
-
-  </div>
-
-
-  <!-- MESSAGES -->
-
-  <div id="messages"></div>
-
-
-  <!-- QUICK START -->
-
-  <div
-    class="starter-row"
-    id="starters"
-  ></div>
-
-
-  <!-- INPUT -->
-
-  <div id="input-row">
-
-    <input
-      id="chat-input"
-      type="text"
-      autocomplete="off"
-      placeholder="Bir soru ya da cümle yaz..."
-    >
-
-    <button
-      id="send-btn"
-    >
-      Gönder
-    </button>
-
-  </div>
-
+<div class="page-demo">
+  <div class="eyebrow">Widget preview</div>
+  <h1>Your site, with the assistant docked bottom-right</h1>
+  <p>This is a working demo of the chat widget — it opens automatically after 30 seconds, or click the mark icon in the corner anytime. It answers course/pricing questions and doubles as a conversation partner: when a student writes a sentence with a mistake, it marks the error and shows the fix inline, like a teacher's note in the margin.</p>
+  <p style="margin-top:20px;">Use the <strong>TR / EN / RU</strong> switcher inside the widget to change the interface and explanation language (Turkish first, and the default). English practice sentences and corrections always stay in English — only the assistant's own explanations and support answers switch, so a Turkish or Russian-speaking student gets help in their own language.</p>
+  <p style="margin-top:20px;"><strong>Note on embedding:</strong> this widget calls <code>/api/chat</code>, a small backend function that holds your free Gemini API key. Deploy the whole project (this repo) to Vercel, then either host your full site there, or point the fetch URL at your deployed Vercel domain if the widget lives on a different site. See README.md for the full setup.</p>
 </div>
 
+<button id="launcher" aria-label="Open chat assistant">
+  <svg viewBox="0 0 24 24"><path class="mark" d="M4 18 L10 6 L14 14 L20 5"/></svg>
+</button>
+
+<div id="panel">
+  <header>
+    <div>
+      <div class="title" id="header-title">Ask about the course</div>
+      <div class="sub" id="header-sub">or practice a sentence</div>
+    </div>
+    <button id="close-btn" aria-label="Close">✕</button>
+  </header>
+  <div id="lang-switch">
+    <button class="lang-btn active" data-lang="tr">TR</button>
+    <button class="lang-btn" data-lang="en">EN</button>
+    <button class="lang-btn" data-lang="ru">RU</button>
+  </div>
+  <div id="messages"></div>
+  <div class="starter-row" id="starters">
+    <div class="starter" data-msg="What levels do you teach?">What levels do you teach?</div>
+    <div class="starter" data-msg="How much are lessons?">Pricing</div>
+    <div class="starter" data-msg="Can you check this sentence: She don't like coffee.">Check a sentence</div>
+  </div>
+  <div id="input-row">
+    <input id="chat-input" type="text" placeholder="Type a question or a sentence..." />
+    <button id="send-btn">Send</button>
+  </div>
+</div>
 
 <script>
-
-/* =========================================================
-   APEX AI — INTERFACE TEXT
-   ========================================================= */
-
+// Each entry: UI strings + starter prompts (sent as-is to the model) for that interface language.
+// The bot always corrects/teaches ENGLISH — this only changes what language explanations,
+// pricing answers, and the interface itself are given in.
 const UI = {
-
   en: {
-
     langName: "English",
-
-    title:
-      "Apex AI English Assistant",
-
-    sub:
-      "AI-powered English learning",
-
-    pageTitle:
-      "Apex AI English Assistant",
-
-    pageDescription:
-      "Your AI-powered English learning assistant. Ask questions, practise English, check grammar, learn vocabulary and improve your communication skills.",
-
-    aiStatus:
-      "AI English Learning Assistant",
-
-    start:
-      "Start Apex AI",
-
-    featureGrammar:
-      "Grammar",
-
-    featureVocabulary:
-      "Vocabulary",
-
-    featureSpeaking:
-      "Speaking Practice",
-
-    featureInterview:
-      "Interview English",
-
-    placeholder:
-      "Type a question or a sentence...",
-
-    send:
-      "Send",
-
-    typing:
-      "typing...",
-
-    greeting:
-      "Hi! I'm Apex AI English Assistant. I'm here to help you improve your English. Ask me about grammar, vocabulary, speaking, translation, interview English, or anything you would like to practise.",
-
-    error:
-      "Sorry, something went wrong reaching the assistant. Please try again.",
-
-    pricingFallback:
-      "For pricing information, I can arrange for the teacher to send you the full and detailed pricing table by email. Please share your email address.",
-
+    title: "Ask about the course",
+    sub: "or practice a sentence",
+    placeholder: "Type a question or a sentence...",
+    send: "Send",
+    typing: "typing...",
+    greeting: "Hi! Ask me about courses, pricing, or scheduling — or write a sentence in English and I'll help you practice.",
+    error: "Sorry, something went wrong reaching the assistant. Please try again.",
     starters: [
-
-      {
-        label: "Grammar",
-        msg: "Can you help me with English grammar?"
-      },
-
-      {
-        label: "Vocabulary",
-        msg: "Teach me some useful English vocabulary."
-      },
-
-      {
-        label: "Practice English",
-        msg: "Let's practise English conversation."
-      },
-
-      {
-        label: "Interview English",
-        msg: "Help me practise English for a job interview."
-      }
-
+      { label: "Levels?", msg: "What levels do you teach?" },
+      { label: "Pricing", msg: "How much are lessons?", notify: true },
+      { label: "Check a sentence", msg: "Can you check this sentence: She don't like coffee." }
     ]
-
   },
-
-
   tr: {
-
     langName: "Türkçe",
-
-    title:
-      "Apex AI English Assistant",
-
-    sub:
-      "Yapay zekâ destekli İngilizce öğrenme",
-
-    pageTitle:
-      "Apex AI English Assistant",
-
-    pageDescription:
-      "Yapay zekâ destekli İngilizce öğrenme asistanınız. Grammar, vocabulary, speaking, çeviri, kelime öğrenme ve İngilizce iletişim pratiği yapın.",
-
-    aiStatus:
-      "Yapay Zekâ İngilizce Asistanı",
-
-    start:
-      "Apex AI'ı Başlat",
-
-    featureGrammar:
-      "Grammar",
-
-    featureVocabulary:
-      "Vocabulary",
-
-    featureSpeaking:
-      "Speaking Pratiği",
-
-    featureInterview:
-      "Mülakat İngilizcesi",
-
-    placeholder:
-      "Bir soru ya da cümle yaz...",
-
-    send:
-      "Gönder",
-
-    typing:
-      "yazıyor...",
-
-    greeting:
-      "Merhaba! Ben Apex AI English Assistant. İngilizceni geliştirmene yardımcı olmak için buradayım. Grammar, vocabulary, speaking, çeviri, interview English veya İngilizceyle ilgili istediğin her konuda soru sorabilirsin.",
-
-    error:
-      "Üzgünüm, asistana ulaşırken bir sorun oluştu. Lütfen tekrar dene.",
-
-    pricingFallback:
-      "Fiyat bilgileri için öğretmenin sana ayrıntılı fiyat tablosunu e-posta ile göndermesini sağlayabilirim. Lütfen e-posta adresini paylaş.",
-
+    title: "Kurs hakkında soru sor",
+    sub: "ya da bir cümle pratiği yap",
+    placeholder: "Bir soru ya da cümle yaz...",
+    send: "Gönder",
+    typing: "yazıyor...",
+    greeting: "Merhaba! Kurslar, fiyatlar ya da program hakkında soru sorabilirsin — ya da İngilizce bir cümle yaz, birlikte pratik yapalım.",
+    error: "Üzgünüm, asistana ulaşırken bir sorun oluştu. Lütfen tekrar dene.",
     starters: [
-
-      {
-        label: "Grammar",
-        msg: "İngilizce grammar konusunda bana yardımcı olur musun?"
-      },
-
-      {
-        label: "Vocabulary",
-        msg: "Bana kullanışlı İngilizce kelimeler öğret."
-      },
-
-      {
-        label: "Speaking",
-        msg: "Benimle İngilizce konuşma pratiği yap."
-      },
-
-      {
-        label: "Mülakat İngilizcesi",
-        msg: "İngilizce iş görüşmesi için pratik yapmama yardımcı ol."
-      }
-
+      { label: "Seviyeler?", msg: "Hangi seviyelerde ders veriyorsunuz?" },
+      { label: "Fiyatlar", msg: "Dersler ne kadar?", notify: true },
+      { label: "Cümle kontrolü", msg: "Bu cümleyi kontrol eder misin: She don't like coffee." }
     ]
-
   },
-
-
   ru: {
-
     langName: "Русский",
-
-    title:
-      "Apex AI English Assistant",
-
-    sub:
-      "AI-помощник для изучения английского",
-
-    pageTitle:
-      "Apex AI English Assistant",
-
-    pageDescription:
-      "AI-помощник для изучения английского языка. Задавайте вопросы, практикуйте грамматику, лексику и разговорный английский.",
-
-    aiStatus:
-      "AI English Learning Assistant",
-
-    start:
-      "Запустить Apex AI",
-
-    featureGrammar:
-      "Грамматика",
-
-    featureVocabulary:
-      "Словарный запас",
-
-    featureSpeaking:
-      "Разговорная практика",
-
-    featureInterview:
-      "Английский для собеседования",
-
-    placeholder:
-      "Введите вопрос или предложение...",
-
-    send:
-      "Отправить",
-
-    typing:
-      "печатает...",
-
-    greeting:
-      "Привет! Я Apex AI English Assistant. Я помогу вам улучшить английский. Вы можете спрашивать меня о грамматике, словарном запасе, разговорной практике, переводе, английском для собеседований или других вопросах.",
-
-    error:
-      "Извините, не удалось связаться с ассистентом. Попробуйте ещё раз.",
-
-    pricingFallback:
-      "По вопросам стоимости я могу попросить преподавателя отправить вам подробную таблицу цен по электронной почте. Пожалуйста, оставьте свой email.",
-
+    title: "Спросить о курсе",
+    sub: "или попрактиковать предложение",
+    placeholder: "Введите вопрос или предложение...",
+    send: "Отправить",
+    typing: "печатает...",
+    greeting: "Привет! Спрашивай о курсах, ценах или расписании — или напиши предложение на английском, и я помогу тебе попрактиковаться.",
+    error: "Извините, не удалось связаться с ассистентом. Попробуйте ещё раз.",
     starters: [
-
-      {
-        label: "Грамматика",
-        msg: "Помоги мне с английской грамматикой."
-      },
-
-      {
-        label: "Словарный запас",
-        msg: "Научи меня полезным английским словам."
-      },
-
-      {
-        label: "Разговорная практика",
-        msg: "Давай попрактикуем разговорный английский."
-      },
-
-      {
-        label: "Собеседование",
-        msg: "Помоги мне подготовиться к собеседованию на английском."
-      }
-
+      { label: "Уровни?", msg: "Какие уровни вы преподаёте?" },
+      { label: "Цены", msg: "Сколько стоят занятия?", notify: true },
+      { label: "Проверить предложение", msg: "Проверь, пожалуйста, это предложение: She don't like coffee." }
     ]
-
   }
-
 };
 
+function buildSystemPrompt(lang){
+  return `You are the assistant embedded on an English-teaching website. You have two jobs, and you switch between them naturally based on what the student sends:
 
-/* =========================================================
-   DOM
-   ========================================================= */
+1. SITE SUPPORT: answer questions about courses, levels (Beginner A1 to Advanced C1), pricing (group classes $15/session, private $40/hour, monthly packages available), scheduling, and how lessons work. If you don't know a specific detail, say the teacher will confirm it — don't invent exact numbers beyond the ones given here.
 
-const messagesEl =
-  document.getElementById('messages');
+2. CONVERSATION PRACTICE: if the student writes a sentence or is clearly practicing English, respond warmly and naturally to what they said, AND check their grammar. If there's an error, show it using this exact format inline: [WRONG]their original wrong phrase[/WRONG][RIGHT]the corrected phrase[/RIGHT]. Only mark real errors, not stylistic choices. If the sentence is correct, briefly say so and keep the conversation going with a follow-up question.
 
-const input =
-  document.getElementById('chat-input');
+3. PRICING → EMAIL COLLECTION: whenever pricing or fees come up, after your short answer, ask the student for their email address so the teacher can send them the full, detailed pricing table. Ask this only once per conversation — if they already gave an email earlier, don't ask again. If the student's message contains something that looks like a real email address (e.g. name@domain.com), thank them, confirm the pricing table will be sent to that address, and include this exact hidden marker once anywhere in your reply: [EMAIL]their@address.com[/EMAIL] — put their actual detected email inside it. This marker is stripped out automatically before the student ever sees your message, so don't reference it or explain it to them.
 
-const sendBtn =
-  document.getElementById('send-btn');
+IMPORTANT — LANGUAGE: the student's interface is set to ${UI[lang].langName}. Write ALL of your own explanations, greetings, and support answers in ${UI[lang].langName}. Example English sentences being taught or corrected stay in English (inside the [WRONG]/[RIGHT] tags), but everything else you say should be in ${UI[lang].langName}.
 
-const launcher =
-  document.getElementById('launcher');
+Keep replies short (2-4 sentences), warm, and encouraging — never condescending. Use plain language appropriate for English learners.`;
+}
 
-const panel =
-  document.getElementById('panel');
-
-const closeBtn =
-  document.getElementById('close-btn');
-
-const starters =
-  document.getElementById('starters');
-
-const headerTitle =
-  document.getElementById('header-title');
-
-const headerSub =
-  document.getElementById('header-sub');
-
-const langButtons =
-  document.querySelectorAll('.lang-btn');
-
-const startAI =
-  document.getElementById('start-ai');
-
-
-/* =========================================================
-   STATE
-   ========================================================= */
+const messagesEl = document.getElementById('messages');
+const input = document.getElementById('chat-input');
+const sendBtn = document.getElementById('send-btn');
+const launcher = document.getElementById('launcher');
+const panel = document.getElementById('panel');
+const closeBtn = document.getElementById('close-btn');
+const starters = document.getElementById('starters');
+const headerTitle = document.getElementById('header-title');
+const headerSub = document.getElementById('header-sub');
+const langButtons = document.querySelectorAll('.lang-btn');
 
 let history = [];
-
-let currentLang = 'tr';
-
-let userHasToggled = false;
-
-
-/* =========================================================
-   PRICING DETECTION
-   ========================================================= */
-
-function isPricingQuestion(text){
-
-  const value =
-    text
-      .toLowerCase()
-      .trim();
-
-  const pricingWords = [
-
-    "price",
-    "prices",
-    "pricing",
-    "cost",
-    "costs",
-    "fee",
-    "fees",
-    "how much",
-    "tuition",
-
-    "fiyat",
-    "fiyatlar",
-    "ücret",
-    "ücretler",
-    "ne kadar",
-    "kaç para",
-    "paket",
-
-    "цена",
-    "цены",
-    "стоимость",
-    "сколько стоит",
-    "оплата"
-
-  ];
-
-  return pricingWords.some(word =>
-    value.includes(word)
-  );
-}
-
-
-/* =========================================================
-   EMAIL DETECTION
-   ========================================================= */
-
-function extractEmail(text){
-
-  const match =
-    text.match(
-      /[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/i
-    );
-
-  return match
-    ? match[0].trim()
-    : null;
-}
-
-
-/* =========================================================
-   HIDDEN EMAIL MARKER
-   ========================================================= */
-
-function extractCapturedEmail(text){
-
-  const match =
-    text.match(
-      /\[EMAIL\](.*?)\[\/EMAIL\]/i
-    );
-
-  if(!match){
-
-    return {
-      cleaned:text,
-      email:null
-    };
-
-  }
-
-  return {
-
-    cleaned:
-      text
-        .replace(match[0], '')
-        .trim(),
-
-    email:
-      match[1].trim()
-
-  };
-
-}
-
-
-/* =========================================================
-   PRICING RESPONSE PROTECTION
-   ========================================================= */
-
-function protectPricingReply(
-  userText,
-  reply
-){
-
-  if(!isPricingQuestion(userText)){
-
-    return reply;
-
-  }
-
-  /*
-    If the model accidentally gives a number or currency,
-    do not show that answer to the student.
-  */
-
-  const suspicious =
-    /[$€£₺]|(\b\d+\s*(usd|dollar|dollars|euro|euros|tl|try|pounds|£|\$)\b)|(\$\s*\d+)|(\b\d+\s*(per|\/)\s*(hour|session|month)\b))/i;
-
-  if(suspicious.test(reply)){
-
-    return UI[currentLang].pricingFallback;
-
-  }
-
-  return reply;
-
-}
-
-
-/* =========================================================
-   SYSTEM PROMPT
-   ========================================================= */
-
-function buildSystemPrompt(lang){
-
-  return `
-
-You are Apex AI English Assistant, the AI English learning assistant for Apex English.
-
-Your primary purpose is to help students learn and practise English.
-
-You can answer a wide range of questions, but your strongest areas are:
-
-- English grammar
-- English vocabulary
-- Sentence correction
-- Speaking and conversation practice
-- Translation
-- Pronunciation explanations
-- English writing
-- Business English
-- Interview English
-- Everyday English
-- Word meanings
-- Phrasal verbs
-- Idioms
-- Tenses
-- Sentence structure
-- Common English mistakes
-
-You should behave like a friendly, patient and knowledgeable English teacher.
-
-==================================================
-GENERAL QUESTIONS
-==================================================
-
-Answer the student's questions clearly and helpfully.
-
-If the student asks a general English question, explain it in a simple way.
-
-If useful, give short examples.
-
-If the student asks about something outside English learning, you may answer briefly and naturally, but do not pretend to know private information about Apex English that has not been provided.
-
-Never invent facts.
-
-==================================================
-GRAMMAR CORRECTION
-==================================================
-
-If the student writes an English sentence and there is a genuine grammar error:
-
-1. Show the incorrect part using:
-
-[WRONG]incorrect text[/WRONG]
-
-2. Show the corrected version using:
-
-[RIGHT]correct text[/RIGHT]
-
-3. Briefly explain why.
-
-Only mark genuine errors.
-
-Do not mark a sentence wrong simply because you would personally phrase it differently.
-
-If the sentence is already correct, tell the student that it is correct and continue the conversation naturally.
-
-==================================================
-VOCABULARY
-==================================================
-
-When the student asks about a word:
-
-- Give the meaning.
-- Give the Turkish/Russian explanation when appropriate.
-- Give one or two natural English examples.
-- Mention part of speech when useful.
-- If the word has multiple common meanings, explain the important ones briefly.
-
-==================================================
-SPEAKING PRACTICE
-==================================================
-
-If the student wants conversation practice:
-
-- Respond naturally.
-- Keep the conversation going.
-- Ask a simple follow-up question.
-- Correct important grammar mistakes.
-- Do not turn every answer into a long grammar lesson.
-
-==================================================
-TRANSLATION
-==================================================
-
-If the student asks for translation:
-
-- Give the natural translation.
-- If useful, explain an important difference between literal and natural English.
-
-==================================================
-APEX ENGLISH SUPPORT
-==================================================
-
-You may answer general questions about Apex English and its English-learning services.
-
-Known information:
-
-- Apex English provides English language education.
-- Programs may include General English, Business English, Executive English, Professional/Sectoral English, Speaking Practice and online English programs.
-- English interview preparation can also be discussed.
-
-If you do not know a specific company detail, say that the teacher/team can confirm it.
-
-Never invent schedules, availability, policies or prices.
-
-==================================================
-IMPORTANT — PRICING POLICY
-==================================================
-
-THIS RULE IS EXTREMELY IMPORTANT.
-
-NEVER give a price.
-
-NEVER give a fee.
-
-NEVER give a dollar amount.
-
-NEVER give a currency amount.
-
-NEVER give hourly, session or monthly pricing numbers.
-
-NEVER repeat pricing numbers from conversation history.
-
-If the student asks:
-
-- How much?
-- What is the price?
-- What are your prices?
-- How much are lessons?
-- How much is a private lesson?
-- How much are group classes?
-- What are your packages?
-- Fiyat nedir?
-- Dersler ne kadar?
-- Özel ders ne kadar?
-- Grup dersi ne kadar?
-- Paketler ne kadar?
-
-DO NOT provide any numerical pricing information.
-
-Instead say that the teacher can send the full and detailed pricing table by email.
-
-Then ask the student for their email address.
-
-Example:
-
-"For detailed pricing information, I can ask the teacher to send you the full pricing table by email. What email address should we use?"
-
-Do not mention any actual price.
-
-==================================================
-EMAIL COLLECTION
-==================================================
-
-When the student asks about pricing, ask for their email address.
-
-Ask for the email only once in the conversation.
-
-If the student has already provided an email address, do not ask again.
-
-If the student provides an email address, thank them and tell them that the detailed pricing information can be sent to that address.
-
-When an email address is detected, include this exact hidden marker once:
-
-[EMAIL]student@example.com[/EMAIL]
-
-Replace student@example.com with the actual email address.
-
-Do not explain the marker.
-
-Do not mention the marker.
-
-==================================================
-LANGUAGE
-==================================================
-
-The student's interface language is:
-
-${UI[lang].langName}
-
-Write your explanations, support answers and normal conversation in ${UI[lang].langName}.
-
-English examples, corrected English sentences and vocabulary examples should remain in English.
-
-If the student writes in English, you may naturally respond in English when appropriate.
-
-==================================================
-STYLE
-==================================================
-
-Be:
-
-- friendly
-- professional
-- concise
-- encouraging
-- teacher-like
-- easy to understand
-
-Avoid long unnecessary answers.
-
-Normally respond in 2-6 sentences.
-
-Use examples when they genuinely help.
-
-Never be condescending.
-
-`;
-
-
-/* =========================================================
-   LANGUAGE APPLICATION
-   ========================================================= */
+let currentLang = 'en';
 
 function applyLanguage(lang){
-
   currentLang = lang;
-
   const t = UI[lang];
-
-  headerTitle.textContent =
-    t.title;
-
-  headerSub.textContent =
-    t.sub;
-
-  input.placeholder =
-    t.placeholder;
-
-  sendBtn.textContent =
-    t.send;
-
-  document.getElementById(
-    'page-title'
-  ).textContent =
-    t.pageTitle;
-
-  document.getElementById(
-    'page-description'
-  ).textContent =
-    t.pageDescription;
-
-  document.getElementById(
-    'ai-status'
-  ).textContent =
-    t.aiStatus;
-
-  document.getElementById(
-    'start-ai-text'
-  ).textContent =
-    t.start;
-
-  document.getElementById(
-    'feature-grammar'
-  ).textContent =
-    t.featureGrammar;
-
-  document.getElementById(
-    'feature-vocabulary'
-  ).textContent =
-    t.featureVocabulary;
-
-  document.getElementById(
-    'feature-speaking'
-  ).textContent =
-    t.featureSpeaking;
-
-  document.getElementById(
-    'feature-interview'
-  ).textContent =
-    t.featureInterview;
-
-
+  headerTitle.textContent = t.title;
+  headerSub.textContent = t.sub;
+  input.placeholder = t.placeholder;
+  sendBtn.textContent = t.send;
   starters.innerHTML = '';
-
-
-  t.starters.forEach(item => {
-
-    const button =
-      document.createElement('div');
-
-    button.className =
-      'starter';
-
-    button.dataset.msg =
-      item.msg;
-
-    button.textContent =
-      item.label;
-
-    starters.appendChild(button);
-
+  t.starters.forEach(s => {
+    const div = document.createElement('div');
+    div.className = 'starter';
+    div.dataset.msg = s.msg;
+    div.textContent = s.label;
+    starters.appendChild(div);
   });
-
-
-  langButtons.forEach(button => {
-
-    button.classList.toggle(
-      'active',
-      button.dataset.lang === lang
-    );
-
-  });
-
+  langButtons.forEach(btn => btn.classList.toggle('active', btn.dataset.lang === lang));
 }
 
-
-/* =========================================================
-   OPEN / CLOSE
-   ========================================================= */
-
-function openAssistant(){
-
-  panel.classList.add('open');
-
-  userHasToggled = true;
-
-  if(history.length === 0){
-
-    addBotMessage(
-      UI[currentLang].greeting
-    );
-
-  }
-
-  setTimeout(() => {
-    input.focus();
-  }, 100);
-
-}
-
-
-function closeAssistant(){
-
-  panel.classList.remove('open');
-
-  userHasToggled = true;
-
-}
-
-
-launcher.addEventListener(
-  'click',
-  openAssistant
-);
-
-
-startAI.addEventListener(
-  'click',
-  openAssistant
-);
-
-
-closeBtn.addEventListener(
-  'click',
-  closeAssistant
-);
-
-
-/* =========================================================
-   LANGUAGE BUTTONS
-   ========================================================= */
-
-langButtons.forEach(button => {
-
-  button.addEventListener(
-    'click',
-    () => {
-
-      applyLanguage(
-        button.dataset.lang
-      );
-
-    }
-  );
-
+langButtons.forEach(btn => {
+  btn.addEventListener('click', () => applyLanguage(btn.dataset.lang));
 });
 
-
-/* =========================================================
-   QUICK START BUTTONS
-   ========================================================= */
-
-starters.addEventListener(
-  'click',
-  event => {
-
-    const message =
-      event.target.dataset.msg;
-
-    if(!message){
-
-      return;
-
-    }
-
-    input.value =
-      message;
-
-    sendMessage();
-
+launcher.addEventListener('click', () => {
+  panel.classList.add('open');
+  if(history.length === 0){
+    addBotMessage(UI[currentLang].greeting);
   }
-);
+});
+closeBtn.addEventListener('click', () => panel.classList.remove('open'));
 
+starters.addEventListener('click', (e) => {
+  const msg = e.target.dataset.msg;
+  if(msg){ input.value = msg; sendMessage(); }
+});
 
-/* =========================================================
-   MESSAGE RENDERING
-   ========================================================= */
-
-function renderBotContent(text){
-
-  const escaped =
-    text
-      .replace(/&/g,'&amp;')
-      .replace(/</g,'&lt;')
-      .replace(/>/g,'&gt;');
-
-  return escaped
-
-    .replace(
-      /\[WRONG\](.*?)\[\/WRONG\]/g,
-      '<span class="wrong">$1</span>'
-    )
-
-    .replace(
-      /\[RIGHT\](.*?)\[\/RIGHT\]/g,
-      '<span class="right">$1</span>'
-    );
-
+// Looks for the hidden [EMAIL]...[/EMAIL] marker the model includes once it
+// has collected a real email address from the student. Returns the reply
+// text with the marker removed (never shown to the student) plus the
+// captured address, if any.
+function extractCapturedEmail(text){
+  const match = text.match(/\[EMAIL\](.*?)\[\/EMAIL\]/i);
+  if(!match){ return { cleaned: text, email: null }; }
+  return { cleaned: text.replace(match[0], '').trim(), email: match[1].trim() };
 }
 
-
-function addUserMessage(text){
-
-  const div =
-    document.createElement('div');
-
-  div.className =
-    'msg user';
-
-  div.textContent =
-    text;
-
-  messagesEl.appendChild(div);
-
-  messagesEl.scrollTop =
-    messagesEl.scrollHeight;
-
+// Fire-and-forget — this should never block or interrupt the student's chat.
+function notifyOwner(visitorEmail, contextMessage){
+  fetch('/api/notify', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ visitorEmail, context: contextMessage, lang: currentLang })
+  }).catch(() => {});
 }
-
-
-function addBotMessage(text){
-
-  const div =
-    document.createElement('div');
-
-  div.className =
-    'msg bot';
-
-  div.innerHTML =
-    renderBotContent(text);
-
-  messagesEl.appendChild(div);
-
-  messagesEl.scrollTop =
-    messagesEl.scrollHeight;
-
-}
-
-
-function addTyping(){
-
-  const div =
-    document.createElement('div');
-
-  div.className =
-    'msg typing';
-
-  div.id =
-    'typing-indicator';
-
-  div.textContent =
-    UI[currentLang].typing;
-
-  messagesEl.appendChild(div);
-
-  messagesEl.scrollTop =
-    messagesEl.scrollHeight;
-
-}
-
-
-function removeTyping(){
-
-  const element =
-    document.getElementById(
-      'typing-indicator'
-    );
-
-  if(element){
-
-    element.remove();
-
-  }
-
-}
-
-
-/* =========================================================
-   OWNER NOTIFICATION
-   ========================================================= */
-
-function notifyOwner(
-  visitorEmail,
-  contextMessage
-){
-
-  fetch(
-    '/api/notify',
-    {
-      method:'POST',
-
-      headers:{
-        'Content-Type':
-          'application/json'
-      },
-
-      body:JSON.stringify({
-
-        visitorEmail:
-          visitorEmail,
-
-        context:
-          contextMessage,
-
-        lang:
-          currentLang
-
-      })
-
-    }
-  ).catch(
-    () => {}
-  );
-
-}
-
-
-/* =========================================================
-   SEND MESSAGE
-   ========================================================= */
-
-async function sendMessage(){
-
-  const text =
-    input.value.trim();
-
-  if(!text){
-
-    return;
-
-  }
-
-
-  input.value = '';
-
-  sendBtn.disabled = true;
-
-
-  addUserMessage(text);
-
-
-  history.push({
-
-    role:'user',
-
-    content:text
-
-  });
-
-
-  addTyping();
-
-
-  try{
-
-    const response =
-      await fetch(
-        '/api/chat',
-        {
-          method:'POST',
-
-          headers:{
-            'Content-Type':
-              'application/json'
-          },
-
-          body:JSON.stringify({
-
-            systemPrompt:
-              buildSystemPrompt(
-                currentLang
-              ),
-
-            messages:
-              history
-
-          })
-
-        }
-      );
-
-
-    const data =
-      await response.json();
-
-
-    removeTyping();
-
-
-    if(!response.ok){
-
-      addBotMessage(
-        data.error ||
-        UI[currentLang].error
-      );
-
-      return;
-
-    }
-
-
-    let reply =
-      data.reply || '';
-
-
-    /*
-      Extract hidden email marker.
-    */
-
-    const captured =
-      extractCapturedEmail(
-        reply
-      );
-
-
-    reply =
-      captured.cleaned;
-
-
-    /*
-      HARD PRICING PROTECTION
-
-      If this is a pricing question and
-      the model accidentally includes
-      a price, do not show it.
-    */
-
-    reply =
-      protectPricingReply(
-        text,
-        reply
-      );
-
-
-    /*
-      If the student provided an email
-      directly in a pricing conversation,
-      use it even if the AI forgot the
-      hidden marker.
-    */
-
-    let email =
-      captured.email;
-
-
-    if(
-      !email &&
-      isPricingQuestion(text)
-    ){
-
-      email =
-        extractEmail(text);
-
-    }
-
-
-    /*
-      Show answer.
-    */
-
-    addBotMessage(
-      reply
-    );
-
-
-    /*
-      Save clean assistant history.
-    */
-
-    history.push({
-
-      role:'assistant',
-
-      content:reply
-
-    });
-
-
-    /*
-      Send notification when a real email
-      has been collected.
-    */
-
-    if(email){
-
-      notifyOwner(
-        email,
-        text
-      );
-
-    }
-
-
-  }
-  catch(error){
-
-    removeTyping();
-
-    addBotMessage(
-      UI[currentLang].error
-    );
-
-    console.error(error);
-
-  }
-  finally{
-
-    sendBtn.disabled =
-      false;
-
-  }
-
-}
-
-
-/* =========================================================
-   INPUT
-   ========================================================= */
-
-sendBtn.addEventListener(
-  'click',
-  sendMessage
-);
-
-
-input.addEventListener(
-  'keydown',
-  event => {
-
-    if(
-      event.key === 'Enter'
-    ){
-
-      sendMessage();
-
-    }
-
-  }
-);
-
-
-/* =========================================================
-   INITIAL LANGUAGE
-   ========================================================= */
 
 applyLanguage('tr');
 
+// Auto-open the widget 30 seconds after the page loads, on every page.
+// If the visitor already opened (or closed) it manually before then, don't
+// pop it open on top of them.
+let userHasToggled = false;
+launcher.addEventListener('click', () => { userHasToggled = true; });
+closeBtn.addEventListener('click', () => { userHasToggled = true; });
 
-/* =========================================================
-   AUTO OPEN
-   ========================================================= */
-
-setTimeout(
-  () => {
-
-    if(
-      !userHasToggled &&
-      !panel.classList.contains('open')
-    ){
-
-      panel.classList.add('open');
-
-      if(history.length === 0){
-
-        addBotMessage(
-          UI[currentLang].greeting
-        );
-
-      }
-
+setTimeout(() => {
+  if(!userHasToggled && !panel.classList.contains('open')){
+    panel.classList.add('open');
+    if(history.length === 0){
+      addBotMessage(UI[currentLang].greeting);
     }
+  }
+}, 30000);
 
-  },
-  30000
-);
+function renderBotContent(text){
+  const escaped = text
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  return escaped
+    .replace(/\[WRONG\](.*?)\[\/WRONG\]/g, '<span class="wrong">$1</span>')
+    .replace(/\[RIGHT\](.*?)\[\/RIGHT\]/g, '<span class="right">$1</span>');
+}
 
+function addUserMessage(text){
+  const div = document.createElement('div');
+  div.className = 'msg user';
+  div.textContent = text;
+  messagesEl.appendChild(div);
+  messagesEl.scrollTop = messagesEl.scrollHeight;
+}
+
+function addBotMessage(text){
+  const div = document.createElement('div');
+  div.className = 'msg bot';
+  div.innerHTML = renderBotContent(text);
+  messagesEl.appendChild(div);
+  messagesEl.scrollTop = messagesEl.scrollHeight;
+}
+
+function addTyping(){
+  const div = document.createElement('div');
+  div.className = 'msg typing';
+  div.id = 'typing-indicator';
+  div.textContent = UI[currentLang].typing;
+  messagesEl.appendChild(div);
+  messagesEl.scrollTop = messagesEl.scrollHeight;
+}
+function removeTyping(){
+  const el = document.getElementById('typing-indicator');
+  if(el) el.remove();
+}
+
+async function sendMessage(){
+  const text = input.value.trim();
+  if(!text) return;
+  input.value = '';
+  sendBtn.disabled = true;
+  addUserMessage(text);
+  history.push({ role: 'user', content: text });
+  addTyping();
+
+  try{
+    const response = await fetch("/api/chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        systemPrompt: buildSystemPrompt(currentLang),
+        messages: history
+      })
+    });
+    const data = await response.json();
+    removeTyping();
+    if(!response.ok){
+      addBotMessage(data.error || UI[currentLang].error);
+      return;
+    }
+    const { cleaned, email } = extractCapturedEmail(data.reply);
+    addBotMessage(cleaned);
+    history.push({ role: 'assistant', content: cleaned });
+    if(email){
+      notifyOwner(email, text);
+    }
+  }catch(err){
+    removeTyping();
+    addBotMessage(UI[currentLang].error);
+    console.error(err);
+  }finally{
+    sendBtn.disabled = false;
+  }
+}
+
+sendBtn.addEventListener('click', sendMessage);
+input.addEventListener('keydown', (e) => { if(e.key === 'Enter') sendMessage(); });
 </script>
 
 </body>
