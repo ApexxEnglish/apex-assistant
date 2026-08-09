@@ -274,7 +274,7 @@ const UI = {
     send: "Send",
     typing: "typing...",
     greeting: "Hi! Ask me about courses, pricing, or scheduling — or write a sentence in English and I'll help you practice.",
-    error: "Sorry, something went wrong reaching the assistant. Please try again.",
+    error: "You've sent quite a few messages in a row — let's take a short break and continue in a minute.",
     starters: [
       { label: "Levels?", msg: "What levels do you teach?" },
       { label: "Pricing", msg: "How much are lessons?", notify: true },
@@ -289,7 +289,7 @@ const UI = {
     send: "Gönder",
     typing: "yazıyor...",
     greeting: "Merhaba! Kurslar, fiyatlar ya da program hakkında soru sorabilirsin — ya da İngilizce bir cümle yaz, birlikte pratik yapalım.",
-    error: "Üzgünüm, asistana ulaşırken bir sorun oluştu. Lütfen tekrar dene.",
+    error: "Biraz fazla mesaj gönderdik gibi görünüyor — kısa bir mola verip birazdan devam edelim mi?",
     starters: [
       { label: "Seviyeler?", msg: "Hangi seviyelerde ders veriyorsunuz?" },
       { label: "Fiyatlar", msg: "Dersler ne kadar?", notify: true },
@@ -304,7 +304,7 @@ const UI = {
     send: "Отправить",
     typing: "печатает...",
     greeting: "Привет! Спрашивай о курсах, ценах или расписании — или напиши предложение на английском, и я помогу тебе попрактиковаться.",
-    error: "Извините, не удалось связаться с ассистентом. Попробуйте ещё раз.",
+    error: "Похоже, мы отправили довольно много сообщений подряд — давай сделаем небольшую паузу и продолжим через минуту.",
     starters: [
       { label: "Уровни?", msg: "Какие уровни вы преподаёте?" },
       { label: "Цены", msg: "Сколько стоят занятия?", notify: true },
@@ -471,7 +471,8 @@ async function sendMessage(){
     const data = await response.json();
     removeTyping();
     if(!response.ok){
-      addBotMessage(data.error || UI[currentLang].error);
+      console.error('API error:', data.error);
+      addBotMessage(UI[currentLang].error);
       return;
     }
     const { cleaned, email } = extractCapturedEmail(data.reply);
