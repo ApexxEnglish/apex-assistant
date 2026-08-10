@@ -25,10 +25,31 @@
   @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&family=Lora:ital,wght@0,500;0,600;1,500&display=swap');
 
   /* Launcher */
-  #launcher{
+  #launcher-wrap{
     position:fixed;
     top:28px;
     right:28px;
+    width:60px;
+    height:60px;
+    z-index:1000;
+  }
+  #launcher-wrap.opened #pulse-ring{ display:none; }
+  #pulse-ring{
+    position:absolute;
+    inset:0;
+    border-radius:50%;
+    background:var(--marigold);
+    opacity:0.55;
+    animation:pulse-ring 2.2s cubic-bezier(0.4,0,0.6,1) infinite;
+    pointer-events:none;
+  }
+  @keyframes pulse-ring{
+    0%{ transform:scale(1); opacity:0.55; }
+    70%{ transform:scale(1.55); opacity:0; }
+    100%{ transform:scale(1.55); opacity:0; }
+  }
+  #launcher{
+    position:relative;
     width:60px;
     height:60px;
     border-radius:50%;
@@ -39,16 +60,16 @@
     display:flex;
     align-items:center;
     justify-content:center;
-    z-index:1000;
+    z-index:1;
     transition:transform 0.2s ease;
   }
   #launcher:hover{ transform:scale(1.06); }
-  #launcher svg{ width:26px; height:26px; }
-  #launcher .mark{
-    stroke:var(--marigold);
-    stroke-width:3;
-    fill:none;
-    stroke-linecap:round;
+  #launcher svg{ width:27px; height:27px; }
+  #launcher .bubble{
+    fill:var(--marigold);
+  }
+  #launcher .dot{
+    fill:var(--ink);
   }
 
   /* Panel */
@@ -232,9 +253,17 @@
 </head>
 <body>
 
-<button id="launcher" aria-label="Open chat assistant">
-  <svg viewBox="0 0 24 24"><path class="mark" d="M4 18 L10 6 L14 14 L20 5"/></svg>
-</button>
+<div id="launcher-wrap">
+  <div id="pulse-ring"></div>
+  <button id="launcher" aria-label="Open chat assistant">
+    <svg viewBox="0 0 24 24">
+      <path class="bubble" d="M12 3C6.48 3 2 6.69 2 11.25c0 2.52 1.39 4.77 3.58 6.29-.12 1.13-.5 2.42-1.32 3.63a.5.5 0 0 0 .58.76c1.86-.62 3.32-1.5 4.36-2.29A12.6 12.6 0 0 0 12 19.5c5.52 0 10-3.69 10-8.25S17.52 3 12 3z"/>
+      <circle class="dot" cx="8.2" cy="11.4" r="1.15"/>
+      <circle class="dot" cx="12" cy="11.4" r="1.15"/>
+      <circle class="dot" cx="15.8" cy="11.4" r="1.15"/>
+    </svg>
+  </button>
+</div>
 
 <div id="panel">
   <header>
@@ -276,10 +305,11 @@ const UI = {
     greeting: "Hi! Ask me about courses, pricing, or scheduling — or write a sentence in English and I'll help you practice.",
     error: "You've sent quite a few messages in a row — let's take a short break and continue in a minute.",
     priceReply: "Could I get your email so we can send you our price list?",
+    checkInvite: "Sure — type any English sentence and I'll check it for you.",
     starters: [
       { label: "Levels?", msg: "What levels do you teach?" },
       { label: "Pricing", msg: "How much are lessons?", notify: true, instant: true },
-      { label: "Check a sentence", msg: "Can you check this sentence: She don't like coffee." }
+      { label: "Check a sentence", type: "checkSentence" }
     ]
   },
   tr: {
@@ -292,10 +322,11 @@ const UI = {
     greeting: "Merhaba! Kurslar, fiyatlar ya da program hakkında soru sorabilirsin — ya da İngilizce bir cümle yaz, birlikte pratik yapalım.",
     error: "Biraz fazla mesaj gönderdik gibi görünüyor — kısa bir mola verip birazdan devam edelim mi?",
     priceReply: "Fiyat listemizi gönderebilmemiz için email adresini alabilir miyim?",
+    checkInvite: "Tabii — kontrol etmemi istediğin İngilizce cümleyi yazman yeterli.",
     starters: [
       { label: "Seviyeler?", msg: "Hangi seviyelerde ders veriyorsunuz?" },
       { label: "Fiyatlar", msg: "Dersler ne kadar?", notify: true, instant: true },
-      { label: "Cümle kontrolü", msg: "Bu cümleyi kontrol eder misin: She don't like coffee." }
+      { label: "Cümle kontrolü", type: "checkSentence" }
     ]
   },
   ru: {
@@ -308,10 +339,11 @@ const UI = {
     greeting: "Привет! Спрашивай о курсах, ценах или расписании — или напиши предложение на английском, и я помогу тебе попрактиковаться.",
     error: "Похоже, мы отправили довольно много сообщений подряд — давай сделаем небольшую паузу и продолжим через минуту.",
     priceReply: "Оставишь свой email, чтобы мы прислали прайс-лист?",
+    checkInvite: "Конечно — просто напиши любое предложение на английском, и я его проверю.",
     starters: [
       { label: "Уровни?", msg: "Какие уровни вы преподаёте?" },
       { label: "Цены", msg: "Сколько стоят занятия?", notify: true, instant: true },
-      { label: "Проверить предложение", msg: "Проверь, пожалуйста, это предложение: She don't like coffee." }
+      { label: "Проверить предложение", type: "checkSentence" }
     ]
   }
 };
@@ -333,6 +365,7 @@ Keep replies short (2-4 sentences), warm, and encouraging — never condescendin
 const messagesEl = document.getElementById('messages');
 const input = document.getElementById('chat-input');
 const sendBtn = document.getElementById('send-btn');
+const launcherWrap = document.getElementById('launcher-wrap');
 const launcher = document.getElementById('launcher');
 const panel = document.getElementById('panel');
 const closeBtn = document.getElementById('close-btn');
@@ -355,8 +388,9 @@ function applyLanguage(lang){
   t.starters.forEach(s => {
     const div = document.createElement('div');
     div.className = 'starter';
-    div.dataset.msg = s.msg;
+    if(s.msg){ div.dataset.msg = s.msg; }
     if(s.instant){ div.dataset.instant = '1'; }
+    if(s.type){ div.dataset.type = s.type; }
     div.textContent = s.label;
     starters.appendChild(div);
   });
@@ -369,6 +403,7 @@ langButtons.forEach(btn => {
 
 launcher.addEventListener('click', () => {
   panel.classList.add('open');
+  launcherWrap.classList.add('opened');
   if(history.length === 0){
     addBotMessage(UI[currentLang].greeting);
   }
@@ -376,6 +411,12 @@ launcher.addEventListener('click', () => {
 closeBtn.addEventListener('click', () => panel.classList.remove('open'));
 
 starters.addEventListener('click', (e) => {
+  const type = e.target.dataset.type;
+  if(type === 'checkSentence'){
+    addBotMessage(UI[currentLang].checkInvite);
+    input.focus();
+    return;
+  }
   const msg = e.target.dataset.msg;
   if(!msg) return;
   if(e.target.dataset.instant){
@@ -421,6 +462,7 @@ closeBtn.addEventListener('click', () => { userHasToggled = true; });
 setTimeout(() => {
   if(!userHasToggled && !panel.classList.contains('open')){
     panel.classList.add('open');
+    launcherWrap.classList.add('opened');
     if(history.length === 0){
       addBotMessage(UI[currentLang].greeting);
     }
@@ -448,9 +490,7 @@ function addBotMessage(text){
   div.className = 'msg bot';
   div.innerHTML = renderBotContent(text);
   messagesEl.appendChild(div);
-  setTimeout(() => {
-    div.scrollIntoView({ block: 'start', behavior: 'smooth' });
-  }, 120);
+  messagesEl.scrollTop = messagesEl.scrollHeight;
 }
 
 function addTyping(){
