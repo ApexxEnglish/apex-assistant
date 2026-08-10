@@ -1,11 +1,13 @@
 // Vercel serverless function — holds the Gemini API key server-side.
 // Never move this key into index.html or any client-side code.
 //
-// Set GEMINI_API_KEY in your Vercel project's Environment Variables.
+// Set GEMINI_API_KEY in your Vercel project's Environment Variables
+// (get a free key at https://aistudio.google.com/apikey).
 
 export default async function handler(req, res) {
-  // Allow the widget to be embedded on a different domain.
-  // Once your site is live, you can restrict this to your real domain.
+  // Allow the widget to be embedded on a different domain than this
+  // function is deployed on. Once your site is live, you can tighten
+  // this to your real domain instead of '*'.
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
@@ -21,12 +23,8 @@ export default async function handler(req, res) {
   }
 
   const apiKey = process.env.GEMINI_API_KEY;
-
   if (!apiKey) {
-    res.status(500).json({
-      error:
-        'Server is missing GEMINI_API_KEY. Add it in Vercel project settings.'
-    });
+    res.status(500).json({ error: 'Server is missing GEMINI_API_KEY. Add it in Vercel project settings.' });
     return;
   }
 
@@ -37,15 +35,15 @@ export default async function handler(req, res) {
     return;
   }
 
-  // Convert our chat history to Gemini's format.
-  const contents = messages.map((m) => ({
+  // Gemini uses "model" instead of "assistant" for its own turns.
+  const contents = messages.map(m => ({
     role: m.role === 'assistant' ? 'model' : 'user',
     parts: [{ text: m.content }]
   }));
 
   try {
     const geminiResponse = await fetch(
-      'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent',
+      'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent',
       {
         method: 'POST',
         headers: {
@@ -53,9 +51,7 @@ export default async function handler(req, res) {
           'x-goog-api-key': apiKey
         },
         body: JSON.stringify({
-          systemInstruction: {
-            parts: [{ text: systemPrompt || '' }]
-          },
+          systemInstruction: { parts: [{ text: systemPrompt || '' }] },
           contents
         })
       }
@@ -64,24 +60,13 @@ export default async function handler(req, res) {
     const data = await geminiResponse.json();
 
     if (!geminiResponse.ok) {
-      res.status(geminiResponse.status).json({
-        error: data.error?.message || 'Gemini API error.'
-      });
+      res.status(geminiResponse.status).json({ error: data.error?.message || 'Gemini API error.' });
       return;
     }
 
-    const reply =
-      data.candidates?.[0]?.content?.parts
-        ?.map((p) => p.text)
-        .join('') || '';
-
+    const reply = data.candidates?.[0]?.content?.parts?.map(p => p.text).join('') || '';
     res.status(200).json({ reply });
-
   } catch (err) {
-    console.error('Gemini request failed:', err);
-
-    res.status(500).json({
-      error: 'Failed to reach Gemini API.'
-    });
+    res.status(500).json({ error: 'Failed to reach Gemini API.' });
   }
 }
