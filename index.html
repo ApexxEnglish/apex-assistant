@@ -275,9 +275,10 @@ const UI = {
     typing: "typing...",
     greeting: "Hi! Ask me about courses, pricing, or scheduling — or write a sentence in English and I'll help you practice.",
     error: "You've sent quite a few messages in a row — let's take a short break and continue in a minute.",
+    priceReply: "Could I get your email so we can send you our price list?",
     starters: [
       { label: "Levels?", msg: "What levels do you teach?" },
-      { label: "Pricing", msg: "How much are lessons?", notify: true },
+      { label: "Pricing", msg: "How much are lessons?", notify: true, instant: true },
       { label: "Check a sentence", msg: "Can you check this sentence: She don't like coffee." }
     ]
   },
@@ -290,9 +291,10 @@ const UI = {
     typing: "yazıyor...",
     greeting: "Merhaba! Kurslar, fiyatlar ya da program hakkında soru sorabilirsin — ya da İngilizce bir cümle yaz, birlikte pratik yapalım.",
     error: "Biraz fazla mesaj gönderdik gibi görünüyor — kısa bir mola verip birazdan devam edelim mi?",
+    priceReply: "Fiyat listemizi gönderebilmemiz için email adresini alabilir miyim?",
     starters: [
       { label: "Seviyeler?", msg: "Hangi seviyelerde ders veriyorsunuz?" },
-      { label: "Fiyatlar", msg: "Dersler ne kadar?", notify: true },
+      { label: "Fiyatlar", msg: "Dersler ne kadar?", notify: true, instant: true },
       { label: "Cümle kontrolü", msg: "Bu cümleyi kontrol eder misin: She don't like coffee." }
     ]
   },
@@ -305,9 +307,10 @@ const UI = {
     typing: "печатает...",
     greeting: "Привет! Спрашивай о курсах, ценах или расписании — или напиши предложение на английском, и я помогу тебе попрактиковаться.",
     error: "Похоже, мы отправили довольно много сообщений подряд — давай сделаем небольшую паузу и продолжим через минуту.",
+    priceReply: "Оставишь свой email, чтобы мы прислали прайс-лист?",
     starters: [
       { label: "Уровни?", msg: "Какие уровни вы преподаёте?" },
-      { label: "Цены", msg: "Сколько стоят занятия?", notify: true },
+      { label: "Цены", msg: "Сколько стоят занятия?", notify: true, instant: true },
       { label: "Проверить предложение", msg: "Проверь, пожалуйста, это предложение: She don't like coffee." }
     ]
   }
@@ -320,7 +323,7 @@ function buildSystemPrompt(lang){
 
 2. CONVERSATION PRACTICE: if the student writes a sentence or is clearly practicing English, respond warmly and naturally to what they said, AND check their grammar. If there's an error, show it using this exact format inline: [WRONG]their original wrong phrase[/WRONG][RIGHT]the corrected phrase[/RIGHT]. Only mark real errors, not stylistic choices. If the sentence is correct, briefly say so and keep the conversation going with a follow-up question.
 
-3. PRICING → NEVER STATE A NUMBER, ALWAYS COLLECT EMAIL INSTEAD: if the student asks about price, fees, or cost in any way, do NOT give any number or price range, not even a rough one. Instead, briefly say the teacher will send the exact pricing directly, and ask for their email address. Ask this only once per conversation — if they already gave an email earlier, don't ask again. If the student's message contains something that looks like a real email address (e.g. name@domain.com), thank them, confirm the pricing table will be sent to that address, and include this exact hidden marker once anywhere in your reply: [EMAIL]their@address.com[/EMAIL] — put their actual detected email inside it. This marker is stripped out automatically before the student ever sees your message, so don't reference it or explain it to them.
+3. PRICING → NEVER STATE A NUMBER, ALWAYS COLLECT EMAIL INSTEAD: if the student asks about price, fees, or cost in any way, do NOT give any number or price range, not even a rough one. Instead, in ONE short sentence (max ~15 words), say the teacher will send the exact pricing, and ask for their email address. Do not explain why, do not add extra context or reassurance — just that one short sentence. Ask this only once per conversation — if they already gave an email earlier, don't ask again. If the student's message contains something that looks like a real email address (e.g. name@domain.com), thank them briefly (one short sentence), confirm the pricing table will be sent to that address, and include this exact hidden marker once anywhere in your reply: [EMAIL]their@address.com[/EMAIL] — put their actual detected email inside it. This marker is stripped out automatically before the student ever sees your message, so don't reference it or explain it to them.
 
 IMPORTANT — LANGUAGE: the student's interface is set to ${UI[lang].langName}. Write ALL of your own explanations, greetings, and support answers in ${UI[lang].langName}. Example English sentences being taught or corrected stay in English (inside the [WRONG]/[RIGHT] tags), but everything else you say should be in ${UI[lang].langName}.
 
@@ -353,6 +356,7 @@ function applyLanguage(lang){
     const div = document.createElement('div');
     div.className = 'starter';
     div.dataset.msg = s.msg;
+    if(s.instant){ div.dataset.instant = '1'; }
     div.textContent = s.label;
     starters.appendChild(div);
   });
@@ -373,7 +377,17 @@ closeBtn.addEventListener('click', () => panel.classList.remove('open'));
 
 starters.addEventListener('click', (e) => {
   const msg = e.target.dataset.msg;
-  if(msg){ input.value = msg; sendMessage(); }
+  if(!msg) return;
+  if(e.target.dataset.instant){
+    addUserMessage(msg);
+    history.push({ role: 'user', content: msg });
+    const reply = UI[currentLang].priceReply;
+    addBotMessage(reply);
+    history.push({ role: 'assistant', content: reply });
+    return;
+  }
+  input.value = msg;
+  sendMessage();
 });
 
 // Looks for the hidden [EMAIL]...[/EMAIL] marker the model includes once it
@@ -434,7 +448,9 @@ function addBotMessage(text){
   div.className = 'msg bot';
   div.innerHTML = renderBotContent(text);
   messagesEl.appendChild(div);
-  messagesEl.scrollTop = messagesEl.scrollHeight;
+  setTimeout(() => {
+    div.scrollIntoView({ block: 'start', behavior: 'smooth' });
+  }, 120);
 }
 
 function addTyping(){
