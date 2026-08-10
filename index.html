@@ -316,7 +316,7 @@ const UI = {
     typing: "typing...",
     greeting: "Hi! Curious about an English word, grammar rule, or idiom? Write a sentence and let's practice — or ask me about courses, pricing, or scheduling.",
     error: "You've sent quite a few messages in a row — let's take a short break and continue in a minute.",
-    priceReply: "Could I get your email so we can send you our price list?",
+    priceReply: "Could I get your email so we can send you our price list? ☺️",
     checkInvite: "Sure — type any English sentence and I'll check it for you.",
     starters: [
       { label: "Check a sentence", type: "checkSentence" },
@@ -333,7 +333,7 @@ const UI = {
     typing: "yazıyor...",
     greeting: "Merhaba! İngilizcede merak ettiğin bir kelime, dilbilgisi kuralı ya da deyim var mı? Bir cümle yaz, birlikte pratik yapalım — ya da kurslar, fiyatlar ve program hakkında da soru sorabilirsin.",
     error: "Biraz fazla mesaj gönderdik gibi görünüyor — kısa bir mola verip birazdan devam edelim mi?",
-    priceReply: "Fiyat listemizi gönderebilmemiz için email adresini alabilir miyim?",
+    priceReply: "Fiyat listemizi gönderebilmemiz için email adresini alabilir miyim? ☺️",
     checkInvite: "Tabii — kontrol etmemi istediğin İngilizce cümleyi yazman yeterli.",
     starters: [
       { label: "Cümle kontrolü", type: "checkSentence" },
@@ -350,7 +350,7 @@ const UI = {
     typing: "печатает...",
     greeting: "Привет! Интересует какое-то английское слово, правило грамматики или идиома? Напиши предложение, и мы попрактикуемся — или спрашивай о курсах, ценах или расписании.",
     error: "Похоже, мы отправили довольно много сообщений подряд — давай сделаем небольшую паузу и продолжим через минуту.",
-    priceReply: "Оставишь свой email, чтобы мы прислали прайс-лист?",
+    priceReply: "Оставишь свой email, чтобы мы прислали прайс-лист? ☺️",
     checkInvite: "Конечно — просто напиши любое предложение на английском, и я его проверю.",
     starters: [
       { label: "Проверить предложение", type: "checkSentence" },
@@ -365,7 +365,13 @@ function buildSystemPrompt(lang){
 
 1. SITE SUPPORT: answer questions about courses, levels (Beginner A1 to Advanced C1), scheduling, and how lessons work. If you don't know a specific detail, say the teacher will confirm it — don't invent numbers or facts.
 
-2. CONVERSATION PRACTICE: if the student writes a sentence or is clearly practicing English, respond warmly and naturally to what they said, AND check their grammar. If there's an error, show it using this exact format inline: [WRONG]their original wrong phrase[/WRONG][RIGHT]the corrected phrase[/RIGHT]. Only mark real errors, not stylistic choices. If the sentence is correct, briefly say so and keep the conversation going with a follow-up question.
+2. CONVERSATION PRACTICE: if the student writes a sentence or is clearly practicing English, respond warmly and naturally to what they said, AND check their grammar.
+- STRICT RULE: only use the [WRONG]/[RIGHT] tags for a genuine grammatical mistake (wrong verb form, wrong tense, subject-verb agreement, wrong preposition, missing/extra word, spelling that changes meaning). Do NOT use them for word-choice preferences, more natural phrasing, formality level, or anything that is already grammatically correct — those are not errors.
+- If you are not fully sure something is a real grammatical error, treat the sentence as correct and do not tag anything.
+- When there is a real error, show it using this exact format inline: [WRONG]their original wrong phrase[/WRONG][RIGHT]the corrected phrase[/RIGHT]. Tag only the specific wrong words/phrase, not the whole sentence.
+- If the sentence is grammatically correct, do NOT use [WRONG] or [RIGHT] anywhere in your reply — just say so briefly and keep the conversation going with a follow-up question.
+- Example (error — tag it): student writes "She don't like coffee." → mention that [WRONG]she don't like[/WRONG][RIGHT]she doesn't like[/RIGHT] coffee, then continue naturally.
+- Example (correct — no tags at all): student writes "I have been living here for two years." → this is fully correct, so respond with encouragement and a follow-up question only, with zero [WRONG]/[RIGHT] tags in the reply.
 
 3. PRICING → NEVER STATE A NUMBER, ALWAYS COLLECT EMAIL INSTEAD: if the student asks about price, fees, or cost in any way, do NOT give any number or price range, not even a rough one. Instead, in ONE short sentence (max ~15 words), say the teacher will send the exact pricing, and ask for their email address. Do not explain why, do not add extra context or reassurance — just that one short sentence. Ask this only once per conversation — if they already gave an email earlier, don't ask again. If the student's message contains something that looks like a real email address (e.g. name@domain.com), thank them briefly (one short sentence), confirm the pricing table will be sent to that address, and include this exact hidden marker once anywhere in your reply: [EMAIL]their@address.com[/EMAIL] — put their actual detected email inside it. This marker is stripped out automatically before the student ever sees your message, so don't reference it or explain it to them.
 
