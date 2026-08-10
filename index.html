@@ -322,9 +322,10 @@ const UI = {
     priceReply: "Could I get your email so we can send you our price list? ☺️",
     checkInvite: "Sure — type any English sentence and I'll check it for you.",
     starters: [
-      { label: "Check a sentence", type: "checkSentence" },
+      { label: "Level test", url: "https://www.apexenglish.net/ucretsiz-seviye-analizi" },
       { label: "Pricing", msg: "How much are lessons?", notify: true, instant: true },
-      { label: "Levels?", msg: "What levels do you teach?" }
+      { label: "Levels?", msg: "What levels do you teach?" },
+      { label: "Contact", url: "https://www.apexenglish.net/iletisim" }
     ]
   },
   tr: {
@@ -339,9 +340,10 @@ const UI = {
     priceReply: "Fiyat listemizi gönderebilmemiz için email adresini alabilir miyim? ☺️",
     checkInvite: "Tabii — kontrol etmemi istediğin İngilizce cümleyi yazman yeterli.",
     starters: [
-      { label: "Cümle kontrolü", type: "checkSentence" },
+      { label: "Seviye Testi", url: "https://www.apexenglish.net/ucretsiz-seviye-analizi" },
       { label: "Fiyatlar", msg: "Dersler ne kadar?", notify: true, instant: true },
-      { label: "Seviyeler?", msg: "Hangi seviyelerde ders veriyorsunuz?" }
+      { label: "Seviyeler?", msg: "Hangi seviyelerde ders veriyorsunuz?" },
+      { label: "İletişim", url: "https://www.apexenglish.net/iletisim" }
     ]
   },
   ru: {
@@ -356,9 +358,10 @@ const UI = {
     priceReply: "Оставишь свой email, чтобы мы прислали прайс-лист? ☺️",
     checkInvite: "Конечно — просто напиши любое предложение на английском, и я его проверю.",
     starters: [
-      { label: "Проверить предложение", type: "checkSentence" },
+      { label: "Тест уровня", url: "https://www.apexenglish.net/ucretsiz-seviye-analizi" },
       { label: "Цены", msg: "Сколько стоят занятия?", notify: true, instant: true },
-      { label: "Уровни?", msg: "Какие уровни вы преподаёте?" }
+      { label: "Уровни?", msg: "Какие уровни вы преподаёте?" },
+      { label: "Контакты", url: "https://www.apexenglish.net/iletisim" }
     ]
   }
 };
@@ -426,7 +429,7 @@ function applyLanguage(lang){
     div.className = 'starter';
     if(s.msg){ div.dataset.msg = s.msg; }
     if(s.instant){ div.dataset.instant = '1'; }
-    if(s.type){ div.dataset.type = s.type; }
+    if(s.url){ div.dataset.url = s.url; }
     div.textContent = s.label;
     starters.appendChild(div);
   });
@@ -447,10 +450,9 @@ launcher.addEventListener('click', () => {
 closeBtn.addEventListener('click', () => panel.classList.remove('open'));
 
 starters.addEventListener('click', (e) => {
-  const type = e.target.dataset.type;
-  if(type === 'checkSentence'){
-    addBotMessage(UI[currentLang].checkInvite);
-    input.focus();
+  const url = e.target.dataset.url;
+  if(url){
+    window.open(url, '_blank', 'noopener');
     return;
   }
   const msg = e.target.dataset.msg;
@@ -510,7 +512,8 @@ function renderBotContent(text){
     .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
   return escaped
     .replace(/\[WRONG\](.*?)\[\/WRONG\]/g, '<span class="wrong">$1</span>')
-    .replace(/\[RIGHT\](.*?)\[\/RIGHT\]/g, '<span class="right">$1</span>');
+    .replace(/\[RIGHT\](.*?)\[\/RIGHT\]/g, '<span class="right">$1</span>')
+    .replace(/(https?:\/\/[^\s<]+)/g, '<a href="$1" target="_blank" rel="noopener" style="color:var(--marigold-deep);text-decoration:underline;">$1</a>');
 }
 
 function addUserMessage(text){
