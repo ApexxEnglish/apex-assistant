@@ -139,19 +139,21 @@
 
   #lang-switch{
     display:flex;
-    gap:4px;
+    flex-wrap:wrap;
+    gap:5px;
     padding:8px 16px;
     background:var(--paper);
     border-bottom:1px solid var(--line);
   }
   .lang-btn{
     font-family:'IBM Plex Mono', monospace;
-    font-size:0.68rem;
+    font-size:0.74rem;
+    font-weight:600;
     letter-spacing:0.03em;
-    background:none;
+    background:var(--white);
     border:1px solid var(--line);
     border-radius:100px;
-    padding:4px 10px;
+    padding:5px 11px;
     cursor:pointer;
     color:var(--ink-soft);
   }
@@ -292,6 +294,11 @@
     <button class="lang-btn active" data-lang="tr">TR</button>
     <button class="lang-btn" data-lang="en">EN</button>
     <button class="lang-btn" data-lang="ru">RU</button>
+    <button class="lang-btn" data-lang="fa">FA</button>
+    <button class="lang-btn" data-lang="es">ES</button>
+    <button class="lang-btn" data-lang="fr">FR</button>
+    <button class="lang-btn" data-lang="zh">ZH</button>
+    <button class="lang-btn" data-lang="ja">JA</button>
   </div>
   <div id="messages"></div>
   <div class="starter-row" id="starters">
@@ -362,6 +369,96 @@ const UI = {
       { label: "Цены", msg: "Сколько стоят занятия?", notify: true, instant: true },
       { label: "Уровни?", msg: "Какие уровни вы преподаёте?" },
       { label: "Контакты", msg: "Поделитесь, пожалуйста, контактными данными?" }
+    ]
+  },
+  fa: {
+    langName: "فارسی",
+    title: "برای تمرین انگلیسی آماده‌ای؟",
+    sub: "یا درباره دوره سوال بپرس",
+    placeholder: "سوال یا جمله‌ای بنویسید...",
+    send: "ارسال",
+    typing: "در حال تایپ...",
+    greeting: "سلام! کنجکاو یک کلمه انگلیسی، قانون گرامری یا اصطلاح هستید؟ یک جمله بنویسید تا تمرین کنیم — یا درباره دوره‌ها، قیمت‌ها یا برنامه زمانی بپرسید.",
+    error: "به نظر می‌رسد چند پیام پشت سر هم فرستادیم — بیایید کمی استراحت کنیم و در یک دقیقه ادامه دهیم.",
+    priceReply: "می‌توانم ایمیل شما را بگیرم تا لیست قیمت را برایتان ارسال کنیم؟ ☺️",
+    checkInvite: "البته — هر جمله انگلیسی را بنویسید تا برایتان بررسی کنم.",
+    starters: [
+      { label: "تست سطح", msg: "می‌توانید لینک تست سطح رایگان را به اشتراک بگذارید؟" },
+      { label: "قیمت‌ها", msg: "دوره‌ها چقدر هزینه دارند؟", notify: true, instant: true },
+      { label: "سطوح؟", msg: "چه سطوحی تدریس می‌کنید؟" },
+      { label: "تماس", msg: "می‌توانید اطلاعات تماس را به اشتراک بگذارید؟" }
+    ]
+  },
+  es: {
+    langName: "Español",
+    title: "¿Listo para practicar tu inglés?",
+    sub: "o pregunta sobre el curso",
+    placeholder: "Escribe una pregunta o frase...",
+    send: "Enviar",
+    typing: "escribiendo...",
+    greeting: "¡Hola! ¿Tienes curiosidad por una palabra en inglés, una regla gramatical o un modismo? Escribe una frase y practiquemos, o pregúntame sobre cursos, precios u horarios.",
+    error: "Hemos enviado bastantes mensajes seguidos — tomemos un breve descanso y continuemos en un minuto.",
+    priceReply: "¿Podrías darme tu correo para enviarte nuestra lista de precios? ☺️",
+    checkInvite: "Claro — escribe cualquier frase en inglés y la revisaré.",
+    starters: [
+      { label: "Prueba de nivel", msg: "¿Puedes compartir el enlace de la prueba de nivel gratuita?" },
+      { label: "Precios", msg: "¿Cuánto cuestan las clases?", notify: true, instant: true },
+      { label: "¿Niveles?", msg: "¿Qué niveles enseñan?" },
+      { label: "Contacto", msg: "¿Puedes compartir tus datos de contacto?" }
+    ]
+  },
+  fr: {
+    langName: "Français",
+    title: "Prêt à pratiquer ton anglais ?",
+    sub: "ou pose une question sur le cours",
+    placeholder: "Tapez une question ou une phrase...",
+    send: "Envoyer",
+    typing: "en train d'écrire...",
+    greeting: "Salut ! Curieux d'un mot anglais, d'une règle de grammaire ou d'une expression ? Écris une phrase et pratiquons — ou demande-moi des infos sur les cours, les tarifs ou les horaires.",
+    error: "On a envoyé pas mal de messages d'affilée — faisons une courte pause et reprenons dans une minute.",
+    priceReply: "Puis-je avoir votre email pour vous envoyer notre grille tarifaire ? ☺️",
+    checkInvite: "Bien sûr — écris n'importe quelle phrase en anglais et je la vérifierai.",
+    starters: [
+      { label: "Test de niveau", msg: "Pouvez-vous partager le lien du test de niveau gratuit ?" },
+      { label: "Tarifs", msg: "Combien coûtent les cours ?", notify: true, instant: true },
+      { label: "Niveaux ?", msg: "Quels niveaux enseignez-vous ?" },
+      { label: "Contact", msg: "Pouvez-vous partager vos coordonnées ?" }
+    ]
+  },
+  zh: {
+    langName: "中文",
+    title: "准备好练习英语了吗？",
+    sub: "或者询问课程相关问题",
+    placeholder: "输入问题或句子...",
+    send: "发送",
+    typing: "正在输入...",
+    greeting: "你好！对某个英语单词、语法规则或习语感到好奇吗？写一个句子，我们一起练习吧——或者问我关于课程、价格或时间安排的问题。",
+    error: "我们已经连续发送了不少消息——稍作休息，一分钟后继续吧。",
+    priceReply: "能提供您的邮箱吗？我们会把价目表发给您 ☺️",
+    checkInvite: "当然——写下任意一句英语句子，我来帮你检查。",
+    starters: [
+      { label: "水平测试", msg: "能分享一下免费水平测试的链接吗？" },
+      { label: "价格", msg: "课程多少钱？", notify: true, instant: true },
+      { label: "级别？", msg: "你们教哪些级别？" },
+      { label: "联系方式", msg: "能分享一下联系方式吗？" }
+    ]
+  },
+  ja: {
+    langName: "日本語",
+    title: "英語の練習をはじめましょうか？",
+    sub: "またはコースについて質問する",
+    placeholder: "質問や文章を入力してください...",
+    send: "送信",
+    typing: "入力中...",
+    greeting: "こんにちは！英単語や文法のルール、イディオムが気になりますか？文章を書いて一緒に練習しましょう——コースや料金、スケジュールについて質問してもいいですよ。",
+    error: "続けてメッセージを送りすぎたようです。少し休憩して、また後で続けましょう。",
+    priceReply: "料金表をお送りするので、メールアドレスを教えていただけますか？☺️",
+    checkInvite: "もちろんです——英語の文章を書いてください、確認しますね。",
+    starters: [
+      { label: "レベルテスト", msg: "無料レベルテストのリンクを共有していただけますか？" },
+      { label: "料金", msg: "レッスンの料金はいくらですか？", notify: true, instant: true },
+      { label: "レベル？", msg: "どのレベルを教えていますか？" },
+      { label: "お問い合わせ", msg: "連絡先を共有していただけますか？" }
     ]
   }
 };
