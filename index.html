@@ -33,20 +33,25 @@
     height:60px;
     z-index:1000;
   }
-  #launcher-wrap.opened #pulse-ring{ display:none; }
-  #pulse-ring{
+  #launcher-wrap.opened #pulse-ring,
+  #launcher-wrap.opened #pulse-ring-2{ display:none; }
+  #launcher-wrap.opened #launcher{ animation:none; }
+  #pulse-ring, #pulse-ring-2{
     position:absolute;
     inset:0;
     border-radius:50%;
     background:var(--marigold);
-    opacity:0.55;
-    animation:pulse-ring 2.2s cubic-bezier(0.4,0,0.6,1) infinite;
+    opacity:0.6;
+    animation:pulse-ring 1.8s cubic-bezier(0.3,0,0.5,1) infinite;
     pointer-events:none;
   }
+  #pulse-ring-2{
+    animation-delay:0.9s;
+  }
   @keyframes pulse-ring{
-    0%{ transform:scale(1); opacity:0.55; }
-    70%{ transform:scale(1.55); opacity:0; }
-    100%{ transform:scale(1.55); opacity:0; }
+    0%{ transform:scale(1); opacity:0.6; }
+    75%{ transform:scale(1.9); opacity:0; }
+    100%{ transform:scale(1.9); opacity:0; }
   }
   #launcher{
     position:relative;
@@ -62,6 +67,12 @@
     justify-content:center;
     z-index:1;
     transition:transform 0.2s ease;
+    animation:launcher-bounce 2.4s ease-in-out infinite;
+  }
+  @keyframes launcher-bounce{
+    0%, 55%, 100%{ transform:translateY(0); }
+    70%{ transform:translateY(-4px); }
+    82%{ transform:translateY(0); }
   }
   #launcher:hover{ transform:scale(1.06); }
   #launcher svg{ width:27px; height:27px; }
@@ -255,6 +266,7 @@
 
 <div id="launcher-wrap">
   <div id="pulse-ring"></div>
+  <div id="pulse-ring-2"></div>
   <button id="launcher" aria-label="Open chat assistant">
     <svg viewBox="0 0 24 24">
       <path class="bubble" d="M12 3C6.48 3 2 6.69 2 11.25c0 2.52 1.39 4.77 3.58 6.29-.12 1.13-.5 2.42-1.32 3.63a.5.5 0 0 0 .58.76c1.86-.62 3.32-1.5 4.36-2.29A12.6 12.6 0 0 0 12 19.5c5.52 0 10-3.69 10-8.25S17.52 3 12 3z"/>
@@ -268,8 +280,8 @@
 <div id="panel">
   <header>
     <div>
-      <div class="title" id="header-title">Ask about the course</div>
-      <div class="sub" id="header-sub">or practice a sentence</div>
+      <div class="title" id="header-title">İngilizce pratiğine hazır mısın?</div>
+      <div class="sub" id="header-sub">ya da kurs hakkında soru sor</div>
     </div>
     <button id="close-btn" aria-label="Close">✕</button>
   </header>
@@ -297,53 +309,53 @@
 const UI = {
   en: {
     langName: "English",
-    title: "Ask about the course",
-    sub: "or practice a sentence",
+    title: "Ready to practice your English?",
+    sub: "or ask about the course",
     placeholder: "Type a question or a sentence...",
     send: "Send",
     typing: "typing...",
-    greeting: "Hi! Ask me about courses, pricing, or scheduling — or write a sentence in English and I'll help you practice.",
+    greeting: "Hi! Curious about an English word, grammar rule, or idiom? Write a sentence and let's practice — or ask me about courses, pricing, or scheduling.",
     error: "You've sent quite a few messages in a row — let's take a short break and continue in a minute.",
     priceReply: "Could I get your email so we can send you our price list?",
     checkInvite: "Sure — type any English sentence and I'll check it for you.",
     starters: [
-      { label: "Levels?", msg: "What levels do you teach?" },
+      { label: "Check a sentence", type: "checkSentence" },
       { label: "Pricing", msg: "How much are lessons?", notify: true, instant: true },
-      { label: "Check a sentence", type: "checkSentence" }
+      { label: "Levels?", msg: "What levels do you teach?" }
     ]
   },
   tr: {
     langName: "Türkçe",
-    title: "Kurs hakkında soru sor",
-    sub: "ya da bir cümle pratiği yap",
+    title: "İngilizce pratiğine hazır mısın?",
+    sub: "ya da kurs hakkında soru sor",
     placeholder: "Bir soru ya da cümle yaz...",
     send: "Gönder",
     typing: "yazıyor...",
-    greeting: "Merhaba! Kurslar, fiyatlar ya da program hakkında soru sorabilirsin — ya da İngilizce bir cümle yaz, birlikte pratik yapalım.",
+    greeting: "Merhaba! İngilizcede merak ettiğin bir kelime, dilbilgisi kuralı ya da deyim var mı? Bir cümle yaz, birlikte pratik yapalım — ya da kurslar, fiyatlar ve program hakkında da soru sorabilirsin.",
     error: "Biraz fazla mesaj gönderdik gibi görünüyor — kısa bir mola verip birazdan devam edelim mi?",
     priceReply: "Fiyat listemizi gönderebilmemiz için email adresini alabilir miyim?",
     checkInvite: "Tabii — kontrol etmemi istediğin İngilizce cümleyi yazman yeterli.",
     starters: [
-      { label: "Seviyeler?", msg: "Hangi seviyelerde ders veriyorsunuz?" },
+      { label: "Cümle kontrolü", type: "checkSentence" },
       { label: "Fiyatlar", msg: "Dersler ne kadar?", notify: true, instant: true },
-      { label: "Cümle kontrolü", type: "checkSentence" }
+      { label: "Seviyeler?", msg: "Hangi seviyelerde ders veriyorsunuz?" }
     ]
   },
   ru: {
     langName: "Русский",
-    title: "Спросить о курсе",
-    sub: "или попрактиковать предложение",
+    title: "Готов попрактиковать английский?",
+    sub: "или спроси о курсе",
     placeholder: "Введите вопрос или предложение...",
     send: "Отправить",
     typing: "печатает...",
-    greeting: "Привет! Спрашивай о курсах, ценах или расписании — или напиши предложение на английском, и я помогу тебе попрактиковаться.",
+    greeting: "Привет! Интересует какое-то английское слово, правило грамматики или идиома? Напиши предложение, и мы попрактикуемся — или спрашивай о курсах, ценах или расписании.",
     error: "Похоже, мы отправили довольно много сообщений подряд — давай сделаем небольшую паузу и продолжим через минуту.",
     priceReply: "Оставишь свой email, чтобы мы прислали прайс-лист?",
     checkInvite: "Конечно — просто напиши любое предложение на английском, и я его проверю.",
     starters: [
-      { label: "Уровни?", msg: "Какие уровни вы преподаёте?" },
+      { label: "Проверить предложение", type: "checkSentence" },
       { label: "Цены", msg: "Сколько стоят занятия?", notify: true, instant: true },
-      { label: "Проверить предложение", type: "checkSentence" }
+      { label: "Уровни?", msg: "Какие уровни вы преподаёте?" }
     ]
   }
 };
