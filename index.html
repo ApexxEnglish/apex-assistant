@@ -93,7 +93,7 @@
     right:28px;
     width:360px;
     max-width:calc(100vw - 40px);
-    height:520px;
+    height:540px;
     max-height:calc(100vh - 140px);
     background:var(--white);
     border-radius:14px;
@@ -254,14 +254,16 @@
     gap:6px;
     padding:0 16px 12px;
     background:var(--paper);
+    max-height: 90px;
+    overflow-y: auto;
   }
   .starter{
     font-family:'IBM Plex Mono', monospace;
-    font-size:0.7rem;
+    font-size:0.68rem;
     background:var(--white);
     border:1px solid var(--line);
     border-radius:100px;
-    padding:5px 10px;
+    padding:4px 9px;
     cursor:pointer;
     color:var(--ink-soft);
   }
@@ -302,11 +304,7 @@
     <button class="lang-btn" data-lang="ja">JA</button>
   </div>
   <div id="messages"></div>
-  <div class="starter-row" id="starters">
-    <div class="starter" data-msg="What levels do you teach?">What levels do you teach?</div>
-    <div class="starter" data-msg="How much are lessons?">Pricing</div>
-    <div class="starter" data-msg="Can you check this sentence: She don't like coffee.">Check a sentence</div>
-  </div>
+  <div class="starter-row" id="starters"></div>
   <div id="input-row">
     <input id="chat-input" type="text" placeholder="Type a question or a sentence..." />
     <button id="send-btn">Send</button>
@@ -314,162 +312,165 @@
 </div>
 
 <script>
-// Each entry: UI strings + starter prompts (sent as-is to the model) for that interface language.
-// The bot always corrects/teaches ENGLISH — this only changes what language explanations,
-// pricing answers, and the interface itself are given in.
 const UI = {
   en: {
     langName: "English",
     title: "Ready to practice your English?",
     sub: "or ask about the course",
-    placeholder: "Type a question or a sentence...",
+    placeholder: "Type a sentence, draft email, or question...",
     send: "Send",
     typing: "typing...",
-    greeting: "Hi! Curious about an English word, grammar rule, or idiom? Write a sentence and let's practice — or ask me about courses, pricing, or scheduling.",
+    greeting: "Hi! I can help you polish business emails, improve your interview answers, fix grammar, or answer questions about Apex English courses.",
     error: "You've sent quite a few messages in a row — let's take a short break and continue in a minute.",
     priceReply: "Could I get your email so we can send you our price list? ☺️",
-    checkInvite: "Sure — type any English sentence and I'll check it for you.",
     starters: [
-      { label: "Level test", msg: "Can you share the level test link?" },
-      { label: "Pricing", msg: "How much are lessons?", notify: true, instant: true },
-      { label: "Levels?", msg: "What levels do you teach?" },
-      { label: "Contact", msg: "Can you share your contact details?" }
+      { label: "✉️ Fix Email", msg: "Can you polish this email to sound professional: 'I want to ask about project deadline update.'" },
+      { label: "💼 Professional Tone", msg: "Make this sentence formal/corporate: 'I can't do this today, I am very busy.'" },
+      { label: "🎯 Interview Check", msg: "Can you optimize this interview answer: 'My biggest strength is working hard.'" },
+      { label: " Level Test", msg: "Can you share the level test link?" },
+      { label: "Pricing", msg: "How much are lessons?", notify: true, instant: true }
     ]
   },
   tr: {
     langName: "Türkçe",
     title: "İngilizce pratiğine hazır mısın?",
-    sub: "ya da kurs hakkında soru sor",
-    placeholder: "Bir soru ya da cümle yaz...",
+    sub: "ya da AI araçlarımızı deneyin",
+    placeholder: "Cümle, taslak e-posta veya soru yazın...",
     send: "Gönder",
     typing: "yazıyor...",
-    greeting: "Merhaba! İngilizcede merak ettiğin bir kelime, dilbilgisi kuralı ya da deyim var mı? Bir cümle yaz, birlikte pratik yapalım — ya da kurslar, fiyatlar ve program hakkında da soru sorabilirsin.",
+    greeting: "Merhaba! İngilizce e-postalarınızı kurumsal dille düzeltebilir, mülakat yanıtlarınızı geliştirebilir, dil bilgisi kontrolü yapabilir veya Apex English kursları hakkında bilgi verebilirim.",
     error: "Biraz fazla mesaj gönderdik gibi görünüyor — kısa bir mola verip birazdan devam edelim mi?",
     priceReply: "Fiyat listemizi gönderebilmemiz için email adresini alabilir miyim? ☺️",
-    checkInvite: "Tabii — kontrol etmemi istediğin İngilizce cümleyi yazman yeterli.",
     starters: [
-      { label: "Seviye Testi", msg: "Ücretsiz seviye testi linkini paylaşır mısınız?" },
-      { label: "Fiyatlar", msg: "Dersler ne kadar?", notify: true, instant: true },
-      { label: "Seviyeler?", msg: "Hangi seviyelerde ders veriyorsunuz?" },
-      { label: "İletişim", msg: "İletişim bilgilerinizi paylaşır mısınız?" }
+      { label: "✉️ E-posta Düzenle", msg: "Şu e-posta taslağını kurumsal İngilizceye çevir: 'Proje teslim tarihini sormak istiyorum.'" },
+      { label: "💼 Kurumsal Dil", msg: "Bu cümleyi iş dünyasına uygun yap: 'Bugün çok doluyum bu işi yapamam.'" },
+      { label: "🎯 Mülakat Cevabı", msg: "Şu mülakat yanıtımı profesyonelleştir: 'En güçlü yanım çok çalışmamdır.'" },
+      { label: " Seviye Testi", msg: "Ücretsiz seviye testi linkini paylaşır mısınız?" },
+      { label: "Fiyatlar", msg: "Dersler ne kadar?", notify: true, instant: true }
     ]
   },
   ru: {
     langName: "Русский",
     title: "Готов попрактиковать английский?",
     sub: "или спроси о курсе",
-    placeholder: "Введите вопрос или предложение...",
+    placeholder: "Введите предложение, письмо или вопрос...",
     send: "Отправить",
     typing: "печатает...",
-    greeting: "Привет! Интересует какое-то английское слово, правило грамматики или идиома? Напиши предложение, и мы попрактикуемся — или спрашивай о курсах, ценах или расписании.",
+    greeting: "Привет! Я могу помочь улучшить деловые письма, ответы на собеседовании, проверить грамматику или рассказать о курсах Apex English.",
     error: "Похоже, мы отправили довольно много сообщений подряд — давай сделаем небольшую паузу и продолжим через минуту.",
     priceReply: "Оставишь свой email, чтобы мы прислали прайс-лист? ☺️",
-    checkInvite: "Конечно — просто напиши любое предложение на английском, и я его проверю.",
     starters: [
-      { label: "Тест уровня", msg: "Поделитесь ссылкой на бесплатный тест уровня?" },
-      { label: "Цены", msg: "Сколько стоят занятия?", notify: true, instant: true },
-      { label: "Уровни?", msg: "Какие уровни вы преподаёте?" },
-      { label: "Контакты", msg: "Поделитесь, пожалуйста, контактными данными?" }
+      { label: "✉️ Исправить email", msg: "Сделай это письмо профессиональным: 'I want to ask about deadline.'" },
+      { label: "💼 Деловая речь", msg: "Переведи в корпоративный стиль: 'I am too busy today.'" },
+      { label: "🎯 Ответ на интервью", msg: "Улучши ответ на собеседовании: 'My strength is working hard.'" },
+      { label: " Тест уровня", msg: "Поделитесь ссылкой на бесплатный тест уровня?" },
+      { label: "Цены", msg: "Сколько стоят занятия?", notify: true, instant: true }
     ]
   },
   fa: {
     langName: "فارسی",
     title: "برای تمرین انگلیسی آماده‌ای؟",
-    sub: "یا درباره دوره سوال بپرس",
-    placeholder: "سوال یا جمله‌ای بنویسید...",
+    sub: "یا از ابزارهای هوشمند استفاده کنید",
+    placeholder: "جمله، ایمیل یا سوال خود را بنویسید...",
     send: "ارسال",
     typing: "در حال تایپ...",
-    greeting: "سلام! کنجکاو یک کلمه انگلیسی، قانون گرامری یا اصطلاح هستید؟ یک جمله بنویسید تا تمرین کنیم — یا درباره دوره‌ها، قیمت‌ها یا برنامه زمانی بپرسید.",
-    error: "به نظر می‌رسد چند پیام پشت سر هم فرستادیم — بیایید کمی استراحت کنیم و در یک دقیقه ادامه دهیم.",
+    greeting: "سلام! من می‌توانم ایمیل‌های کاری شما را حرفه‌ای کنم، پاسخ‌های مصاحبه را ارتقا دهم و گرامر شما را بررسی کنم.",
+    error: "به نظر می‌رسد چند پیام پشت سر هم فرستادیم — بیایید کمی استراحت کنیم.",
     priceReply: "می‌توانم ایمیل شما را بگیرم تا لیست قیمت را برایتان ارسال کنیم؟ ☺️",
-    checkInvite: "البته — هر جمله انگلیسی را بنویسید تا برایتان بررسی کنم.",
     starters: [
-      { label: "تست سطح", msg: "می‌توانید لینک تست سطح رایگان را به اشتراک بگذارید؟" },
-      { label: "قیمت‌ها", msg: "دوره‌ها چقدر هزینه دارند؟", notify: true, instant: true },
-      { label: "سطوح؟", msg: "چه سطوحی تدریس می‌کنید؟" },
-      { label: "تماس", msg: "می‌توانید اطلاعات تماس را به اشتراک بگذارید؟" }
+      { label: "✉️ اصلاح ایمیل", msg: "این ایمیل را حرفه‌ای کن: 'I want to ask about deadline.'" },
+      { label: "💼 لحن رسمی", msg: "این جمله را اداری کن: 'I am too busy today.'" },
+      { label: "🎯 پاسخ مصاحبه", msg: "پاسخ مصاحبه را بهتر کن: 'My strength is working hard.'" },
+      { label: " تست سطح", msg: "می‌توانید لینک تست سطح رایگان را به اشتراک بگذارید؟" },
+      { label: "قیمت‌ها", msg: "دوره‌ها چقدر هزینه دارند؟", notify: true, instant: true }
     ]
   },
   es: {
     langName: "Español",
     title: "¿Listo para practicar tu inglés?",
-    sub: "o pregunta sobre el curso",
-    placeholder: "Escribe una pregunta o frase...",
+    sub: "o prueba nuestras herramientas AI",
+    placeholder: "Escribe una frase, email o pregunta...",
     send: "Enviar",
     typing: "escribiendo...",
-    greeting: "¡Hola! ¿Tienes curiosidad por una palabra en inglés, una regla gramatical o un modismo? Escribe una frase y practiquemos, o pregúntame sobre cursos, precios u horarios.",
-    error: "Hemos enviado bastantes mensajes seguidos — tomemos un breve descanso y continuemos en un minuto.",
+    greeting: "¡Hola! Puedo ayudarte a perfeccionar correos corporativos, mejorar respuestas de entrevistas, revisar gramática o informarte sobre nuestros cursos.",
+    error: "Hemos enviado bastantes mensajes seguidos — tomemos un breve descanso.",
     priceReply: "¿Podrías darme tu correo para enviarte nuestra lista de precios? ☺️",
-    checkInvite: "Claro — escribe cualquier frase en inglés y la revisaré.",
     starters: [
-      { label: "Prueba de nivel", msg: "¿Puedes compartir el enlace de la prueba de nivel gratuita?" },
-      { label: "Precios", msg: "¿Cuánto cuestan las clases?", notify: true, instant: true },
-      { label: "¿Niveles?", msg: "¿Qué niveles enseñan?" },
-      { label: "Contacto", msg: "¿Puedes compartir tus datos de contacto?" }
+      { label: "✉️ Corregir Email", msg: "Haz este email más profesional: 'I want to ask about deadline.'" },
+      { label: "💼 Tono Formal", msg: "Convierte a lenguaje corporativo: 'I am too busy today.'" },
+      { label: "🎯 Entrevista", msg: "Optimiza esta respuesta de entrevista: 'My strength is working hard.'" },
+      { label: " Prueba de nivel", msg: "¿Puedes compartir el enlace de la prueba de nivel?" },
+      { label: "Precios", msg: "¿Cuánto cuestan las clases?", notify: true, instant: true }
     ]
   },
   fr: {
     langName: "Français",
     title: "Prêt à pratiquer ton anglais ?",
     sub: "ou pose une question sur le cours",
-    placeholder: "Tapez une question ou une phrase...",
+    placeholder: "Saisissez une phrase, un email ou une question...",
     send: "Envoyer",
     typing: "en train d'écrire...",
-    greeting: "Salut ! Curieux d'un mot anglais, d'une règle de grammaire ou d'une expression ? Écris une phrase et pratiquons — ou demande-moi des infos sur les cours, les tarifs ou les horaires.",
-    error: "On a envoyé pas mal de messages d'affilée — faisons une courte pause et reprenons dans une minute.",
+    greeting: "Salut ! Je peux vous aider à rédiger des emails professionnels, améliorer vos réponses d'entretien ou vérifier votre grammaire.",
+    error: "On a envoyé pas mal de messages d'affilée — faisons une courte pause.",
     priceReply: "Puis-je avoir votre email pour vous envoyer notre grille tarifaire ? ☺️",
-    checkInvite: "Bien sûr — écris n'importe quelle phrase en anglais et je la vérifierai.",
     starters: [
-      { label: "Test de niveau", msg: "Pouvez-vous partager le lien du test de niveau gratuit ?" },
-      { label: "Tarifs", msg: "Combien coûtent les cours ?", notify: true, instant: true },
-      { label: "Niveaux ?", msg: "Quels niveaux enseignez-vous ?" },
-      { label: "Contact", msg: "Pouvez-vous partager vos coordonnées ?" }
+      { label: "✉️ Corriger Email", msg: "Rends cet email professionnel: 'I want to ask about deadline.'" },
+      { label: "💼 Ton Formel", msg: "Formule de manière entreprise: 'I am too busy today.'" },
+      { label: "🎯 Entretien", msg: "Améliore cette réponse d'entretien: 'My strength is working hard.'" },
+      { label: " Test de niveau", msg: "Pouvez-vous partager le lien du test de niveau ?" },
+      { label: "Tarifs", msg: "Combien coûtent les cours ?", notify: true, instant: true }
     ]
   },
   zh: {
     langName: "中文",
     title: "准备好练习英语了吗？",
-    sub: "或者询问课程相关问题",
-    placeholder: "输入问题或句子...",
+    sub: "或使用 AI 辅助工具",
+    placeholder: "输入句子、邮件草稿或问题...",
     send: "发送",
     typing: "正在输入...",
-    greeting: "你好！对某个英语单词、语法规则或习语感到好奇吗？写一个句子，我们一起练习吧——或者问我关于课程、价格或时间安排的问题。",
+    greeting: "你好！我可以帮您润色商务邮件、优化面试回答、纠正语法，或解答关于 Apex English 课程的问题。",
     error: "我们已经连续发送了不少消息——稍作休息，一分钟后继续吧。",
     priceReply: "能提供您的邮箱吗？我们会把价目表发给您 ☺️",
-    checkInvite: "当然——写下任意一句英语句子，我来帮你检查。",
     starters: [
-      { label: "水平测试", msg: "能分享一下免费水平测试的链接吗？" },
-      { label: "价格", msg: "课程多少钱？", notify: true, instant: true },
-      { label: "级别？", msg: "你们教哪些级别？" },
-      { label: "联系方式", msg: "能分享一下联系方式吗？" }
+      { label: "✉️ 润色邮件", msg: "把这封邮件修改得更商务专业: 'I want to ask about deadline.'" },
+      { label: "💼 职场语气", msg: "转换成职场正式表达: 'I am too busy today.'" },
+      { label: "🎯 面试回答", msg: "优化这个面试回答: 'My strength is working hard.'" },
+      { label: " 水平测试", msg: "能分享一下免费水平测试的链接吗？" },
+      { label: "价格", msg: "课程多少钱？", notify: true, instant: true }
     ]
   },
   ja: {
     langName: "日本語",
     title: "英語の練習をはじめましょうか？",
-    sub: "またはコースについて質問する",
-    placeholder: "質問や文章を入力してください...",
+    sub: "または AI 工具をお試しください",
+    placeholder: "文章、メールの下書き、質問を入力...",
     send: "送信",
     typing: "入力中...",
-    greeting: "こんにちは！英単語や文法のルール、イディオムが気になりますか？文章を書いて一緒に練習しましょう——コースや料金、スケジュールについて質問してもいいですよ。",
-    error: "続けてメッセージを送りすぎたようです。少し休憩して、また後で続けましょう。",
+    greeting: "こんにちは！ビジネスメールの添削、面接の回答改善、文法チェック、コースのご案内が可能です。",
+    error: "続けてメッセージを送りすぎたようです。少し休憩しましょう。",
     priceReply: "料金表をお送りするので、メールアドレスを教えていただけますか？☺️",
-    checkInvite: "もちろんです——英語の文章を書いてください、確認しますね。",
     starters: [
-      { label: "レベルテスト", msg: "無料レベルテストのリンクを共有していただけますか？" },
-      { label: "料金", msg: "レッスンの料金はいくらですか？", notify: true, instant: true },
-      { label: "レベル？", msg: "どのレベルを教えていますか？" },
-      { label: "お問い合わせ", msg: "連絡先を共有していただけますか？" }
+      { label: "✉️ メール添削", msg: "このメールを丁寧なビジネス英語にしてください: 'I want to ask about deadline.'" },
+      { label: "💼 フォーマル表現", msg: "ビジネスに適した表現に変換: 'I am too busy today.'" },
+      { label: "🎯 面试の回答", msg: "面接の回答をブラッシュアップ: 'My strength is working hard.'" },
+      { label: " レベルテスト", msg: "無料レベルテストのリンクを共有していただけますか？" },
+      { label: "料金", msg: "レッスンの料金はいくらですか？", notify: true, instant: true }
     ]
   }
 };
 
 function buildSystemPrompt(lang){
-  return `You are the assistant embedded on an English-teaching website. You have four jobs, and you switch between them naturally based on what the student sends:
+  return `You are the AI assistant embedded on Apex English (apexenglish.net). You have 5 primary duties and switch between them seamlessly:
 
-1. SITE SUPPORT: answer questions about courses, levels (Beginner A1 to Advanced C1), scheduling, and how lessons work. If you don't know a specific detail, say the teacher will confirm it — don't invent numbers or facts.
+1. AI MIKRO TOOLS (Email Polisher, Tone Converter, Interview Assistant, Resume Optimizer):
+- If the user asks to fix/polish an email or convert text to corporate tone: Provide a refined, professional, and grammatically flawless Business English version. Show clear improvements.
+- If the user provides an interview answer: Rephrase it using strong action verbs, professional structure, and the STAR framework where applicable.
+- If the user wants to convert casual phrasing to executive language: Provide high-level corporate equivalents (e.g., C1/C2 vocabulary).
+- Lead Gen Lead-in: After providing a micro-tool response, end with a brief invitation like: "To measure your complete Business English accuracy, try our free level test here: https://www.apexenglish.net/ucretsiz-seviye-analizi"
 
-2. SITE LINKS: if the student asks for site info, contact details, the blog/guide, or a specific program page, share the single most relevant link from this exact list (never invent a URL, never modify one):
+2. SITE SUPPORT: Answer questions about courses, levels (Beginner A1 to Advanced C1), scheduling, and how lessons work. If you don't know a specific detail, say the teacher will confirm it — don't invent numbers or facts.
+
+3. SITE LINKS: If requested, share the single most relevant official URL from this exact list:
 - İletişim / Contact: https://www.apexenglish.net/iletisim
 - İngilizce Rehberi (Blog): https://www.apexenglish.net/ingilizce-ogrenme-rehberi
 - Genel İngilizce Programı: https://www.apexenglish.net/genel-ingilizce-program
@@ -482,21 +483,20 @@ function buildSystemPrompt(lang){
 - Ücretsiz Seviye Testi: https://www.apexenglish.net/ucretsiz-seviye-analizi
 - Kabin Memuru Mülakat Hazırlığı: https://www.apexenglish.net/kabin-memuru-mulakat-hazirlik
 - Anasayfa: https://www.apexenglish.net/
-Share the link as plain text in your reply. If nothing in the list matches what they asked, say you're not sure and suggest contacting the team instead of guessing a URL.
 
-3. CONVERSATION PRACTICE: if the student writes a sentence or is clearly practicing English, respond warmly and naturally to what they said, AND check their grammar.
-- STRICT RULE: only use the [WRONG]/[RIGHT] tags for a genuine grammatical mistake (wrong verb form, wrong tense, subject-verb agreement, wrong preposition, missing/extra word, spelling that changes meaning). Do NOT use them for word-choice preferences, more natural phrasing, formality level, or anything that is already grammatically correct — those are not errors.
-- If you are not fully sure something is a real grammatical error, treat the sentence as correct and do not tag anything.
-- When there is a real error, show it using this exact format inline: [WRONG]their original wrong phrase[/WRONG][RIGHT]the corrected phrase[/RIGHT]. Tag only the specific wrong words/phrase, not the whole sentence.
-- If the sentence is grammatically correct, do NOT use [WRONG] or [RIGHT] anywhere in your reply — just say so briefly and keep the conversation going with a follow-up question.
-- Example (error — tag it): student writes "She don't like coffee." → mention that [WRONG]she don't like[/WRONG][RIGHT]she doesn't like[/RIGHT] coffee, then continue naturally.
-- Example (correct — no tags at all): student writes "I have been living here for two years." → this is fully correct, so respond with encouragement and a follow-up question only, with zero [WRONG]/[RIGHT] tags in the reply.
+4. CONVERSATION & GRAMMAR PRACTICE: If the student writes a sentence to practice, respond naturally AND check grammar.
+- STRICT RULE: Only use [WRONG]wrong phrase[/WRONG][RIGHT]corrected phrase[/RIGHT] tags for real grammatical errors (verb tenses, prepositions, spelling errors).
+- Do NOT tag correct sentences. If correct, complement them and keep the conversation going.
 
-4. PRICING → NEVER STATE A NUMBER, ALWAYS COLLECT EMAIL INSTEAD: if the student asks about price, fees, or cost in any way, do NOT give any number or price range, not even a rough one. Instead, in ONE short sentence (max ~15 words), say the teacher will send the exact pricing, and ask for their email address. Do not explain why, do not add extra context or reassurance — just that one short sentence. Ask this only once per conversation — if they already gave an email earlier, don't ask again. If the student's message contains something that looks like a real email address (e.g. name@domain.com), thank them briefly (one short sentence), confirm the pricing table will be sent to that address, and include this exact hidden marker once anywhere in your reply: [EMAIL]their@address.com[/EMAIL] — put their actual detected email inside it. This marker is stripped out automatically before the student ever sees your message, so don't reference it or explain it to them.
+5. PRICING → NEVER STATE A NUMBER, ALWAYS COLLECT EMAIL INSTEAD:
+- If asked about fees/price, do NOT give numbers.
+- Say in 1 short sentence that the team will send the exact pricing, and ask for their email address.
+- When an email is detected (e.g. user@domain.com), thank them and include hidden tag: [EMAIL]user@domain.com[/EMAIL]
 
-IMPORTANT — LANGUAGE: the student's interface is set to ${UI[lang].langName}. Write ALL of your own explanations, greetings, and support answers in ${UI[lang].langName}. Example English sentences being taught or corrected stay in English (inside the [WRONG]/[RIGHT] tags), but everything else you say should be in ${UI[lang].langName}.
+IMPORTANT — LANGUAGE:
+The user's interface language is ${UI[lang].langName}. Write all explanations and support messages in ${UI[lang].langName}. Example English sentences or corrected English outputs inside tags stay in English.
 
-Keep replies short (2-4 sentences), warm, and encouraging — never condescending. Use plain language appropriate for English learners.`;
+Keep replies concise, clear, encouraging, and professional.`;
 }
 
 const messagesEl = document.getElementById('messages');
@@ -512,7 +512,7 @@ const headerSub = document.getElementById('header-sub');
 const langButtons = document.querySelectorAll('.lang-btn');
 
 let history = [];
-let currentLang = 'en';
+let currentLang = 'tr';
 
 function applyLanguage(lang){
   currentLang = lang;
@@ -567,17 +567,12 @@ starters.addEventListener('click', (e) => {
   sendMessage();
 });
 
-// Looks for the hidden [EMAIL]...[/EMAIL] marker the model includes once it
-// has collected a real email address from the student. Returns the reply
-// text with the marker removed (never shown to the student) plus the
-// captured address, if any.
 function extractCapturedEmail(text){
   const match = text.match(/\[EMAIL\](.*?)\[\/EMAIL\]/i);
   if(!match){ return { cleaned: text, email: null }; }
   return { cleaned: text.replace(match[0], '').trim(), email: match[1].trim() };
 }
 
-// Fire-and-forget — this should never block or interrupt the student's chat.
 function notifyOwner(visitorEmail, contextMessage){
   fetch('/api/notify', {
     method: 'POST',
@@ -588,9 +583,6 @@ function notifyOwner(visitorEmail, contextMessage){
 
 applyLanguage('tr');
 
-// Auto-open the widget 30 seconds after the page loads, on every page.
-// If the visitor already opened (or closed) it manually before then, don't
-// pop it open on top of them.
 let userHasToggled = false;
 launcher.addEventListener('click', () => { userHasToggled = true; });
 closeBtn.addEventListener('click', () => { userHasToggled = true; });
