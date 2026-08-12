@@ -254,8 +254,8 @@
     gap:6px;
     padding:0 16px 12px;
     background:var(--paper);
-    max-height: 90px;
-    overflow-y: auto;
+    max-height:95px;
+    overflow-y:auto;
   }
   .starter{
     font-family:'IBM Plex Mono', monospace;
@@ -320,183 +320,191 @@ const UI = {
     placeholder: "Type a sentence, draft email, or question...",
     send: "Send",
     typing: "typing...",
-    greeting: "Hi! I can help you polish business emails, improve your interview answers, fix grammar, or answer questions about Apex English courses.",
+    greeting: "Hi! I can help you check sentences, practice job interviews step-by-step, or answer questions about Apex English courses.",
     error: "You've sent quite a few messages in a row — let's take a short break and continue in a minute.",
     priceReply: "Could I get your email so we can send you our price list? ☺️",
     starters: [
-      { label: "✉️ Fix Email", msg: "Can you polish this email to sound professional: 'I want to ask about project deadline update.'" },
-      { label: "💼 Professional Tone", msg: "Make this sentence formal/corporate: 'I can't do this today, I am very busy.'" },
-      { label: "🎯 Interview Check", msg: "Can you optimize this interview answer: 'My biggest strength is working hard.'" },
-      { label: " Level Test", msg: "Can you share the level test link?" },
-      { label: "Pricing", msg: "How much are lessons?", notify: true, instant: true }
+      { label: "Sentence Check", msg: "I want to check a sentence." },
+      { label: "Interview Preparation", msg: "I want to prepare for a job interview." },
+      { label: "Level Test", msg: "Can you share the level test link?" },
+      { label: "Pricing", msg: "How much are lessons?", notify: true, instant: true },
+      { label: "Contact", msg: "Can you share your contact details?" }
     ]
   },
   tr: {
     langName: "Türkçe",
     title: "İngilizce pratiğine hazır mısın?",
-    sub: "ya da AI araçlarımızı deneyin",
-    placeholder: "Cümle, taslak e-posta veya soru yazın...",
+    sub: "ya da kurs hakkında soru sor",
+    placeholder: "Cümle, mülakat yanıtı veya soru yazın...",
     send: "Gönder",
     typing: "yazıyor...",
-    greeting: "Merhaba! İngilizce e-postalarınızı kurumsal dille düzeltebilir, mülakat yanıtlarınızı geliştirebilir, dil bilgisi kontrolü yapabilir veya Apex English kursları hakkında bilgi verebilirim.",
+    greeting: "Merhaba! İngilizce cümlelerinizi kontrol edebilir, adım adım mülakat simülasyonu yapabilir veya Apex English kursları hakkında bilgi verebilirim.",
     error: "Biraz fazla mesaj gönderdik gibi görünüyor — kısa bir mola verip birazdan devam edelim mi?",
     priceReply: "Fiyat listemizi gönderebilmemiz için email adresini alabilir miyim? ☺️",
     starters: [
-      { label: "✉️ E-posta Düzenle", msg: "Şu e-posta taslağını kurumsal İngilizceye çevir: 'Proje teslim tarihini sormak istiyorum.'" },
-      { label: "💼 Kurumsal Dil", msg: "Bu cümleyi iş dünyasına uygun yap: 'Bugün çok doluyum bu işi yapamam.'" },
-      { label: "🎯 Mülakat Cevabı", msg: "Şu mülakat yanıtımı profesyonelleştir: 'En güçlü yanım çok çalışmamdır.'" },
-      { label: " Seviye Testi", msg: "Ücretsiz seviye testi linkini paylaşır mısınız?" },
-      { label: "Fiyatlar", msg: "Dersler ne kadar?", notify: true, instant: true }
+      { label: "Cümle Kontrolü", msg: "Bir cümle kontrol ettirmek istiyorum." },
+      { label: "Mülakat Hazırlığı", msg: "Mülakata hazırlanmak istiyorum." },
+      { label: "Seviye Testi", msg: "Ücretsiz seviye testi linkini paylaşır mısınız?" },
+      { label: "Fiyatlar", msg: "Dersler ne kadar?", notify: true, instant: true },
+      { label: "İletişim", msg: "İletişim bilgilerinizi paylaşır mısınız?" }
     ]
   },
   ru: {
     langName: "Русский",
     title: "Готов попрактиковать английский?",
     sub: "или спроси о курсе",
-    placeholder: "Введите предложение, письмо или вопрос...",
+    placeholder: "Введите предложение или вопрос...",
     send: "Отправить",
     typing: "печатает...",
-    greeting: "Привет! Я могу помочь улучшить деловые письма, ответы на собеседовании, проверить грамматику или рассказать о курсах Apex English.",
+    greeting: "Привет! Я могу проверить ваши предложения на английском, провести тренировку перед собеседованием или рассказать о курсах Apex English.",
     error: "Похоже, мы отправили довольно много сообщений подряд — давай сделаем небольшую паузу и продолжим через минуту.",
     priceReply: "Оставишь свой email, чтобы мы прислали прайс-лист? ☺️",
     starters: [
-      { label: "✉️ Исправить email", msg: "Сделай это письмо профессиональным: 'I want to ask about deadline.'" },
-      { label: "💼 Деловая речь", msg: "Переведи в корпоративный стиль: 'I am too busy today.'" },
-      { label: "🎯 Ответ на интервью", msg: "Улучши ответ на собеседовании: 'My strength is working hard.'" },
-      { label: " Тест уровня", msg: "Поделитесь ссылкой на бесплатный тест уровня?" },
-      { label: "Цены", msg: "Сколько стоят занятия?", notify: true, instant: true }
+      { label: "Проверка предложения", msg: "I want to check a sentence." },
+      { label: "Подготовка к интервью", msg: "I want to prepare for a job interview." },
+      { label: "Тест уровня", msg: "Поделитесь ссылкой на бесплатный тест уровня?" },
+      { label: "Цены", msg: "Сколько стоят занятия?", notify: true, instant: true },
+      { label: "Контакты", msg: "Поделитесь, пожалуйста, контактными данными?" }
     ]
   },
   fa: {
     langName: "فارسی",
     title: "برای تمرین انگلیسی آماده‌ای؟",
-    sub: "یا از ابزارهای هوشمند استفاده کنید",
+    sub: "یا درباره دوره سوال بپرس",
     placeholder: "جمله، ایمیل یا سوال خود را بنویسید...",
     send: "ارسال",
     typing: "در حال تایپ...",
-    greeting: "سلام! من می‌توانم ایمیل‌های کاری شما را حرفه‌ای کنم، پاسخ‌های مصاحبه را ارتقا دهم و گرامر شما را بررسی کنم.",
+    greeting: "سلام! من می‌توانم جملات انگلیسی شما را بررسی کنم، شما را برای مصاحبه کاری آماده کنم و به سوالات شما درباره دوره‌ها پاسخ دهم.",
     error: "به نظر می‌رسد چند پیام پشت سر هم فرستادیم — بیایید کمی استراحت کنیم.",
     priceReply: "می‌توانم ایمیل شما را بگیرم تا لیست قیمت را برایتان ارسال کنیم؟ ☺️",
     starters: [
-      { label: "✉️ اصلاح ایمیل", msg: "این ایمیل را حرفه‌ای کن: 'I want to ask about deadline.'" },
-      { label: "💼 لحن رسمی", msg: "این جمله را اداری کن: 'I am too busy today.'" },
-      { label: "🎯 پاسخ مصاحبه", msg: "پاسخ مصاحبه را بهتر کن: 'My strength is working hard.'" },
-      { label: " تست سطح", msg: "می‌توانید لینک تست سطح رایگان را به اشتراک بگذارید؟" },
-      { label: "قیمت‌ها", msg: "دوره‌ها چقدر هزینه دارند؟", notify: true, instant: true }
+      { label: "بررسی جمله", msg: "می‌خواهم یک جمله را بررسی کنم." },
+      { label: "آمادگی مصاحبه", msg: "می‌خواهم برای مصاحبه کاری آماده شوم." },
+      { label: "تست سطح", msg: "می‌توانید لینک تست سطح رایگان را به اشتراک بگذارید؟" },
+      { label: "قیمت‌ها", msg: "دوره‌ها چقدر هزینه دارند؟", notify: true, instant: true },
+      { label: "تماس", msg: "می‌توانید اطلاعات تماس را به اشتراک بگذارید؟" }
     ]
   },
   es: {
     langName: "Español",
     title: "¿Listo para practicar tu inglés?",
-    sub: "o prueba nuestras herramientas AI",
-    placeholder: "Escribe una frase, email o pregunta...",
+    sub: "o pregunta sobre el curso",
+    placeholder: "Escribe una frase o pregunta...",
     send: "Enviar",
     typing: "escribiendo...",
-    greeting: "¡Hola! Puedo ayudarte a perfeccionar correos corporativos, mejorar respuestas de entrevistas, revisar gramática o informarte sobre nuestros cursos.",
+    greeting: "¡Hola! Puedo revisar tus frases en inglés, prepararte paso a paso para una entrevista de trabajo o darte información sobre nuestros cursos.",
     error: "Hemos enviado bastantes mensajes seguidos — tomemos un breve descanso.",
     priceReply: "¿Podrías darme tu correo para enviarte nuestra lista de precios? ☺️",
     starters: [
-      { label: "✉️ Corregir Email", msg: "Haz este email más profesional: 'I want to ask about deadline.'" },
-      { label: "💼 Tono Formal", msg: "Convierte a lenguaje corporativo: 'I am too busy today.'" },
-      { label: "🎯 Entrevista", msg: "Optimiza esta respuesta de entrevista: 'My strength is working hard.'" },
-      { label: " Prueba de nivel", msg: "¿Puedes compartir el enlace de la prueba de nivel?" },
-      { label: "Precios", msg: "¿Cuánto cuestan las clases?", notify: true, instant: true }
+      { label: "Revisar frase", msg: "Quiero revisar una frase." },
+      { label: "Preparación de entrevista", msg: "Quiero prepararme para una entrevista de trabajo." },
+      { label: "Prueba de nivel", msg: "¿Puedes compartir el enlace de la prueba de nivel?" },
+      { label: "Precios", msg: "¿Cuánto cuestan las clases?", notify: true, instant: true },
+      { label: "Contacto", msg: "¿Puedes compartir tus datos de contacto?" }
     ]
   },
   fr: {
     langName: "Français",
     title: "Prêt à pratiquer ton anglais ?",
     sub: "ou pose une question sur le cours",
-    placeholder: "Saisissez une phrase, un email ou une question...",
+    placeholder: "Tapez une phrase ou une question...",
     send: "Envoyer",
     typing: "en train d'écrire...",
-    greeting: "Salut ! Je peux vous aider à rédiger des emails professionnels, améliorer vos réponses d'entretien ou vérifier votre grammaire.",
+    greeting: "Salut ! Je peux vérifier vos phrases en anglais, vous préparer étape par étape à un entretien d'embauche ou répondre à vos questions.",
     error: "On a envoyé pas mal de messages d'affilée — faisons une courte pause.",
     priceReply: "Puis-je avoir votre email pour vous envoyer notre grille tarifaire ? ☺️",
     starters: [
-      { label: "✉️ Corriger Email", msg: "Rends cet email professionnel: 'I want to ask about deadline.'" },
-      { label: "💼 Ton Formel", msg: "Formule de manière entreprise: 'I am too busy today.'" },
-      { label: "🎯 Entretien", msg: "Améliore cette réponse d'entretien: 'My strength is working hard.'" },
-      { label: " Test de niveau", msg: "Pouvez-vous partager le lien du test de niveau ?" },
-      { label: "Tarifs", msg: "Combien coûtent les cours ?", notify: true, instant: true }
+      { label: "Vérifier une phrase", msg: "Je veux vérifier une phrase." },
+      { label: "Préparation entretien", msg: "Je veux me préparer à un entretien d'embauche." },
+      { label: "Test de niveau", msg: "Pouvez-vous partager le lien du test de niveau ?" },
+      { label: "Tarifs", msg: "Combien coûtent les cours ?", notify: true, instant: true },
+      { label: "Contact", msg: "Pouvez-vous partager vos coordonnées ?" }
     ]
   },
   zh: {
     langName: "中文",
     title: "准备好练习英语了吗？",
-    sub: "或使用 AI 辅助工具",
-    placeholder: "输入句子、邮件草稿或问题...",
+    sub: "或者询问课程相关问题",
+    placeholder: "输入句子或问题...",
     send: "发送",
     typing: "正在输入...",
-    greeting: "你好！我可以帮您润色商务邮件、优化面试回答、纠正语法，或解答关于 Apex English 课程的问题。",
+    greeting: "你好！我可以帮您检查英语句子、一步步模拟求职面试，或解答关于 Apex English 课程的问题。",
     error: "我们已经连续发送了不少消息——稍作休息，一分钟后继续吧。",
     priceReply: "能提供您的邮箱吗？我们会把价目表发给您 ☺️",
     starters: [
-      { label: "✉️ 润色邮件", msg: "把这封邮件修改得更商务专业: 'I want to ask about deadline.'" },
-      { label: "💼 职场语气", msg: "转换成职场正式表达: 'I am too busy today.'" },
-      { label: "🎯 面试回答", msg: "优化这个面试回答: 'My strength is working hard.'" },
-      { label: " 水平测试", msg: "能分享一下免费水平测试的链接吗？" },
-      { label: "价格", msg: "课程多少钱？", notify: true, instant: true }
+      { label: "句子检查", msg: "我想检查一个句子。" },
+      { label: "面试准备", msg: "我想准备求职面试。" },
+      { label: "水平测试", msg: "能分享一下免费水平测试的链接吗？" },
+      { label: "价格", msg: "课程多少钱？", notify: true, instant: true },
+      { label: "联系方式", msg: "能分享一下联系方式吗？" }
     ]
   },
   ja: {
     langName: "日本語",
     title: "英語の練習をはじめましょうか？",
-    sub: "または AI 工具をお試しください",
-    placeholder: "文章、メールの下書き、質問を入力...",
+    sub: "またはコースについて質問する",
+    placeholder: "文章や質問を入力してください...",
     send: "送信",
     typing: "入力中...",
-    greeting: "こんにちは！ビジネスメールの添削、面接の回答改善、文法チェック、コースのご案内が可能です。",
+    greeting: "こんにちは！英文のチェック、段階的な面接対策、コースのご案内が可能です。",
     error: "続けてメッセージを送りすぎたようです。少し休憩しましょう。",
     priceReply: "料金表をお送りするので、メールアドレスを教えていただけますか？☺️",
     starters: [
-      { label: "✉️ メール添削", msg: "このメールを丁寧なビジネス英語にしてください: 'I want to ask about deadline.'" },
-      { label: "💼 フォーマル表現", msg: "ビジネスに適した表現に変換: 'I am too busy today.'" },
-      { label: "🎯 面试の回答", msg: "面接の回答をブラッシュアップ: 'My strength is working hard.'" },
-      { label: " レベルテスト", msg: "無料レベルテストのリンクを共有していただけますか？" },
-      { label: "料金", msg: "レッスンの料金はいくらですか？", notify: true, instant: true }
+      { label: "文章チェック", msg: "英文をチェックしたいです。" },
+      { label: "面接対策", msg: "面接の準備をしたいです。" },
+      { label: "レベルテスト", msg: "無料レベルテストのリンクを共有していただけますか？" },
+      { label: "料金", msg: "レッスンの料金はいくらですか？", notify: true, instant: true },
+      { label: "お問い合わせ", msg: "連絡先を共有していただけますか？" }
     ]
   }
 };
 
 function buildSystemPrompt(lang){
-  return `You are the AI assistant embedded on Apex English (apexenglish.net). You have 5 primary duties and switch between them seamlessly:
+  return `You are the AI assistant embedded on Apex English (apexenglish.net). Your tasks are structured as follows:
 
-1. AI MIKRO TOOLS (Email Polisher, Tone Converter, Interview Assistant, Resume Optimizer):
-- If the user asks to fix/polish an email or convert text to corporate tone: Provide a refined, professional, and grammatically flawless Business English version. Show clear improvements.
-- If the user provides an interview answer: Rephrase it using strong action verbs, professional structure, and the STAR framework where applicable.
-- If the user wants to convert casual phrasing to executive language: Provide high-level corporate equivalents (e.g., C1/C2 vocabulary).
-- Lead Gen Lead-in: After providing a micro-tool response, end with a brief invitation like: "To measure your complete Business English accuracy, try our free level test here: https://www.apexenglish.net/ucretsiz-seviye-analizi"
+1. INTERVIEW PREPARATION FLOW:
+- When the student initiates interview prep (e.g., "Mülakata hazırlanmak istiyorum", "I want to prepare for an interview"):
+  Step 1: Ask them in ${UI[lang].langName} which company and which job position they are interviewing for. Do NOT ask interview questions yet.
+  Step 2: Once they reply with the company and position, ask ONE realistic interview question at a time in English.
+  Step 3: When the student answers in English, evaluate their answer:
+    - Point out any grammatical or vocabulary errors using [WRONG]their wrong input[/WRONG][RIGHT]the correction[/RIGHT].
+    - Give a brief evaluation in B1-B2 level English.
+    - Provide an improved sample response suitable for B1-B2 level.
+    - Then, ask the NEXT interview question (one by one).
 
-2. SITE SUPPORT: Answer questions about courses, levels (Beginner A1 to Advanced C1), scheduling, and how lessons work. If you don't know a specific detail, say the teacher will confirm it — don't invent numbers or facts.
+2. SENTENCE CHECK FLOW:
+- When the student requests a sentence check (e.g., "Cümle kontrolü", "Check a sentence"):
+  Step 1: If they haven't provided the sentence yet, warmly ask them in ${UI[lang].langName} to type the English sentence they want to check.
+  Step 2: Once they provide the sentence:
+    - Highlight real grammatical/spelling errors using [WRONG]wrong text[/WRONG][RIGHT]corrected text[/RIGHT]. If it is already correct, state that clearly.
+    - Provide a short evaluation/explanation in ${UI[lang].langName}.
+    - Provide TWO types of sample example sentences based on their thought:
+      * Level 1 (A2-B1 Level): Simple, clear, everyday English.
+      * Level 2 (B2-C1 Level): Advanced, professional, natural Business English.
 
-3. SITE LINKS: If requested, share the single most relevant official URL from this exact list:
-- İletişim / Contact: https://www.apexenglish.net/iletisim
-- İngilizce Rehberi (Blog): https://www.apexenglish.net/ingilizce-ogrenme-rehberi
-- Genel İngilizce Programı: https://www.apexenglish.net/genel-ingilizce-program
-- İş İngilizcesi Programı: https://www.apexenglish.net/-ngilizce-program
-- Profesyonel Yönetici İngilizcesi: https://www.apexenglish.net/yonetici-ingilizcesi
-- Konuşma Kulübü: https://www.apexenglish.net/speaking-club
-- Sektörel İngilizce (Finans, Hukuk, IT vb.): https://www.apexenglish.net/sektre-zel-ngilizce
-- Online Eğitimler: https://www.apexenglish.net/online-egitimler
-- Kurumsal Eğitimler: https://www.apexenglish.net/kurumsal-egitimler
-- Ücretsiz Seviye Testi: https://www.apexenglish.net/ucretsiz-seviye-analizi
-- Kabin Memuru Mülakat Hazırlığı: https://www.apexenglish.net/kabin-memuru-mulakat-hazirlik
-- Anasayfa: https://www.apexenglish.net/
+3. SITE SUPPORT & OFFICIAL LINKS:
+- Answer questions about Apex English courses, levels, scheduling, etc.
+- When asked for links, provide ONLY valid URLs from this list:
+  * İletişim: https://www.apexenglish.net/iletisim
+  * İngilizce Rehberi: https://www.apexenglish.net/ingilizce-ogrenme-rehberi
+  * Genel İngilizce: https://www.apexenglish.net/genel-ingilizce-program
+  * İş İngilizcesi: https://www.apexenglish.net/-ngilizce-program
+  * Yönetici İngilizcesi: https://www.apexenglish.net/yonetici-ingilizcesi
+  * Konuşma Kulübü: https://www.apexenglish.net/speaking-club
+  * Sektörel İngilizce: https://www.apexenglish.net/sektre-zel-ngilizce
+  * Online Eğitimler: https://www.apexenglish.net/online-egitimler
+  * Kurumsal Eğitimler: https://www.apexenglish.net/kurumsal-egitimler
+  * Ücretsiz Seviye Testi: https://www.apexenglish.net/ucretsiz-seviye-analizi
+  * Kabin Memuru Mülakat Hazırlığı: https://www.apexenglish.net/kabin-memuru-mulakat-hazirlik
+  * Anasayfa: https://www.apexenglish.net/
 
-4. CONVERSATION & GRAMMAR PRACTICE: If the student writes a sentence to practice, respond naturally AND check grammar.
-- STRICT RULE: Only use [WRONG]wrong phrase[/WRONG][RIGHT]corrected phrase[/RIGHT] tags for real grammatical errors (verb tenses, prepositions, spelling errors).
-- Do NOT tag correct sentences. If correct, complement them and keep the conversation going.
+4. PRICING RULES:
+- NEVER give any numbers or prices directly.
+- Say in 1 short sentence that the team will send the price list, and ask for their email address.
+- When an email address (e.g. name@domain.com) is provided, thank them and include the marker: [EMAIL]name@domain.com[/EMAIL]
 
-5. PRICING → NEVER STATE A NUMBER, ALWAYS COLLECT EMAIL INSTEAD:
-- If asked about fees/price, do NOT give numbers.
-- Say in 1 short sentence that the team will send the exact pricing, and ask for their email address.
-- When an email is detected (e.g. user@domain.com), thank them and include hidden tag: [EMAIL]user@domain.com[/EMAIL]
-
-IMPORTANT — LANGUAGE:
-The user's interface language is ${UI[lang].langName}. Write all explanations and support messages in ${UI[lang].langName}. Example English sentences or corrected English outputs inside tags stay in English.
-
-Keep replies concise, clear, encouraging, and professional.`;
+LANGUAGE RULE:
+Write explanations and instructions in ${UI[lang].langName}. English practice questions, corrections inside tags, and sample answers must remain in English. Keep explanations concise, warm, and structured.`;
 }
 
 const messagesEl = document.getElementById('messages');
