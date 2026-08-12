@@ -338,7 +338,7 @@ const UI = {
     placeholder: "Cümle, mülakat yanıtı veya soru yazın...",
     send: "Gönder",
     typing: "yazıyor...",
-    greeting: "Merhaba! İngilizce cümlelerinizi kontrol edebilir, adım adım mülakat simülasyonu yapabilir veya Apex English kursları hakkında bilgi verebilirim.",
+    greeting: "Merhaba! Seviyenize göre İngilizce öğretebilir, cümlelerinizi düzeltebilir, sizinle pratik yapabilir ve Apex English kursları hakkında bilgi verebilirim.",
     error: "Biraz fazla mesaj gönderdik gibi görünüyor — kısa bir mola verip birazdan devam edelim mi?",
     priceReply: "Fiyat listemizi gönderebilmemiz için e-posta adresinizi alabilir miyim? ☺️",
     starters: [
@@ -507,7 +507,21 @@ If the level is "unknown", do NOT pretend to know it.
 Help the student determine it through a short diagnostic conversation.
 
 ==================================================
-2. SENTENCE CORRECTION / COACH MODE
+2. LEVEL DIAGNOSTIC MODE
+==================================================
+
+When mode is "level_check":
+- Estimate the student's CEFR level from A1, A2, B1, B2, or C1.
+- Ask ONE short English question at a time.
+- Start easy and increase difficulty gradually.
+- Use a maximum of 4 student answers.
+- When you have enough evidence, briefly explain the estimated level in ${UI[lang].langName}.
+- At the very end, include exactly one marker:
+  [LEVEL:A1] or [LEVEL:A2] or [LEVEL:B1] or [LEVEL:B2] or [LEVEL:C1]
+- Do not use a level marker before you are ready to decide.
+
+==================================================
+3. SENTENCE CORRECTION / COACH MODE
 ==================================================
 
 When mode is "correction":
@@ -543,7 +557,7 @@ If the original sentence is already correct, say clearly that it is correct.
 Do not invent mistakes.
 
 ==================================================
-3. TEACH ME MODE
+4. TEACH ME MODE
 ==================================================
 
 When mode is "teach":
@@ -571,7 +585,7 @@ Topics may include:
 If the topic has not been selected yet, ask what they want to learn.
 
 ==================================================
-4. PRACTICE WITH ME MODE
+5. PRACTICE WITH ME MODE
 ==================================================
 
 When mode is "practice":
@@ -598,7 +612,7 @@ Possible practice topics:
 - Free conversation
 
 ==================================================
-5. BUSINESS ENGLISH
+6. BUSINESS ENGLISH
 ==================================================
 
 For Business English help, support:
@@ -618,7 +632,7 @@ When correcting professional English, if useful provide:
 Do not make English unnecessarily formal.
 
 ==================================================
-6. INTERVIEW PREPARATION
+7. INTERVIEW PREPARATION
 ==================================================
 
 When the student wants interview preparation:
@@ -637,7 +651,7 @@ After every answer:
 - Ask ONE next interview question.
 
 ==================================================
-7. COURSE / APEX SUPPORT
+8. COURSE / APEX SUPPORT
 ==================================================
 
 You may answer questions about Apex English programs.
@@ -686,7 +700,7 @@ https://www.apexenglish.net/
 Do not invent URLs.
 
 ==================================================
-8. COMMERCIAL INTENT / LEAD COLLECTION
+9. COMMERCIAL INTENT / LEAD COLLECTION
 ==================================================
 
 Do NOT ask for contact information during normal English practice.
@@ -713,7 +727,7 @@ When the visitor provides an email address, include:
 Do not show this marker as normal conversational text.
 
 ==================================================
-9. GENERAL BEHAVIOR
+10. GENERAL BEHAVIOR
 ==================================================
 
 Write explanations and instructions in ${UI[lang].langName}.
@@ -750,7 +764,8 @@ let currentLang = 'tr';
 let session = {
   level: null,
   mode: null,
-  topic: null
+  topic: null,
+  phase: "level"
 };
 
 function applyLanguage(lang){
@@ -760,17 +775,154 @@ function applyLanguage(lang){
   headerSub.textContent = t.sub;
   input.placeholder = t.placeholder;
   sendBtn.textContent = t.send;
-  starters.innerHTML = '';
-  t.starters.forEach(s => {
-    const div = document.createElement('div');
-    div.className = 'starter';
-    if(s.msg){ div.dataset.msg = s.msg; }
-    if(s.instant){ div.dataset.instant = '1'; }
-    if(s.url){ div.dataset.url = s.url; }
-    div.textContent = s.label;
-    starters.appendChild(div);
-  });
   langButtons.forEach(btn => btn.classList.toggle('active', btn.dataset.lang === lang));
+  renderCurrentChoices();
+}
+
+function clearStarters(){
+  starters.innerHTML = '';
+}
+
+function addChoice(label, data = {}){
+  const div = document.createElement('div');
+  div.className = 'starter';
+  Object.entries(data).forEach(([key, value]) => {
+    div.dataset[key] = value;
+  });
+  div.textContent = label;
+  starters.appendChild(div);
+}
+
+function addChoiceLabel(text){
+  const label = document.createElement('div');
+  label.style.width = '100%';
+  label.style.fontSize = '0.72rem';
+  label.style.fontWeight = '600';
+  label.style.color = 'var(--ink-soft)';
+  label.style.marginBottom = '3px';
+  label.textContent = text;
+  starters.appendChild(label);
+}
+
+function showLevelSelection(){
+  session.phase = 'level';
+  clearStarters();
+
+  addChoiceLabel(currentLang === 'tr'
+    ? 'İngilizce seviyenizi seçin:'
+    : 'Choose your English level:');
+
+  ['A1','A2','B1','B2','C1'].forEach(level => {
+    addChoice(level, { level });
+  });
+
+  addChoice(
+    currentLang === 'tr' ? 'Bilmiyorum' : "I don't know",
+    { level: 'unknown' }
+  );
+}
+
+function showModeSelection(){
+  session.phase = 'mode';
+  clearStarters();
+
+  addChoiceLabel(currentLang === 'tr'
+    ? 'Ne yapmak istersiniz?'
+    : 'What would you like to do?');
+
+  addChoice(currentLang === 'tr' ? 'Cümlemi Düzelt' : 'Correct My Sentence', { mode: 'correction' });
+  addChoice(currentLang === 'tr' ? 'Bana Öğret' : 'Teach Me', { mode: 'teach' });
+  addChoice(currentLang === 'tr' ? 'Benimle Pratik Yap' : 'Practice With Me', { mode: 'practice' });
+
+  const priceStarter = UI[currentLang].starters.find(s => s.instant);
+  addChoice(currentLang === 'tr' ? 'Fiyatlar' : 'Pricing', {
+    instant: '1',
+    msg: priceStarter ? priceStarter.msg : 'How much are lessons?'
+  });
+
+  addChoice(currentLang === 'tr' ? 'Seviye Testi' : 'Level Test', {
+    msg: currentLang === 'tr'
+      ? 'Ücretsiz seviye testi linkini paylaşır mısınız?'
+      : 'Can you share the level test link?'
+  });
+}
+
+function showTeachTopics(){
+  session.phase = 'topic';
+  clearStarters();
+
+  addChoiceLabel(currentLang === 'tr'
+    ? 'Ne öğrenmek istiyorsunuz?'
+    : 'What would you like to learn?');
+
+  const topics = currentLang === 'tr'
+    ? [
+        ['Gramer','Grammar'],
+        ['Kelime','Vocabulary'],
+        ['Deyimler','Idioms'],
+        ['Günlük İngilizce','Everyday English'],
+        ['Business English','Business English']
+      ]
+    : [
+        ['Grammar','Grammar'],
+        ['Vocabulary','Vocabulary'],
+        ['Idioms','Idioms'],
+        ['Everyday English','Everyday English'],
+        ['Business English','Business English']
+      ];
+
+  topics.forEach(([label, topic]) => addChoice(label, { topic }));
+}
+
+function showPracticeTopics(){
+  session.phase = 'topic';
+  clearStarters();
+
+  addChoiceLabel(currentLang === 'tr'
+    ? 'Nasıl pratik yapmak istersiniz?'
+    : 'How would you like to practice?');
+
+  const topics = currentLang === 'tr'
+    ? [
+        ['Günlük Konuşma','Everyday conversation'],
+        ['Business English','Business English'],
+        ['İş Görüşmesi','Job interview'],
+        ['Seyahat İngilizcesi','Travel English'],
+        ['Serbest Konuşma','Free conversation']
+      ]
+    : [
+        ['Everyday Conversation','Everyday conversation'],
+        ['Business English','Business English'],
+        ['Job Interview','Job interview'],
+        ['Travel English','Travel English'],
+        ['Free Conversation','Free conversation']
+      ];
+
+  topics.forEach(([label, topic]) => addChoice(label, { topic }));
+}
+
+function renderCurrentChoices(){
+  if(!session.level || session.phase === 'level'){
+    showLevelSelection();
+    return;
+  }
+
+  if(session.phase === 'mode'){
+    showModeSelection();
+    return;
+  }
+
+  if(session.mode === 'teach' && session.phase === 'topic'){
+    showTeachTopics();
+    return;
+  }
+
+  if(session.mode === 'practice' && session.phase === 'topic'){
+    showPracticeTopics();
+    return;
+  }
+
+  clearStarters();
 }
 
 langButtons.forEach(btn => {
@@ -782,19 +934,121 @@ launcher.addEventListener('click', () => {
   launcherWrap.classList.add('opened');
   if(history.length === 0){
     addBotMessage(UI[currentLang].greeting);
+    setTimeout(showLevelSelection, 250);
   }
 });
 closeBtn.addEventListener('click', () => panel.classList.remove('open'));
 
 starters.addEventListener('click', (e) => {
-  const url = e.target.dataset.url;
+  const target = e.target.closest('.starter');
+  if(!target) return;
+
+  const selectedLevel = target.dataset.level;
+  if(selectedLevel){
+    if(selectedLevel === 'unknown'){
+      session.level = 'unknown';
+      session.mode = 'level_check';
+      session.topic = null;
+      session.phase = 'diagnostic';
+
+      addUserMessage(currentLang === 'tr' ? 'Seviyemi bilmiyorum.' : "I don't know my level.");
+      history.push({
+        role: 'user',
+        content: currentLang === 'tr' ? 'Seviyemi bilmiyorum.' : "I don't know my level."
+      });
+
+      clearStarters();
+      input.value = currentLang === 'tr'
+        ? 'Seviyemi kısa bir testle belirleyelim.'
+        : "Let's estimate my level with a short test.";
+      sendMessage();
+      return;
+    }
+
+    session.level = selectedLevel;
+    session.mode = null;
+    session.topic = null;
+    session.phase = 'mode';
+
+    addUserMessage(currentLang === 'tr'
+      ? `Seviyem: ${selectedLevel}`
+      : `My level: ${selectedLevel}`);
+
+    addBotMessage(currentLang === 'tr'
+      ? `${selectedLevel} seviyesine göre çalışacağız. Şimdi ne yapmak istediğinizi seçin.`
+      : `We'll work at ${selectedLevel} level. Now choose what you'd like to do.`);
+
+    showModeSelection();
+    return;
+  }
+
+  const selectedMode = target.dataset.mode;
+  if(selectedMode){
+    session.mode = selectedMode;
+    session.topic = null;
+
+    if(selectedMode === 'correction'){
+      session.phase = 'active';
+      clearStarters();
+      addUserMessage(currentLang === 'tr' ? 'Cümlemi düzelt.' : 'Correct my sentence.');
+      addBotMessage(currentLang === 'tr'
+        ? 'Tabii. Düzeltmemi istediğiniz İngilizce cümleyi yazın.'
+        : 'Sure. Type the English sentence you want me to correct.');
+      input.focus();
+      return;
+    }
+
+    if(selectedMode === 'teach'){
+      session.phase = 'topic';
+      addUserMessage(currentLang === 'tr' ? 'Bana öğret.' : 'Teach me.');
+      addBotMessage(currentLang === 'tr'
+        ? 'Memnuniyetle. Ne öğrenmek istediğinizi seçin.'
+        : 'Of course. Choose what you would like to learn.');
+      showTeachTopics();
+      return;
+    }
+
+    if(selectedMode === 'practice'){
+      session.phase = 'topic';
+      addUserMessage(currentLang === 'tr' ? 'Benimle pratik yap.' : 'Practice with me.');
+      addBotMessage(currentLang === 'tr'
+        ? 'Harika. Nasıl pratik yapmak istediğinizi seçin.'
+        : 'Great. Choose how you would like to practice.');
+      showPracticeTopics();
+      return;
+    }
+  }
+
+  const selectedTopic = target.dataset.topic;
+  if(selectedTopic){
+    session.topic = selectedTopic;
+    session.phase = 'active';
+
+    addUserMessage(target.textContent.trim());
+    clearStarters();
+
+    input.value = session.mode === 'teach'
+      ? (currentLang === 'tr'
+          ? `${selectedTopic} öğrenmek istiyorum. Seviyeme göre kısa bir dersle başla.`
+          : `I want to learn ${selectedTopic}. Start with a short lesson for my level.`)
+      : (currentLang === 'tr'
+          ? `${selectedTopic} pratiği yapmak istiyorum. Seviyeme göre başla.`
+          : `I want to practice ${selectedTopic}. Start at my level.`);
+
+    sendMessage();
+    return;
+  }
+
+  const url = target.dataset.url;
   if(url){
     window.open(url, '_blank', 'noopener');
     return;
   }
-  const msg = e.target.dataset.msg;
+
+  const msg = target.dataset.msg;
   if(!msg) return;
-  if(e.target.dataset.instant){
+
+  if(target.dataset.instant){
     addUserMessage(msg);
     history.push({ role: 'user', content: msg });
     const reply = UI[currentLang].priceReply;
@@ -802,6 +1056,7 @@ starters.addEventListener('click', (e) => {
     history.push({ role: 'assistant', content: reply });
     return;
   }
+
   input.value = msg;
   sendMessage();
 });
@@ -810,6 +1065,18 @@ function extractCapturedEmail(text){
   const match = text.match(/\[EMAIL\](.*?)\[\/EMAIL\]/i);
   if(!match){ return { cleaned: text, email: null }; }
   return { cleaned: text.replace(match[0], '').trim(), email: match[1].trim() };
+}
+
+function extractEstimatedLevel(text){
+  const match = text.match(/\[LEVEL:(A1|A2|B1|B2|C1)\]/i);
+  if(!match){
+    return { cleaned: text, level: null };
+  }
+
+  return {
+    cleaned: text.replace(match[0], '').trim(),
+    level: match[1].toUpperCase()
+  };
 }
 
 function notifyOwner(visitorEmail, contextMessage){
@@ -832,6 +1099,7 @@ setTimeout(() => {
     launcherWrap.classList.add('opened');
     if(history.length === 0){
       addBotMessage(UI[currentLang].greeting);
+      setTimeout(showLevelSelection, 250);
     }
   }
 }, 30000);
@@ -910,11 +1178,30 @@ async function sendMessage(){
       addBotMessage(UI[currentLang].error);
       return;
     }
-    const { cleaned, email } = extractCapturedEmail(data.reply);
-    addBotMessage(cleaned);
-    history.push({ role: 'assistant', content: cleaned });
-    if(email){
-      notifyOwner(email, text);
+    const emailResult = extractCapturedEmail(data.reply);
+    const levelResult = extractEstimatedLevel(emailResult.cleaned);
+
+    addBotMessage(levelResult.cleaned);
+    history.push({ role: 'assistant', content: levelResult.cleaned });
+
+    if(emailResult.email){
+      notifyOwner(emailResult.email, text);
+    }
+
+    if(levelResult.level){
+      session.level = levelResult.level;
+      session.mode = null;
+      session.topic = null;
+      session.phase = 'mode';
+
+      setTimeout(() => {
+        addBotMessage(
+          currentLang === 'tr'
+            ? `Tahmini seviyeniz ${levelResult.level}. Şimdi ne yapmak istediğinizi seçebilirsiniz.`
+            : `Your estimated level is ${levelResult.level}. Now choose what you'd like to do.`
+        );
+        showModeSelection();
+      }, 300);
     }
   }catch(err){
     removeTyping();
