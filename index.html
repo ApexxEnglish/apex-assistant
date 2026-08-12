@@ -337,7 +337,7 @@ border: 1px solid var(--line);
   <div class="starter-row" id="starters"></div>
   <div id="mode-toolbar">
   <button id="change-mode-btn" type="button">
-    ↩ Mod Değiştir
+    ↩ Change Mode
   </button>
 </div>
   <div id="input-row">
@@ -494,6 +494,313 @@ const UI = {
   }
 };
 
+
+const FLOW_UI = {
+  en: {
+    chooseLevel: "Choose your English level:",
+    unknownLevel: "I don't know",
+    chooseMode: "What would you like to do?",
+    correction: "Correct My Sentence",
+    teach: "Teach Me",
+    practice: "Practice With Me",
+    pricing: "Pricing",
+    levelTest: "Level Test",
+    changeMode: "↩ Change Mode",
+    chooseTeachTopic: "What would you like to learn?",
+    grammar: "Grammar",
+    vocabulary: "Vocabulary",
+    idioms: "Idioms",
+    everydayEnglish: "Everyday English",
+    businessEnglish: "Business English",
+    choosePracticeTopic: "How would you like to practice?",
+    everydayConversation: "Everyday Conversation",
+    jobInterview: "Job Interview",
+    travelEnglish: "Travel English",
+    freeConversation: "Free Conversation",
+    levelUnknownUser: "I don't know my level.",
+    levelCheckPrompt: "Let's estimate my level with a short test.",
+    levelSelectedUser: (level) => `My level: ${level}`,
+    levelSelectedBot: (level) => `We'll work at ${level} level. Now choose what you'd like to do.`,
+    correctionUser: "Correct my sentence.",
+    correctionBot: "Sure. Type the English sentence you want me to correct.",
+    teachUser: "Teach me.",
+    teachBot: "Of course. Choose what you would like to learn.",
+    practiceUser: "Practice with me.",
+    practiceBot: "Great. Choose how you would like to practice.",
+    teachPrompt: (topic) => `I want to learn ${topic}. Start with a short lesson for my level.`,
+    practicePrompt: (topic) => `I want to practice ${topic}. Start at my level.`,
+    estimatedLevel: (level) => `Your estimated level is ${level}. Now choose what you'd like to do.`,
+    modeChanged: "Sure. You can choose another activity.",
+    levelTestMsg: "Can you share the free level test link?"
+  },
+
+  tr: {
+    chooseLevel: "İngilizce seviyenizi seçin:",
+    unknownLevel: "Bilmiyorum",
+    chooseMode: "Ne yapmak istersiniz?",
+    correction: "Cümlemi Düzelt",
+    teach: "Bana Öğret",
+    practice: "Benimle Pratik Yap",
+    pricing: "Fiyatlar",
+    levelTest: "Seviye Testi",
+    changeMode: "↩ Mod Değiştir",
+    chooseTeachTopic: "Ne öğrenmek istiyorsunuz?",
+    grammar: "Gramer",
+    vocabulary: "Kelime",
+    idioms: "Deyimler",
+    everydayEnglish: "Günlük İngilizce",
+    businessEnglish: "Business English",
+    choosePracticeTopic: "Nasıl pratik yapmak istersiniz?",
+    everydayConversation: "Günlük Konuşma",
+    jobInterview: "İş Görüşmesi",
+    travelEnglish: "Seyahat İngilizcesi",
+    freeConversation: "Serbest Konuşma",
+    levelUnknownUser: "Seviyemi bilmiyorum.",
+    levelCheckPrompt: "Seviyemi kısa bir testle belirleyelim.",
+    levelSelectedUser: (level) => `Seviyem: ${level}`,
+    levelSelectedBot: (level) => `${level} seviyesine göre çalışacağız. Şimdi ne yapmak istediğinizi seçin.`,
+    correctionUser: "Cümlemi düzelt.",
+    correctionBot: "Tabii. Düzeltmemi istediğiniz İngilizce cümleyi yazın.",
+    teachUser: "Bana öğret.",
+    teachBot: "Memnuniyetle. Ne öğrenmek istediğinizi seçin.",
+    practiceUser: "Benimle pratik yap.",
+    practiceBot: "Harika. Nasıl pratik yapmak istediğinizi seçin.",
+    teachPrompt: (topic) => `${topic} öğrenmek istiyorum. Seviyeme göre kısa bir dersle başla.`,
+    practicePrompt: (topic) => `${topic} pratiği yapmak istiyorum. Seviyeme göre başla.`,
+    estimatedLevel: (level) => `Tahmini seviyeniz ${level}. Şimdi ne yapmak istediğinizi seçebilirsiniz.`,
+    modeChanged: "Tabii. Ne yapmak istediğinizi tekrar seçebilirsiniz.",
+    levelTestMsg: "Ücretsiz seviye testi linkini paylaşır mısınız?"
+  },
+
+  ru: {
+    chooseLevel: "Выберите свой уровень английского:",
+    unknownLevel: "Не знаю",
+    chooseMode: "Что вы хотите сделать?",
+    correction: "Исправить предложение",
+    teach: "Обучи меня",
+    practice: "Практиковаться со мной",
+    pricing: "Цены",
+    levelTest: "Тест уровня",
+    changeMode: "↩ Сменить режим",
+    chooseTeachTopic: "Что вы хотите изучить?",
+    grammar: "Грамматика",
+    vocabulary: "Словарный запас",
+    idioms: "Идиомы",
+    everydayEnglish: "Повседневный английский",
+    businessEnglish: "Деловой английский",
+    choosePracticeTopic: "Как вы хотите практиковаться?",
+    everydayConversation: "Повседневный разговор",
+    jobInterview: "Собеседование",
+    travelEnglish: "Английский для путешествий",
+    freeConversation: "Свободный разговор",
+    levelUnknownUser: "Я не знаю свой уровень.",
+    levelCheckPrompt: "Давайте определим мой уровень с помощью короткого теста.",
+    levelSelectedUser: (level) => `Мой уровень: ${level}`,
+    levelSelectedBot: (level) => `Будем заниматься на уровне ${level}. Теперь выберите, что хотите делать.`,
+    correctionUser: "Исправь мое предложение.",
+    correctionBot: "Конечно. Напишите английское предложение, которое хотите исправить.",
+    teachUser: "Научи меня.",
+    teachBot: "С удовольствием. Выберите, что вы хотите изучить.",
+    practiceUser: "Давай попрактикуемся.",
+    practiceBot: "Отлично. Выберите формат практики.",
+    teachPrompt: (topic) => `Я хочу изучать ${topic}. Начни с короткого урока для моего уровня.`,
+    practicePrompt: (topic) => `Я хочу практиковать ${topic}. Начни на моем уровне.`,
+    estimatedLevel: (level) => `Ваш примерный уровень — ${level}. Теперь выберите, что хотите делать.`,
+    modeChanged: "Конечно. Вы можете выбрать другой режим.",
+    levelTestMsg: "Можете поделиться ссылкой на бесплатный тест уровня?"
+  },
+
+  fa: {
+    chooseLevel: "سطح انگلیسی خود را انتخاب کنید:",
+    unknownLevel: "نمی‌دانم",
+    chooseMode: "می‌خواهید چه کاری انجام دهید؟",
+    correction: "جمله‌ام را اصلاح کن",
+    teach: "به من آموزش بده",
+    practice: "با من تمرین کن",
+    pricing: "قیمت‌ها",
+    levelTest: "تست سطح",
+    changeMode: "↩ تغییر حالت",
+    chooseTeachTopic: "می‌خواهید چه چیزی یاد بگیرید؟",
+    grammar: "گرامر",
+    vocabulary: "واژگان",
+    idioms: "اصطلاحات",
+    everydayEnglish: "انگلیسی روزمره",
+    businessEnglish: "انگلیسی تجاری",
+    choosePracticeTopic: "چطور می‌خواهید تمرین کنید؟",
+    everydayConversation: "مکالمه روزمره",
+    jobInterview: "مصاحبه شغلی",
+    travelEnglish: "انگلیسی سفر",
+    freeConversation: "مکالمه آزاد",
+    levelUnknownUser: "سطحم را نمی‌دانم.",
+    levelCheckPrompt: "بیایید با یک تست کوتاه سطح من را مشخص کنیم.",
+    levelSelectedUser: (level) => `سطح من: ${level}`,
+    levelSelectedBot: (level) => `بر اساس سطح ${level} تمرین می‌کنیم. حالا انتخاب کنید چه کاری می‌خواهید انجام دهید.`,
+    correctionUser: "جمله‌ام را اصلاح کن.",
+    correctionBot: "حتماً. جمله انگلیسی‌ای را که می‌خواهید اصلاح شود بنویسید.",
+    teachUser: "به من آموزش بده.",
+    teachBot: "حتماً. انتخاب کنید چه چیزی می‌خواهید یاد بگیرید.",
+    practiceUser: "با من تمرین کن.",
+    practiceBot: "عالی است. نوع تمرین را انتخاب کنید.",
+    teachPrompt: (topic) => `می‌خواهم ${topic} یاد بگیرم. با یک درس کوتاه متناسب با سطح من شروع کن.`,
+    practicePrompt: (topic) => `می‌خواهم ${topic} تمرین کنم. متناسب با سطح من شروع کن.`,
+    estimatedLevel: (level) => `سطح تقریبی شما ${level} است. حالا می‌توانید نوع فعالیت را انتخاب کنید.`,
+    modeChanged: "حتماً. می‌توانید یک حالت دیگر انتخاب کنید.",
+    levelTestMsg: "می‌توانید لینک تست سطح رایگان را به اشتراک بگذارید؟"
+  },
+
+  es: {
+    chooseLevel: "Elige tu nivel de inglés:",
+    unknownLevel: "No lo sé",
+    chooseMode: "¿Qué te gustaría hacer?",
+    correction: "Corregir mi frase",
+    teach: "Enséñame",
+    practice: "Practica conmigo",
+    pricing: "Precios",
+    levelTest: "Prueba de nivel",
+    changeMode: "↩ Cambiar modo",
+    chooseTeachTopic: "¿Qué te gustaría aprender?",
+    grammar: "Gramática",
+    vocabulary: "Vocabulario",
+    idioms: "Modismos",
+    everydayEnglish: "Inglés cotidiano",
+    businessEnglish: "Inglés de negocios",
+    choosePracticeTopic: "¿Cómo te gustaría practicar?",
+    everydayConversation: "Conversación cotidiana",
+    jobInterview: "Entrevista de trabajo",
+    travelEnglish: "Inglés para viajar",
+    freeConversation: "Conversación libre",
+    levelUnknownUser: "No sé cuál es mi nivel.",
+    levelCheckPrompt: "Vamos a estimar mi nivel con una prueba corta.",
+    levelSelectedUser: (level) => `Mi nivel: ${level}`,
+    levelSelectedBot: (level) => `Trabajaremos al nivel ${level}. Ahora elige qué te gustaría hacer.`,
+    correctionUser: "Corrige mi frase.",
+    correctionBot: "Claro. Escribe la frase en inglés que quieres que corrija.",
+    teachUser: "Enséñame.",
+    teachBot: "Claro. Elige qué te gustaría aprender.",
+    practiceUser: "Practica conmigo.",
+    practiceBot: "Genial. Elige cómo te gustaría practicar.",
+    teachPrompt: (topic) => `Quiero aprender ${topic}. Empieza con una lección corta para mi nivel.`,
+    practicePrompt: (topic) => `Quiero practicar ${topic}. Empieza a mi nivel.`,
+    estimatedLevel: (level) => `Tu nivel estimado es ${level}. Ahora elige qué te gustaría hacer.`,
+    modeChanged: "Claro. Puedes elegir otra actividad.",
+    levelTestMsg: "¿Puedes compartir el enlace de la prueba de nivel gratuita?"
+  },
+
+  fr: {
+    chooseLevel: "Choisissez votre niveau d’anglais :",
+    unknownLevel: "Je ne sais pas",
+    chooseMode: "Que voulez-vous faire ?",
+    correction: "Corriger ma phrase",
+    teach: "Apprends-moi",
+    practice: "Pratiquer avec moi",
+    pricing: "Tarifs",
+    levelTest: "Test de niveau",
+    changeMode: "↩ Changer de mode",
+    chooseTeachTopic: "Que voulez-vous apprendre ?",
+    grammar: "Grammaire",
+    vocabulary: "Vocabulaire",
+    idioms: "Expressions idiomatiques",
+    everydayEnglish: "Anglais quotidien",
+    businessEnglish: "Anglais professionnel",
+    choosePracticeTopic: "Comment voulez-vous pratiquer ?",
+    everydayConversation: "Conversation quotidienne",
+    jobInterview: "Entretien d’embauche",
+    travelEnglish: "Anglais de voyage",
+    freeConversation: "Conversation libre",
+    levelUnknownUser: "Je ne connais pas mon niveau.",
+    levelCheckPrompt: "Estimons mon niveau avec un petit test.",
+    levelSelectedUser: (level) => `Mon niveau : ${level}`,
+    levelSelectedBot: (level) => `Nous travaillerons au niveau ${level}. Choisissez maintenant ce que vous voulez faire.`,
+    correctionUser: "Corrige ma phrase.",
+    correctionBot: "Bien sûr. Écrivez la phrase anglaise que vous voulez corriger.",
+    teachUser: "Apprends-moi.",
+    teachBot: "Avec plaisir. Choisissez ce que vous voulez apprendre.",
+    practiceUser: "Pratique avec moi.",
+    practiceBot: "Parfait. Choisissez comment vous voulez pratiquer.",
+    teachPrompt: (topic) => `Je veux apprendre ${topic}. Commence par une courte leçon adaptée à mon niveau.`,
+    practicePrompt: (topic) => `Je veux pratiquer ${topic}. Commence à mon niveau.`,
+    estimatedLevel: (level) => `Votre niveau estimé est ${level}. Choisissez maintenant ce que vous voulez faire.`,
+    modeChanged: "Bien sûr. Vous pouvez choisir une autre activité.",
+    levelTestMsg: "Pouvez-vous partager le lien du test de niveau gratuit ?"
+  },
+
+  zh: {
+    chooseLevel: "请选择你的英语水平：",
+    unknownLevel: "我不知道",
+    chooseMode: "你想做什么？",
+    correction: "纠正我的句子",
+    teach: "教我英语",
+    practice: "和我练习",
+    pricing: "价格",
+    levelTest: "水平测试",
+    changeMode: "↩ 切换模式",
+    chooseTeachTopic: "你想学习什么？",
+    grammar: "语法",
+    vocabulary: "词汇",
+    idioms: "习语",
+    everydayEnglish: "日常英语",
+    businessEnglish: "商务英语",
+    choosePracticeTopic: "你想怎么练习？",
+    everydayConversation: "日常对话",
+    jobInterview: "求职面试",
+    travelEnglish: "旅行英语",
+    freeConversation: "自由对话",
+    levelUnknownUser: "我不知道自己的水平。",
+    levelCheckPrompt: "让我们通过一个简短测试来估计我的水平。",
+    levelSelectedUser: (level) => `我的水平：${level}`,
+    levelSelectedBot: (level) => `我们会按照 ${level} 水平练习。现在请选择你想做什么。`,
+    correctionUser: "纠正我的句子。",
+    correctionBot: "当然。请输入你想让我纠正的英语句子。",
+    teachUser: "教我英语。",
+    teachBot: "当然。请选择你想学习的内容。",
+    practiceUser: "和我练习。",
+    practiceBot: "很好。请选择你想练习的方式。",
+    teachPrompt: (topic) => `我想学习${topic}。请按照我的水平开始一个简短课程。`,
+    practicePrompt: (topic) => `我想练习${topic}。请按照我的水平开始。`,
+    estimatedLevel: (level) => `你的估计水平是 ${level}。现在请选择你想做什么。`,
+    modeChanged: "当然。你可以选择其他活动。",
+    levelTestMsg: "可以分享免费水平测试的链接吗？"
+  },
+
+  ja: {
+    chooseLevel: "英語レベルを選んでください：",
+    unknownLevel: "わかりません",
+    chooseMode: "何をしたいですか？",
+    correction: "英文を直す",
+    teach: "教えて",
+    practice: "一緒に練習する",
+    pricing: "料金",
+    levelTest: "レベルテスト",
+    changeMode: "↩ モード変更",
+    chooseTeachTopic: "何を学びたいですか？",
+    grammar: "文法",
+    vocabulary: "単語",
+    idioms: "イディオム",
+    everydayEnglish: "日常英語",
+    businessEnglish: "ビジネス英語",
+    choosePracticeTopic: "どのように練習したいですか？",
+    everydayConversation: "日常会話",
+    jobInterview: "面接",
+    travelEnglish: "旅行英語",
+    freeConversation: "フリートーク",
+    levelUnknownUser: "自分のレベルがわかりません。",
+    levelCheckPrompt: "短いテストでレベルを確認しましょう。",
+    levelSelectedUser: (level) => `私のレベル：${level}`,
+    levelSelectedBot: (level) => `${level} レベルに合わせて練習します。次に何をしたいか選んでください。`,
+    correctionUser: "英文を直して。",
+    correctionBot: "もちろんです。直したい英文を入力してください。",
+    teachUser: "教えて。",
+    teachBot: "もちろんです。学びたい内容を選んでください。",
+    practiceUser: "一緒に練習して。",
+    practiceBot: "いいですね。練習方法を選んでください。",
+    teachPrompt: (topic) => `${topic}を学びたいです。私のレベルに合った短いレッスンから始めてください。`,
+    practicePrompt: (topic) => `${topic}を練習したいです。私のレベルに合わせて始めてください。`,
+    estimatedLevel: (level) => `推定レベルは ${level} です。次に何をしたいか選んでください。`,
+    modeChanged: "もちろんです。別のモードを選べます。",
+    levelTestMsg: "無料レベルテストのリンクを共有してもらえますか？"
+  }
+};
+
 function buildSystemPrompt(lang){
   const level = session.level || "unknown";
   const mode = session.mode || "general";
@@ -573,7 +880,8 @@ CORRECTED VERSION:
 Write ONLY the final corrected English sentence.
 Do not repeat the incorrect sentence here.
 Do not show both the wrong and corrected versions on the same line.
-Do not add markdown bold markers around the correctio
+Do not add markdown bold markers around the correction.
+
 WHY:
 Explain only the main error(s) briefly in ${UI[lang].langName}.
 Use a maximum of 2-3 short sentences unless the student asks for more detail.
@@ -810,11 +1118,23 @@ let session = {
 function applyLanguage(lang){
   currentLang = lang;
   const t = UI[lang];
+  const f = FLOW_UI[lang] || FLOW_UI.en;
+
   headerTitle.textContent = t.title;
   headerSub.textContent = t.sub;
   input.placeholder = t.placeholder;
   sendBtn.textContent = t.send;
-  langButtons.forEach(btn => btn.classList.toggle('active', btn.dataset.lang === lang));
+  changeModeBtn.textContent = f.changeMode;
+
+  const firstBotMessage = messagesEl.querySelector('.msg.bot');
+  if(firstBotMessage && history.length === 0){
+    firstBotMessage.innerHTML = renderBotContent(t.greeting);
+  }
+
+  langButtons.forEach(btn =>
+    btn.classList.toggle('active', btn.dataset.lang === lang)
+  );
+
   renderCurrentChoices();
 }
 
@@ -825,9 +1145,11 @@ function clearStarters(){
 function addChoice(label, data = {}){
   const div = document.createElement('div');
   div.className = 'starter';
+
   Object.entries(data).forEach(([key, value]) => {
     div.dataset[key] = value;
   });
+
   div.textContent = label;
   starters.appendChild(div);
 }
@@ -845,20 +1167,17 @@ function addChoiceLabel(text){
 
 function showLevelSelection(){
   session.phase = 'level';
+  modeToolbar.classList.remove('visible');
   clearStarters();
 
-  addChoiceLabel(currentLang === 'tr'
-    ? 'İngilizce seviyenizi seçin:'
-    : 'Choose your English level:');
+  const f = FLOW_UI[currentLang] || FLOW_UI.en;
+  addChoiceLabel(f.chooseLevel);
 
   ['A1','A2','B1','B2','C1'].forEach(level => {
     addChoice(level, { level });
   });
 
-  addChoice(
-    currentLang === 'tr' ? 'Bilmiyorum' : "I don't know",
-    { level: 'unknown' }
-  );
+  addChoice(f.unknownLevel, { level: 'unknown' });
 }
 
 function showModeSelection(){
@@ -866,24 +1185,21 @@ function showModeSelection(){
   session.phase = 'mode';
   clearStarters();
 
-  addChoiceLabel(currentLang === 'tr'
-    ? 'Ne yapmak istersiniz?'
-    : 'What would you like to do?');
+  const f = FLOW_UI[currentLang] || FLOW_UI.en;
+  addChoiceLabel(f.chooseMode);
 
-  addChoice(currentLang === 'tr' ? 'Cümlemi Düzelt' : 'Correct My Sentence', { mode: 'correction' });
-  addChoice(currentLang === 'tr' ? 'Bana Öğret' : 'Teach Me', { mode: 'teach' });
-  addChoice(currentLang === 'tr' ? 'Benimle Pratik Yap' : 'Practice With Me', { mode: 'practice' });
+  addChoice(f.correction, { mode: 'correction' });
+  addChoice(f.teach, { mode: 'teach' });
+  addChoice(f.practice, { mode: 'practice' });
 
   const priceStarter = UI[currentLang].starters.find(s => s.instant);
-  addChoice(currentLang === 'tr' ? 'Fiyatlar' : 'Pricing', {
+  addChoice(f.pricing, {
     instant: '1',
     msg: priceStarter ? priceStarter.msg : 'How much are lessons?'
   });
 
-  addChoice(currentLang === 'tr' ? 'Seviye Testi' : 'Level Test', {
-    msg: currentLang === 'tr'
-      ? 'Ücretsiz seviye testi linkini paylaşır mısınız?'
-      : 'Can you share the level test link?'
+  addChoice(f.levelTest, {
+    msg: f.levelTestMsg
   });
 }
 
@@ -891,54 +1207,32 @@ function showTeachTopics(){
   session.phase = 'topic';
   clearStarters();
 
-  addChoiceLabel(currentLang === 'tr'
-    ? 'Ne öğrenmek istiyorsunuz?'
-    : 'What would you like to learn?');
+  const f = FLOW_UI[currentLang] || FLOW_UI.en;
+  addChoiceLabel(f.chooseTeachTopic);
 
-  const topics = currentLang === 'tr'
-    ? [
-        ['Gramer','Grammar'],
-        ['Kelime','Vocabulary'],
-        ['Deyimler','Idioms'],
-        ['Günlük İngilizce','Everyday English'],
-        ['Business English','Business English']
-      ]
-    : [
-        ['Grammar','Grammar'],
-        ['Vocabulary','Vocabulary'],
-        ['Idioms','Idioms'],
-        ['Everyday English','Everyday English'],
-        ['Business English','Business English']
-      ];
-
-  topics.forEach(([label, topic]) => addChoice(label, { topic }));
+  [
+    [f.grammar, 'Grammar'],
+    [f.vocabulary, 'Vocabulary'],
+    [f.idioms, 'Idioms'],
+    [f.everydayEnglish, 'Everyday English'],
+    [f.businessEnglish, 'Business English']
+  ].forEach(([label, topic]) => addChoice(label, { topic }));
 }
 
 function showPracticeTopics(){
   session.phase = 'topic';
   clearStarters();
 
-  addChoiceLabel(currentLang === 'tr'
-    ? 'Nasıl pratik yapmak istersiniz?'
-    : 'How would you like to practice?');
+  const f = FLOW_UI[currentLang] || FLOW_UI.en;
+  addChoiceLabel(f.choosePracticeTopic);
 
-  const topics = currentLang === 'tr'
-    ? [
-        ['Günlük Konuşma','Everyday conversation'],
-        ['Business English','Business English'],
-        ['İş Görüşmesi','Job interview'],
-        ['Seyahat İngilizcesi','Travel English'],
-        ['Serbest Konuşma','Free conversation']
-      ]
-    : [
-        ['Everyday Conversation','Everyday conversation'],
-        ['Business English','Business English'],
-        ['Job Interview','Job interview'],
-        ['Travel English','Travel English'],
-        ['Free Conversation','Free conversation']
-      ];
-
-  topics.forEach(([label, topic]) => addChoice(label, { topic }));
+  [
+    [f.everydayConversation, 'Everyday conversation'],
+    [f.businessEnglish, 'Business English'],
+    [f.jobInterview, 'Job interview'],
+    [f.travelEnglish, 'Travel English'],
+    [f.freeConversation, 'Free conversation']
+  ].forEach(([label, topic]) => addChoice(label, { topic }));
 }
 
 function renderCurrentChoices(){
@@ -984,6 +1278,8 @@ starters.addEventListener('click', (e) => {
   const target = e.target.closest('.starter');
   if(!target) return;
 
+  const f = FLOW_UI[currentLang] || FLOW_UI.en;
+
   const selectedLevel = target.dataset.level;
   if(selectedLevel){
     if(selectedLevel === 'unknown'){
@@ -992,16 +1288,11 @@ starters.addEventListener('click', (e) => {
       session.topic = null;
       session.phase = 'diagnostic';
 
-      addUserMessage(currentLang === 'tr' ? 'Seviyemi bilmiyorum.' : "I don't know my level.");
-      history.push({
-        role: 'user',
-        content: currentLang === 'tr' ? 'Seviyemi bilmiyorum.' : "I don't know my level."
-      });
+      addUserMessage(f.levelUnknownUser);
+      history.push({ role: 'user', content: f.levelUnknownUser });
 
       clearStarters();
-      input.value = currentLang === 'tr'
-        ? 'Seviyemi kısa bir testle belirleyelim.'
-        : "Let's estimate my level with a short test.";
+      input.value = f.levelCheckPrompt;
       sendMessage();
       return;
     }
@@ -1011,13 +1302,8 @@ starters.addEventListener('click', (e) => {
     session.topic = null;
     session.phase = 'mode';
 
-    addUserMessage(currentLang === 'tr'
-      ? `Seviyem: ${selectedLevel}`
-      : `My level: ${selectedLevel}`);
-
-    addBotMessage(currentLang === 'tr'
-      ? `${selectedLevel} seviyesine göre çalışacağız. Şimdi ne yapmak istediğinizi seçin.`
-      : `We'll work at ${selectedLevel} level. Now choose what you'd like to do.`);
+    addUserMessage(f.levelSelectedUser(selectedLevel));
+    addBotMessage(f.levelSelectedBot(selectedLevel));
 
     showModeSelection();
     return;
@@ -1031,30 +1317,24 @@ starters.addEventListener('click', (e) => {
     if(selectedMode === 'correction'){
       session.phase = 'active';
       clearStarters();
-      addUserMessage(currentLang === 'tr' ? 'Cümlemi düzelt.' : 'Correct my sentence.');
-      addBotMessage(currentLang === 'tr'
-        ? 'Tabii. Düzeltmemi istediğiniz İngilizce cümleyi yazın.'
-        : 'Sure. Type the English sentence you want me to correct.');
+      addUserMessage(f.correctionUser);
+      addBotMessage(f.correctionBot);
       input.focus();
       return;
     }
 
     if(selectedMode === 'teach'){
       session.phase = 'topic';
-      addUserMessage(currentLang === 'tr' ? 'Bana öğret.' : 'Teach me.');
-      addBotMessage(currentLang === 'tr'
-        ? 'Memnuniyetle. Ne öğrenmek istediğinizi seçin.'
-        : 'Of course. Choose what you would like to learn.');
+      addUserMessage(f.teachUser);
+      addBotMessage(f.teachBot);
       showTeachTopics();
       return;
     }
 
     if(selectedMode === 'practice'){
       session.phase = 'topic';
-      addUserMessage(currentLang === 'tr' ? 'Benimle pratik yap.' : 'Practice with me.');
-      addBotMessage(currentLang === 'tr'
-        ? 'Harika. Nasıl pratik yapmak istediğinizi seçin.'
-        : 'Great. Choose how you would like to practice.');
+      addUserMessage(f.practiceUser);
+      addBotMessage(f.practiceBot);
       showPracticeTopics();
       return;
     }
@@ -1069,12 +1349,8 @@ starters.addEventListener('click', (e) => {
     clearStarters();
 
     input.value = session.mode === 'teach'
-      ? (currentLang === 'tr'
-          ? `${selectedTopic} öğrenmek istiyorum. Seviyeme göre kısa bir dersle başla.`
-          : `I want to learn ${selectedTopic}. Start with a short lesson for my level.`)
-      : (currentLang === 'tr'
-          ? `${selectedTopic} pratiği yapmak istiyorum. Seviyeme göre başla.`
-          : `I want to practice ${selectedTopic}. Start at my level.`);
+      ? f.teachPrompt(selectedTopic)
+      : f.practicePrompt(selectedTopic);
 
     sendMessage();
     return;
@@ -1092,6 +1368,7 @@ starters.addEventListener('click', (e) => {
   if(target.dataset.instant){
     addUserMessage(msg);
     history.push({ role: 'user', content: msg });
+
     const reply = UI[currentLang].priceReply;
     addBotMessage(reply);
     history.push({ role: 'assistant', content: reply });
@@ -1151,6 +1428,7 @@ function renderBotContent(text){
   return escaped
     .replace(/\[WRONG\](.*?)\[\/WRONG\]/g, '<span class="wrong">$1</span>')
     .replace(/\[RIGHT\](.*?)\[\/RIGHT\]/g, '<span class="right">$1</span>')
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
     .replace(/(https?:\/\/[^\s<]+)/g, '<a href="$1" target="_blank" rel="noopener" style="color:var(--marigold-deep);text-decoration:underline;">$1</a>');
 }
 
@@ -1236,11 +1514,8 @@ async function sendMessage(){
       session.phase = 'mode';
 
       setTimeout(() => {
-        addBotMessage(
-          currentLang === 'tr'
-            ? `Tahmini seviyeniz ${levelResult.level}. Şimdi ne yapmak istediğinizi seçebilirsiniz.`
-            : `Your estimated level is ${levelResult.level}. Now choose what you'd like to do.`
-        );
+        const f = FLOW_UI[currentLang] || FLOW_UI.en;
+        addBotMessage(f.estimatedLevel(levelResult.level));
         showModeSelection();
       }, 300);
     }
@@ -1259,11 +1534,8 @@ changeModeBtn.addEventListener('click', () => {
 
   showModeSelection();
 
-  addBotMessage(
-    currentLang === 'tr'
-      ? 'Tabii. Ne yapmak istediğinizi tekrar seçebilirsiniz.'
-      : 'Sure. You can choose another activity.'
-  );
+  const f = FLOW_UI[currentLang] || FLOW_UI.en;
+  addBotMessage(f.modeChanged);
 });
 sendBtn.addEventListener('click', sendMessage);
 input.addEventListener('keydown', (e) => { if(e.key === 'Enter') sendMessage(); });
