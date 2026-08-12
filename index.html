@@ -5,6 +5,31 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 <title>English Site Assistant — Widget Demo</title>
 <style>
+  #mode-toolbar{
+  display:none;
+  padding:8px 12px 0;
+  background:var(--white);
+  border-top:1px solid var(--line);
+}
+
+#mode-toolbar.visible{
+  display:flex;
+}
+
+#change-mode-btn{
+  background:transparent;
+  border:none;
+  padding:4px 2px;
+  color:var(--ink-soft);
+  font-family:'IBM Plex Mono', monospace;
+  font-size:0.68rem;
+  font-weight:600;
+  cursor:pointer;
+}
+
+#change-mode-btn:hover{
+  color:var(--ink);
+}
   :root{
     --paper:#EFEDE6;
     --ink:#202A44;
@@ -305,6 +330,11 @@
   </div>
   <div id="messages"></div>
   <div class="starter-row" id="starters"></div>
+  <div id="mode-toolbar">
+  <button id="change-mode-btn" type="button">
+    ↩ Mod Değiştir
+  </button>
+</div>
   <div id="input-row">
     <input id="chat-input" type="text" placeholder="Type a question or a sentence..." />
     <button id="send-btn">Send</button>
@@ -758,6 +788,8 @@ const closeBtn = document.getElementById('close-btn');
 const starters = document.getElementById('starters');
 const headerTitle = document.getElementById('header-title');
 const headerSub = document.getElementById('header-sub');
+const modeToolbar = document.getElementById('mode-toolbar');
+const changeModeBtn = document.getElementById('change-mode-btn');
 const langButtons = document.querySelectorAll('.lang-btn');
 
 let history = [];
@@ -825,6 +857,7 @@ function showLevelSelection(){
 }
 
 function showModeSelection(){
+  modeToolbar.classList.add('visible');
   session.phase = 'mode';
   clearStarters();
 
@@ -928,6 +961,7 @@ function renderCurrentChoices(){
 }
 
 langButtons.forEach(btn => {
+  
   btn.addEventListener('click', () => applyLanguage(btn.dataset.lang));
 });
 
@@ -1213,7 +1247,19 @@ async function sendMessage(){
     sendBtn.disabled = false;
   }
 }
+changeModeBtn.addEventListener('click', () => {
+  session.mode = null;
+  session.topic = null;
+  session.phase = 'mode';
 
+  showModeSelection();
+
+  addBotMessage(
+    currentLang === 'tr'
+      ? 'Tabii. Ne yapmak istediğinizi tekrar seçebilirsiniz.'
+      : 'Sure. You can choose another activity.'
+  );
+});
 sendBtn.addEventListener('click', sendMessage);
 input.addEventListener('keydown', (e) => { if(e.key === 'Enter') sendMessage(); });
 </script>
