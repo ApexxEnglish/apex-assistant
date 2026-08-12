@@ -340,7 +340,7 @@ const UI = {
     typing: "yazıyor...",
     greeting: "Merhaba! İngilizce cümlelerinizi kontrol edebilir, adım adım mülakat simülasyonu yapabilir veya Apex English kursları hakkında bilgi verebilirim.",
     error: "Biraz fazla mesaj gönderdik gibi görünüyor — kısa bir mola verip birazdan devam edelim mi?",
-    priceReply: "Fiyat listemizi gönderebilmemiz için email adresini alabilir miyim? ☺️",
+    priceReply: "Fiyat listemizi gönderebilmemiz için e-posta adresinizi alabilir miyim? ☺️",
     starters: [
       { label: "Cümle Kontrolü", msg: "Bir cümle kontrol ettirmek istiyorum." },
       { label: "Mülakat Hazırlığı", msg: "Mülakata hazırlanmak istiyorum." },
@@ -747,6 +747,12 @@ const langButtons = document.querySelectorAll('.lang-btn');
 let history = [];
 let currentLang = 'tr';
 
+let session = {
+  level: null,
+  mode: null,
+  topic: null
+};
+
 function applyLanguage(lang){
   currentLang = lang;
   const t = UI[lang];
@@ -851,8 +857,19 @@ function addBotMessage(text){
   const div = document.createElement('div');
   div.className = 'msg bot';
   div.innerHTML = renderBotContent(text);
+
   messagesEl.appendChild(div);
-  messagesEl.scrollTop = messagesEl.scrollHeight;
+
+  // AI cevabı geldiğinde cevabın SONUNA değil,
+  // İLK SATIRINA getir.
+  requestAnimationFrame(() => {
+    const targetTop = div.offsetTop - messagesEl.offsetTop - 12;
+
+    messagesEl.scrollTo({
+      top: Math.max(0, targetTop),
+      behavior: 'smooth'
+    });
+  });
 }
 
 function addTyping(){
