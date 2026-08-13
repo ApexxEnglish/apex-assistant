@@ -118,6 +118,15 @@ IMPORTANT LIMITS:
 - Keep feedback encouraging, concise, and actionable.
 - Use the requested FEEDBACK LANGUAGE for notes, but keep English target words/phrases in English.
 - Scores are coarse coaching ratings from 1 to 5, not percentages.
+- The "tryAgain" field is a TARGETED DRILL, not a generic retry.
+- Base "tryAgain" on the clearest pronunciation/stress/rhythm issue you actually heard.
+- If one word is the main issue, create a short natural English sentence that contains that word.
+- If two related words are the main issue, create one short sentence containing those words.
+- Keep the drill short enough to repeat comfortably (normally 4-10 words).
+- Do NOT simply copy the original TARGET SENTENCE unless repeating that exact short sentence is genuinely the best drill.
+- "tryAgain" must correspond to the same issue(s) listed in "focusWords".
+- If there is no clear problem, give a slightly more challenging short English sentence instead of repeating the original.
+- Never invent a pronunciation problem just to produce a drill.
 
 Return ONLY valid JSON in this exact shape:
 {
@@ -129,7 +138,7 @@ Return ONLY valid JSON in this exact shape:
     {"word": "English word", "note": "short actionable note in the feedback language"}
   ],
   "coachNote": "2-4 concise sentences in the feedback language",
-  "tryAgain": "one short English sentence to repeat"
+  "tryAgain": "one short targeted English drill sentence based on the clearest audible issue"
 }
 `.trim();
 
