@@ -250,7 +250,7 @@ border: 1px solid var(--line);
     background:var(--white);
     border-top:1px solid var(--line);
   }
-  #input-row textarea{
+  #input-row input{
     flex:1;
     border:1px solid var(--line);
     border-radius:8px;
@@ -260,12 +260,11 @@ border: 1px solid var(--line);
     line-height:1.4;
     outline:none;
     color:var(--ink);
-    resize:none;
-    min-height:42px;
-    max-height:120px;
-    overflow-y:auto;
+    height:44px;
+    white-space:nowrap;
+    overflow-x:auto;
   }
-  #input-row textarea:focus{
+  #input-row input:focus{
     border-color:var(--marigold-deep);
   }
   #input-row button{
@@ -389,7 +388,7 @@ border: 1px solid var(--line);
   </button>
 </div>
   <div id="input-row">
-    <textarea id="chat-input" rows="1" placeholder="Type a question or a sentence..."></textarea>
+    <input id="chat-input" type="text" placeholder="Type a question or a sentence..." autocomplete="off" />
     <button id="mic-btn" type="button" aria-label="Start speaking" title="Start speaking">
       <span class="mic-icon">🎙️</span>
       <span class="mic-stop">■</span>
@@ -1222,8 +1221,15 @@ const micBtn = document.getElementById('mic-btn');
 const langButtons = document.querySelectorAll('.lang-btn');
 
 function resizeChatInput(){
-  input.style.height = 'auto';
-  input.style.height = Math.min(input.scrollHeight, 120) + 'px';
+  // Single-line composer: keep a fixed height.
+}
+
+function moveInputCaretToEnd(){
+  try{
+    const len = input.value.length;
+    input.setSelectionRange(len, len);
+    input.scrollLeft = input.scrollWidth;
+  }catch(e){}
 }
 
 
@@ -1560,6 +1566,17 @@ function getRecognitionLanguage(){
     ja: 'ja-JP'
   };
 
+  // In English-learning modes, spoken answers are expected to be English,
+  // even when the interface language is Turkish/Russian/etc.
+  if(
+    session.mode === 'correction' ||
+    session.mode === 'practice' ||
+    session.mode === 'level_check'
+  ){
+    return 'en-US';
+  }
+
+  // Outside those modes, recognize the currently selected interface language.
   return speechLanguages[currentLang] || 'en-US';
 }
 
@@ -1618,7 +1635,7 @@ function startVoiceRecognition(){
 
   // A fresh microphone session should not append to an older transcript.
   input.value = '';
-  resizeChatInput();
+  input.scrollLeft = 0;
   session.voiceMode = false;
   voiceConversationActive = false;
 
@@ -1631,7 +1648,7 @@ function startVoiceRecognition(){
   recognition.lang = getRecognitionLanguage();
   recognition.continuous = true;
   recognition.interimResults = true;
-  recognition.maxAlternatives = 1;
+  recognition.maxAlternatives = 3;
 
   let finalTranscript = '';
   let hadResult = false;
@@ -1660,8 +1677,7 @@ function startVoiceRecognition(){
       .trim();
 
     input.value = combinedTranscript;
-    resizeChatInput();
-    input.scrollTop = input.scrollHeight;
+    moveInputCaretToEnd();
   };
 
   recognition.onerror = (event) => {
@@ -1705,7 +1721,7 @@ function startVoiceRecognition(){
 
     if(finalTranscript.trim()){
       input.value = finalTranscript.trim();
-      resizeChatInput();
+      moveInputCaretToEnd();
       session.voiceMode = true;
       voiceConversationActive = true;
     }
@@ -1842,7 +1858,7 @@ async function sendMessage(options = {}){
 
   // Clear the composer immediately after submit.
   input.value = '';
-  resizeChatInput();
+  input.scrollLeft = 0;
   sendBtn.disabled = true;
   addUserMessage(text);
   history.push({ role: 'user', content: text });
@@ -1928,15 +1944,12 @@ sendBtn.addEventListener('click', () => {
 
   sendMessage({ preserveVoiceMode });
 });
-input.addEventListener('input', resizeChatInput);
-
 input.addEventListener('keydown', (e) => {
-  if(e.key === 'Enter' && !e.shiftKey){
+  if(e.key === 'Enter'){
     e.preventDefault();
 
     const preserveVoiceMode = session.voiceMode === true;
 
-    // Enter should behave exactly like the Send button.
     stopVoiceRecognition({ clearInput: false });
 
     if(!preserveVoiceMode){
