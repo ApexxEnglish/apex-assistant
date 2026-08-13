@@ -1506,9 +1506,48 @@ function getSpeechRecognitionConstructor(){
   return window.SpeechRecognition || window.webkitSpeechRecognition || null;
 }
 
+function getVoiceBrowserSupport(){
+  const ua = navigator.userAgent || '';
+  const Recognition = getSpeechRecognitionConstructor();
+
+  const isOpera = /OPR\/|Opera/i.test(ua);
+  const isIOS = /iPad|iPhone|iPod/i.test(ua);
+  const isIOSSafari = isIOS
+    && /Safari/i.test(ua)
+    && !/CriOS|FxiOS|EdgiOS|OPiOS|DuckDuckGo/i.test(ua);
+
+  // Opera may expose part of the API but still fail to provide usable
+  // SpeechRecognition in practice, so show a clear fallback message.
+  if(isOpera){
+    return { supported: false, Recognition: null };
+  }
+
+  // On iOS, prefer Safari. Other iOS browsers may expose the same engine
+  // inconsistently and often do not provide reliable speech recognition.
+  if(isIOS && !isIOSSafari){
+    return { supported: false, Recognition: null };
+  }
+
+  if(!Recognition){
+    return { supported: false, Recognition: null };
+  }
+
+  return { supported: true, Recognition };
+}
+
 function getRecognitionLanguage(){
-  // English is intentional: the microphone is for English speaking practice.
-  return 'en-US';
+  const speechLanguages = {
+    tr: 'tr-TR',
+    en: 'en-US',
+    ru: 'ru-RU',
+    fa: 'fa-IR',
+    es: 'es-ES',
+    fr: 'fr-FR',
+    zh: 'zh-CN',
+    ja: 'ja-JP'
+  };
+
+  return speechLanguages[currentLang] || 'en-US';
 }
 
 function setMicListeningState(listening){
@@ -1533,10 +1572,11 @@ function stopVoiceRecognition(){
 }
 
 function startVoiceRecognition(){
-  const Recognition = getSpeechRecognitionConstructor();
+  const support = getVoiceBrowserSupport();
+  const Recognition = support.Recognition;
   const f = FLOW_UI[currentLang] || FLOW_UI.en;
 
-  if(!Recognition){
+  if(!support.supported || !Recognition){
     addBotMessage(f.voiceUnsupported);
     return;
   }
@@ -1597,6 +1637,16 @@ function startVoiceRecognition(){
       // A short pause is normal while continuous listening is active.
       if(micShouldKeepListening) return;
       addBotMessage(f.voiceNoSpeech);
+      return;
+    }
+
+    if(
+      event.error === 'network' ||
+      event.error === 'audio-capture' ||
+      event.error === 'language-not-supported'
+    ){
+      micShouldKeepListening = false;
+      addBotMessage(f.voiceUnsupported);
       return;
     }
 
