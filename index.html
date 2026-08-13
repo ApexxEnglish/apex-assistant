@@ -317,6 +317,22 @@ border: 1px solid var(--line);
     font-size:0.8rem;
   }
 
+  #voice-notice{
+    display:none;
+    margin:0 12px 8px;
+    padding:9px 11px;
+    border:1px solid var(--marigold-deep);
+    border-radius:8px;
+    background:#FFF8DD;
+    color:var(--ink);
+    font-size:0.78rem;
+    line-height:1.4;
+  }
+
+  #voice-notice.visible{
+    display:block;
+  }
+
   #mic-btn.listening .mic-icon{
     display:none;
   }
@@ -382,6 +398,7 @@ border: 1px solid var(--line);
   </div>
   <div id="messages"></div>
   <div class="starter-row" id="starters"></div>
+  <div id="voice-notice" role="status" aria-live="polite"></div>
   <div id="mode-toolbar">
   <button id="change-mode-btn" type="button">
     ↩ Change Mode
@@ -1218,6 +1235,7 @@ const headerSub = document.getElementById('header-sub');
 const modeToolbar = document.getElementById('mode-toolbar');
 const changeModeBtn = document.getElementById('change-mode-btn');
 const micBtn = document.getElementById('mic-btn');
+const voiceNotice = document.getElementById('voice-notice');
 const langButtons = document.querySelectorAll('.lang-btn');
 
 function resizeChatInput(){
@@ -1255,6 +1273,7 @@ function applyLanguage(lang){
   currentLang = lang;
   const t = UI[lang];
   const f = FLOW_UI[lang] || FLOW_UI.en;
+  hideVoiceNotice();
 
   headerTitle.textContent = t.title;
   headerSub.textContent = t.sub;
@@ -1521,6 +1540,19 @@ starters.addEventListener('click', (e) => {
 });
 
 
+
+function showVoiceNotice(message){
+  if(!voiceNotice) return;
+  voiceNotice.textContent = message;
+  voiceNotice.classList.add('visible');
+}
+
+function hideVoiceNotice(){
+  if(!voiceNotice) return;
+  voiceNotice.textContent = '';
+  voiceNotice.classList.remove('visible');
+}
+
 function getSpeechRecognitionConstructor(){
   return window.SpeechRecognition || window.webkitSpeechRecognition || null;
 }
@@ -1529,29 +1561,66 @@ function getVoiceBrowserSupport(){
   const ua = navigator.userAgent || '';
   const Recognition = getSpeechRecognitionConstructor();
 
-  const isOpera = /OPR\/|Opera/i.test(ua);
+  const isOpera = /OPR\/|Opera|Opera Mini|Opera Mobi/i.test(ua);
+  const isFirefox = /Firefox|FxiOS/i.test(ua);
+  const isSamsung = /SamsungBrowser/i.test(ua);
   const isIOS = /iPad|iPhone|iPod/i.test(ua);
-  const isIOSSafari = isIOS
-    && /Safari/i.test(ua)
-    && !/CriOS|FxiOS|EdgiOS|OPiOS|DuckDuckGo/i.test(ua);
+  const isAndroid = /Android/i.test(ua);
 
-  // Opera may expose part of the API but still fail to provide usable
-  // SpeechRecognition in practice, so show a clear fallback message.
-  if(isOpera){
-    return { supported: false, Recognition: null };
+  const isChromeDesktop =
+    /Chrome\/|Chromium\//i.test(ua) &&
+    !isOpera &&
+    !isAndroid &&
+    !/EdgA|EdgiOS/i.test(ua);
+
+  const isEdgeDesktop =
+    /Edg\//i.test(ua) &&
+    !isAndroid;
+
+  const isChromeAndroid =
+    isAndroid &&
+    /Chrome\//i.test(ua) &&
+    !isOpera &&
+    !isSamsung;
+
+  const isIOSSafari =
+    isIOS &&
+    /Safari/i.test(ua) &&
+    !/CriOS|FxiOS|EdgiOS|OPiOS|DuckDuckGo|GSA/i.test(ua);
+
+  const isMacSafari =
+    !isIOS &&
+    /Macintosh/i.test(ua) &&
+    /Safari/i.test(ua) &&
+    !/Chrome|Chromium|Edg|OPR/i.test(ua);
+
+  // Explicitly unsupported / unreliable browsers.
+  if(isOpera || isFirefox || isSamsung){
+    return { supported:false, Recognition:null, reason:'browser' };
   }
 
-  // On iOS, prefer Safari. Other iOS browsers may expose the same engine
-  // inconsistently and often do not provide reliable speech recognition.
+  // On iOS, use Safari only.
   if(isIOS && !isIOSSafari){
-    return { supported: false, Recognition: null };
+    return { supported:false, Recognition:null, reason:'ios-browser' };
   }
 
   if(!Recognition){
-    return { supported: false, Recognition: null };
+    return { supported:false, Recognition:null, reason:'api' };
   }
 
-  return { supported: true, Recognition };
+  if(
+    isChromeDesktop ||
+    isEdgeDesktop ||
+    isChromeAndroid ||
+    isIOSSafari ||
+    isMacSafari
+  ){
+    return { supported:true, Recognition, reason:'ok' };
+  }
+
+  // Unknown browsers are treated conservatively so the user gets guidance
+  // instead of tapping a microphone that silently does nothing.
+  return { supported:false, Recognition:null, reason:'unknown' };
 }
 
 function getRecognitionLanguage(){
@@ -1566,18 +1635,56 @@ function getRecognitionLanguage(){
     ja: 'ja-JP'
   };
 
-  // In English-learning modes, spoken answers are expected to be English,
-  // even when the interface language is Turkish/Russian/etc.
-  if(
+  // The learning flows expect the student to SPEAK ENGLISH,
+  // regardless of whether the interface/explanations are Turkish,
+  // Persian, Russian, etc.
+  const englishLearningMode =
     session.mode === 'correction' ||
     session.mode === 'practice' ||
-    session.mode === 'level_check'
-  ){
+    session.mode === 'level_check' ||
+    session.mode === 'teach';
+
+  if(englishLearningMode){
     return 'en-US';
   }
 
-  // Outside those modes, recognize the currently selected interface language.
+  // For general questions / course support, follow the selected UI language.
   return speechLanguages[currentLang] || 'en-US';
+}
+
+
+function chooseBestTranscript(result, expectedLang){
+  if(!result || !result.length) return '';
+
+  const alternatives = [];
+  for(let i = 0; i < result.length; i++){
+    alternatives.push(result[i].transcript || '');
+  }
+
+  if(!expectedLang.startsWith('en')){
+    return alternatives[0] || '';
+  }
+
+  // When English is expected, prefer the alternative that most resembles
+  // Latin-script English. This prevents occasional Persian/Russian/etc.
+  // script output from winning even though the student spoke English.
+  const scoreEnglishLike = (value) => {
+    const s = (value || '').trim();
+    if(!s) return -999;
+
+    const latin = (s.match(/[A-Za-z]/g) || []).length;
+    const nonLatinLetters = (
+      s.match(/[\u0400-\u04FF\u0600-\u06FF\u4E00-\u9FFF\u3040-\u30FF]/g) || []
+    ).length;
+
+    const commonEnglish = (
+      s.toLowerCase().match(/\b(i|you|we|they|he|she|it|the|a|an|am|is|are|was|were|do|does|did|have|has|had|to|at|in|on|for|with|my|your|and|but|because|work|wake|eat|go|get|like|want|need)\b/g) || []
+    ).length;
+
+    return latin + (commonEnglish * 8) - (nonLatinLetters * 5);
+  };
+
+  return alternatives.sort((a,b) => scoreEnglishLike(b) - scoreEnglishLike(a))[0] || '';
 }
 
 function setMicListeningState(listening){
@@ -1624,9 +1731,12 @@ function startVoiceRecognition(){
   const f = FLOW_UI[currentLang] || FLOW_UI.en;
 
   if(!support.supported || !Recognition){
+    showVoiceNotice(f.voiceUnsupported);
     addBotMessage(f.voiceUnsupported);
     return;
   }
+
+  hideVoiceNotice();
 
   if(isListening){
     stopVoiceRecognition();
@@ -1644,8 +1754,10 @@ function startVoiceRecognition(){
   recognitionSessionId += 1;
   const thisRecognitionSession = recognitionSessionId;
 
+  const recognitionLanguage = getRecognitionLanguage();
+
   recognition = new Recognition();
-  recognition.lang = getRecognitionLanguage();
+  recognition.lang = recognitionLanguage;
   recognition.continuous = true;
   recognition.interimResults = true;
   recognition.maxAlternatives = 3;
@@ -1663,7 +1775,10 @@ function startVoiceRecognition(){
     let interimTranscript = '';
 
     for(let i = event.resultIndex; i < event.results.length; i++){
-      const transcript = event.results[i][0].transcript;
+      const transcript = chooseBestTranscript(
+        event.results[i],
+        recognitionLanguage
+      );
 
       if(event.results[i].isFinal){
         finalTranscript += transcript;
@@ -1685,6 +1800,7 @@ function startVoiceRecognition(){
 
     if(event.error === 'not-allowed' || event.error === 'service-not-allowed'){
       micShouldKeepListening = false;
+      showVoiceNotice(f.voicePermission);
       addBotMessage(f.voicePermission);
       return;
     }
@@ -1702,12 +1818,14 @@ function startVoiceRecognition(){
       event.error === 'language-not-supported'
     ){
       micShouldKeepListening = false;
+      showVoiceNotice(f.voiceUnsupported);
       addBotMessage(f.voiceUnsupported);
       return;
     }
 
     if(event.error !== 'aborted' && event.error !== 'no-speech'){
       micShouldKeepListening = false;
+      showVoiceNotice(f.voiceError);
       addBotMessage(f.voiceError);
     }
   };
@@ -1748,7 +1866,9 @@ function startVoiceRecognition(){
   try{
     recognition.start();
   }catch(err){
+    micShouldKeepListening = false;
     setMicListeningState(false);
+    showVoiceNotice(f.voiceError);
     addBotMessage(f.voiceError);
   }
 }
