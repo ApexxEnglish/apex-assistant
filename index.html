@@ -1392,7 +1392,6 @@ launcher.addEventListener('click', () => {
 });
 closeBtn.addEventListener('click', () => {
   stopVoiceRecognition();
-  if('speechSynthesis' in window) window.speechSynthesis.cancel();
   panel.classList.remove('open');
 });
 
@@ -1521,32 +1520,6 @@ function setMicListeningState(listening){
   micBtn.title = listening ? f.micStop : f.micStart;
 }
 
-function stripForSpeech(text){
-  return text
-    .replace(/\[WRONG\](.*?)\[\/WRONG\]/gi, '$1')
-    .replace(/\[RIGHT\](.*?)\[\/RIGHT\]/gi, '$1')
-    .replace(/\*\*(.*?)\*\*/g, '$1')
-    .replace(/https?:\/\/\S+/g, '')
-    .replace(/\s+/g, ' ')
-    .trim();
-}
-
-function speakBotReply(text){
-  if(!voiceConversationActive) return;
-  if(!('speechSynthesis' in window) || typeof SpeechSynthesisUtterance === 'undefined') return;
-
-  const cleanText = stripForSpeech(text);
-  if(!cleanText) return;
-
-  window.speechSynthesis.cancel();
-
-  const utterance = new SpeechSynthesisUtterance(cleanText);
-  utterance.lang = 'en-US';
-  utterance.rate = 0.96;
-  utterance.pitch = 1;
-
-  window.speechSynthesis.speak(utterance);
-}
 
 function stopVoiceRecognition(){
   if(recognition && isListening){
@@ -1567,10 +1540,6 @@ function startVoiceRecognition(){
   if(isListening){
     stopVoiceRecognition();
     return;
-  }
-
-  if('speechSynthesis' in window){
-    window.speechSynthesis.cancel();
   }
 
   recognition = new Recognition();
@@ -1625,19 +1594,19 @@ function startVoiceRecognition(){
   recognition.onend = () => {
     setMicListeningState(false);
 
-    const transcript = input.value.trim();
-
     if(finalTranscript.trim()){
       input.value = finalTranscript.trim();
       session.voiceMode = true;
       voiceConversationActive = true;
-      sendMessage({ preserveVoiceMode: true });
+      input.focus();
       return;
     }
 
-    if(!hadResult && !transcript){
+    if(!hadResult && !input.value.trim()){
       return;
     }
+
+    input.focus();
   };
 
   try{
@@ -1757,12 +1726,19 @@ async function sendMessage(options = {}){
   history.push({ role: 'user', content: text });
   addTyping();
 
+  // Voice transcript has now been submitted manually.
+  // Reset for the next message unless the microphone is used again.
+  const submittedAsVoice = session.voiceMode === true;
+  session.voiceMode = false;
+
   try{
     const response = await fetch("/api/chat", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        systemPrompt: buildSystemPrompt(currentLang),
+        systemPrompt: submittedAsVoice
+          ? buildSystemPrompt(currentLang).replace('Voice input active: no', 'Voice input active: yes')
+          : buildSystemPrompt(currentLang),
         messages: history
       })
     });
@@ -1778,7 +1754,6 @@ async function sendMessage(options = {}){
 
     addBotMessage(levelResult.cleaned);
     history.push({ role: 'assistant', content: levelResult.cleaned });
-    speakBotReply(levelResult.cleaned);
 
     if(emailResult.email){
       notifyOwner(emailResult.email, text);
@@ -1815,15 +1790,23 @@ changeModeBtn.addEventListener('click', () => {
   addBotMessage(f.modeChanged);
 });
 sendBtn.addEventListener('click', () => {
-  session.voiceMode = false;
-  voiceConversationActive = false;
-  sendMessage();
+  const preserveVoiceMode = session.voiceMode === true;
+
+  if(!preserveVoiceMode){
+    voiceConversationActive = false;
+  }
+
+  sendMessage({ preserveVoiceMode });
 });
 input.addEventListener('keydown', (e) => {
   if(e.key === 'Enter'){
-    session.voiceMode = false;
-    voiceConversationActive = false;
-    sendMessage();
+    const preserveVoiceMode = session.voiceMode === true;
+
+    if(!preserveVoiceMode){
+      voiceConversationActive = false;
+    }
+
+    sendMessage({ preserveVoiceMode });
   }
 });
 </script>
