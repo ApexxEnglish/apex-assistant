@@ -1386,6 +1386,211 @@ border: 1px solid var(--line);
     #pronunciation-actions{ grid-template-columns:1fr; }
   }
 
+
+  /* ==================================================
+     v20 — Pronunciation Coach visual upgrade
+     ================================================== */
+  #pronunciation-launch{
+    position:relative;
+    min-height:38px;
+    padding:5px 10px 5px 8px;
+    gap:8px;
+    border-radius:12px;
+    background:linear-gradient(180deg,#252f4f 0%,#1d2743 100%);
+    border:1px solid rgba(255,255,255,.08);
+    box-shadow:
+      0 7px 18px rgba(31,42,73,.18),
+      inset 0 1px 0 rgba(255,255,255,.08);
+    color:#fff;
+    transition:transform .16s ease, box-shadow .16s ease, filter .16s ease;
+  }
+  #pronunciation-launch:hover{
+    transform:translateY(-1px);
+    box-shadow:
+      0 10px 22px rgba(31,42,73,.24),
+      inset 0 1px 0 rgba(255,255,255,.10);
+    filter:brightness(1.03);
+  }
+  #pronunciation-launch:active{ transform:translateY(0); }
+
+  .pron-live-dot{
+    width:7px;
+    height:7px;
+    border-radius:50%;
+    flex:0 0 7px;
+    background:#f5c72c;
+    box-shadow:0 0 0 0 rgba(245,199,44,.42);
+    animation:pronPulse 2s infinite;
+  }
+  @keyframes pronPulse{
+    0%{box-shadow:0 0 0 0 rgba(245,199,44,.42)}
+    70%{box-shadow:0 0 0 6px rgba(245,199,44,0)}
+    100%{box-shadow:0 0 0 0 rgba(245,199,44,0)}
+  }
+
+  .pron-modern-icon{
+    width:22px;
+    height:22px;
+    border-radius:8px;
+    display:grid;
+    place-items:center;
+    background:rgba(255,255,255,.09);
+    color:#f5c72c;
+    flex:0 0 22px;
+  }
+  .pron-modern-icon svg{
+    width:15px;
+    height:15px;
+    fill:none;
+    stroke:currentColor;
+    stroke-width:1.9;
+    stroke-linecap:round;
+    stroke-linejoin:round;
+  }
+
+  .pron-launch-copy{
+    display:flex;
+    align-items:center;
+    gap:5px;
+    min-width:0;
+  }
+  .pron-launch-copy strong{
+    font-family:'DM Sans',sans-serif;
+    font-size:.69rem;
+    line-height:1;
+    font-weight:750;
+    letter-spacing:0;
+    color:#fff;
+    white-space:nowrap;
+  }
+  .pron-launch-copy small{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:.45rem;
+    line-height:1;
+    font-weight:800;
+    padding:3px 4px;
+    border-radius:5px;
+    color:#263252;
+    background:#f5c72c;
+  }
+
+  #pronunciation-card > header{
+    padding:15px 16px 13px;
+  }
+  #pronunciation-card .pron-title{
+    font-size:1.05rem;
+    font-weight:800;
+    letter-spacing:-.015em;
+  }
+  #pronunciation-card .pron-sub{
+    max-width:390px;
+    margin-top:4px;
+    font-size:.72rem;
+    line-height:1.45;
+  }
+  #pronunciation-target-label{
+    font-family:'DM Sans',sans-serif;
+    font-size:.68rem;
+    font-weight:800;
+    letter-spacing:.02em;
+    color:var(--ink);
+  }
+
+  #pronunciation-apex-cta{
+    display:none;
+    margin-top:14px;
+    padding:14px;
+    border-radius:14px;
+    border:1px solid #d9d4c7;
+    background:
+      radial-gradient(circle at top right, rgba(245,199,44,.20), transparent 36%),
+      linear-gradient(180deg,#f8f5ed 0%,#f2eee4 100%);
+  }
+  #pronunciation-result.show #pronunciation-apex-cta{
+    display:block;
+  }
+  .pron-cta-kicker{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:.55rem;
+    font-weight:800;
+    letter-spacing:.06em;
+    color:#6d675d;
+    text-transform:uppercase;
+  }
+  .pron-cta-title{
+    margin-top:6px;
+    font-size:.9rem;
+    line-height:1.34;
+    font-weight:800;
+    letter-spacing:-.01em;
+    color:var(--ink);
+  }
+  .pron-cta-copy{
+    margin-top:6px;
+    font-size:.72rem;
+    line-height:1.48;
+    color:var(--ink-soft);
+  }
+  #pronunciation-cta-link{
+    margin-top:11px;
+    min-height:38px;
+    padding:8px 11px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    border-radius:10px;
+    background:#202a48;
+    color:#fff;
+    text-decoration:none;
+    font-size:.72rem;
+    font-weight:750;
+    box-shadow:0 6px 16px rgba(32,42,72,.13);
+  }
+  #pronunciation-cta-link:hover{
+    transform:translateY(-1px);
+  }
+
+  #pronunciation-panel[dir="rtl"] .pron-launch-copy,
+  #pronunciation-panel[dir="rtl"] .pron-cta-title,
+  #pronunciation-panel[dir="rtl"] .pron-cta-copy,
+  #pronunciation-panel[dir="rtl"] .pron-cta-kicker{
+    text-align:right;
+  }
+
+  @media(max-width:560px){
+    #pronunciation-launch{
+      min-height:34px;
+      padding:5px 7px;
+      gap:6px;
+    }
+    .pron-live-dot{ display:none; }
+    .pron-modern-icon{
+      width:21px;
+      height:21px;
+      flex-basis:21px;
+    }
+    .pron-launch-copy strong{
+      font-size:.62rem;
+    }
+    .pron-launch-copy small{
+      font-size:.42rem;
+      padding:2px 3px;
+    }
+  }
+
+  @media(max-width:430px){
+    .pron-launch-copy small{ display:none; }
+    #pronunciation-launch{
+      padding-right:8px;
+    }
+    .pron-launch-copy strong{
+      max-width:96px;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+  }
+
 </style>
 </head>
 <body>
@@ -1421,8 +1626,19 @@ border: 1px solid var(--line);
     <button class="lang-btn" data-lang="zh">ZH</button>
     <button class="lang-btn" data-lang="ja">JA</button>
     <button id="pronunciation-launch" type="button" aria-label="Pronunciation Coach" title="Pronunciation Coach">
-      <span class="pron-icon">🗣️</span>
-      <span class="pron-label-short" id="pronunciation-launch-label">Pronunciation</span>
+      <span class="pron-live-dot" aria-hidden="true"></span>
+      <span class="pron-modern-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" role="img">
+          <path d="M12 3a4 4 0 0 0-4 4v4a4 4 0 0 0 8 0V7a4 4 0 0 0-4-4Z"></path>
+          <path d="M5 10.5v.5a7 7 0 0 0 14 0v-.5"></path>
+          <path d="M12 18v3"></path>
+          <path d="M9 21h6"></path>
+        </svg>
+      </span>
+      <span class="pron-launch-copy">
+        <strong id="pronunciation-launch-label">Telaffuz Koçu</strong>
+        <small>AI</small>
+      </span>
     </button>
   </div>
   <div id="coach-status">
@@ -1473,14 +1689,14 @@ border: 1px solid var(--line);
     <div id="pronunciation-card" role="dialog" aria-modal="true" aria-labelledby="pronunciation-title">
       <header>
         <div>
-          <div class="pron-title" id="pronunciation-title">Pronunciation Coach</div>
-          <div class="pron-sub" id="pronunciation-subtitle">Record a short English sentence and get audio-based coaching.</div>
+          <div class="pron-title" id="pronunciation-title">Telaffuz Koçu</div>
+          <div class="pron-sub" id="pronunciation-subtitle">Bir örnek seçin veya kendi cümlenizi yazın; gerçek ses kaydınıza göre anında geri bildirim alın.</div>
         </div>
         <button id="pronunciation-close" type="button" aria-label="Close">✕</button>
       </header>
 
       <div id="pronunciation-body">
-        <label class="pron-label" id="pronunciation-target-label" for="pronunciation-target">Sentence to practise</label>
+        <label class="pron-label" id="pronunciation-target-label" for="pronunciation-target">ÖRNEK CÜMLE / KENDİ CÜMLENİZ</label>
         <textarea id="pronunciation-target" maxlength="240">I would like to improve my English pronunciation.</textarea>
 
         <div id="pronunciation-example-row">
@@ -1529,6 +1745,16 @@ border: 1px solid var(--line);
           <div class="pron-result-section">
             <div class="pron-result-heading" id="pronunciation-try-label">Try again</div>
             <div class="pron-result-text" id="pronunciation-try-again">—</div>
+          </div>
+
+          <div id="pronunciation-apex-cta">
+            <div class="pron-cta-kicker" id="pronunciation-cta-kicker">BİR SONRAKİ ADIM</div>
+            <div class="pron-cta-title" id="pronunciation-cta-title">AI ile pratik yaptınız. Şimdi gerçek bir eğitmenle konuşmanızı geliştirin.</div>
+            <div class="pron-cta-copy" id="pronunciation-cta-copy">AI size anlık pratik ve geri bildirim sağlar. Daha kapsamlı konuşma ve telaffuz gelişimi için Apex English eğitmenleriyle çalışabilirsiniz.</div>
+            <a id="pronunciation-cta-link" href="https://www.apexenglish.net/iletisim" target="_blank" rel="noopener">
+              <span id="pronunciation-cta-button">Apex English ile Eğitime Başla</span>
+              <span aria-hidden="true">→</span>
+            </a>
           </div>
         </div>
       </div>
@@ -1757,92 +1983,140 @@ const UI = {
 
 const PRON_UI = {
   en: {
-    launch:"Pronunciation", title:"Pronunciation Coach", sub:"Record a short English sentence and get audio-based coaching.",
-    target:"Sentence to practise", ready:"Ready to record. Maximum 12 seconds.", recording:"Listening… speak naturally.",
+    launch:"Pronunciation Coach", title:"Pronunciation Coach",
+    sub:"Choose an example or write your own sentence, then get instant feedback based on your real voice recording.",
+    target:"EXAMPLE SENTENCE / YOUR OWN SENTENCE",
+    ready:"Ready to record. Maximum 12 seconds.", recording:"Listening… speak naturally.",
     start:"● Start recording", stop:"■ Stop recording", analyze:"Analyze my pronunciation", analyzing:"Analyzing your recording…",
-    note:"The coach analyzes the actual recording. It gives practical feedback on clarity, stress and rhythm, but it is not a clinical or phonetics-lab measurement.",
+    note:"The coach analyzes your actual recording and gives practical feedback on clarity, stress and rhythm. It is not a clinical or phonetics-lab measurement.",
     clarity:"Clarity", rhythm:"Rhythm", stress:"Stress", heard:"What I heard", focus:"Focus words", coach:"Coach note", tryAgain:"Try again",
     micDenied:"Microphone access was blocked. Please allow microphone permission and try again.",
     unsupported:"Audio recording is not supported in this browser. Please try Chrome, Edge or Safari.",
     noAudio:"Record your sentence first.", error:"I couldn't analyze this recording. Please try again.",
-    examples:["Business","Everyday","Challenge"]
+    examples:["Business","Everyday","Challenge"],
+    ctaKicker:"NEXT STEP",
+    ctaTitle:"You practised with AI. Now develop your speaking with a real instructor.",
+    ctaCopy:"AI gives instant practice and feedback. For deeper speaking and pronunciation development, continue with Apex English instructors.",
+    ctaButton:"Start Training with Apex English"
   },
   tr: {
-    launch:"Telaffuz", title:"Pronunciation Coach", sub:"Kısa bir İngilizce cümle kaydedin; gerçek ses kaydınıza göre koçluk alın.",
-    target:"Çalışılacak cümle", ready:"Kayda hazır. En fazla 12 saniye.", recording:"Dinliyorum… doğal şekilde konuşun.",
+    launch:"Telaffuz Koçu", title:"Telaffuz Koçu",
+    sub:"Bir örnek seçin veya kendi cümlenizi yazın; gerçek ses kaydınıza göre anında geri bildirim alın.",
+    target:"ÖRNEK CÜMLE / KENDİ CÜMLENİZ",
+    ready:"Kayda hazır. En fazla 12 saniye.", recording:"Dinliyorum… doğal şekilde konuşun.",
     start:"● Kaydı Başlat", stop:"■ Kaydı Durdur", analyze:"Telaffuzumu Analiz Et", analyzing:"Ses kaydınız analiz ediliyor…",
-    note:"Koç gerçek ses kaydını analiz eder. Netlik, vurgu ve ritim için pratik geri bildirim verir; klinik veya fonetik laboratuvar ölçümü değildir.",
+    note:"Koç gerçek ses kaydınızı analiz eder; netlik, vurgu ve ritim için pratik geri bildirim verir. Klinik veya fonetik laboratuvar ölçümü değildir.",
     clarity:"Netlik", rhythm:"Ritim", stress:"Vurgu", heard:"Duyduğum", focus:"Odak kelimeler", coach:"Koç notu", tryAgain:"Tekrar dene",
     micDenied:"Mikrofon erişimi engellendi. Mikrofon izni verip tekrar deneyin.",
     unsupported:"Bu tarayıcı ses kaydını desteklemiyor. Chrome, Edge veya Safari ile deneyin.",
     noAudio:"Önce cümlenizi kaydedin.", error:"Bu kaydı analiz edemedim. Lütfen tekrar deneyin.",
-    examples:["Business","Günlük","Zorlayıcı"]
+    examples:["Business","Günlük","Zorlayıcı"],
+    ctaKicker:"BİR SONRAKİ ADIM",
+    ctaTitle:"AI ile pratik yaptınız. Şimdi gerçek bir eğitmenle konuşmanızı geliştirin.",
+    ctaCopy:"AI size anlık pratik ve geri bildirim sağlar. Daha kapsamlı konuşma ve telaffuz gelişimi için Apex English eğitmenleriyle çalışabilirsiniz.",
+    ctaButton:"Apex English ile Eğitime Başla"
   },
   ru: {
-    launch:"Произношение", title:"Pronunciation Coach", sub:"Запишите короткую английскую фразу и получите рекомендации по реальной аудиозаписи.",
-    target:"Фраза для практики", ready:"Готово к записи. Максимум 12 секунд.", recording:"Слушаю… говорите естественно.",
+    launch:"Тренер произношения", title:"Тренер произношения",
+    sub:"Выберите пример или напишите свою фразу и получите мгновенную обратную связь по реальной записи голоса.",
+    target:"ПРИМЕР / ВАША ФРАЗА",
+    ready:"Готово к записи. Максимум 12 секунд.", recording:"Слушаю… говорите естественно.",
     start:"● Начать запись", stop:"■ Остановить", analyze:"Анализ произношения", analyzing:"Анализирую запись…",
     note:"Коуч анализирует реальную запись и дает практические советы по ясности, ударению и ритму. Это не лабораторное фонетическое измерение.",
     clarity:"Ясность", rhythm:"Ритм", stress:"Ударение", heard:"Что я услышал", focus:"Слова для работы", coach:"Совет коуча", tryAgain:"Попробуйте снова",
     micDenied:"Доступ к микрофону заблокирован. Разрешите его и попробуйте снова.",
     unsupported:"Запись аудио не поддерживается этим браузером. Попробуйте Chrome, Edge или Safari.",
     noAudio:"Сначала запишите фразу.", error:"Не удалось проанализировать запись. Попробуйте снова.",
-    examples:["Деловой","Разговорный","Сложнее"]
+    examples:["Деловой","Разговорный","Сложнее"],
+    ctaKicker:"СЛЕДУЮЩИЙ ШАГ",
+    ctaTitle:"Вы потренировались с AI. Теперь развивайте речь с настоящим преподавателем.",
+    ctaCopy:"AI дает мгновенную практику и обратную связь. Для более глубокого развития речи и произношения продолжите обучение с преподавателями Apex English.",
+    ctaButton:"Начать обучение с Apex English"
   },
   fa: {
-    launch:"تلفظ", title:"مربی تلفظ", sub:"یک جمله کوتاه انگلیسی ضبط کنید و بر اساس صدای واقعی خود بازخورد بگیرید.",
-    target:"جمله برای تمرین", ready:"آماده ضبط. حداکثر ۱۲ ثانیه.", recording:"در حال شنیدن… طبیعی صحبت کنید.",
+    launch:"مربی تلفظ", title:"مربی تلفظ",
+    sub:"یک نمونه انتخاب کنید یا جمله خودتان را بنویسید و بر اساس صدای واقعی خود فوراً بازخورد بگیرید.",
+    target:"جمله نمونه / جمله خودتان",
+    ready:"آماده ضبط. حداکثر ۱۲ ثانیه.", recording:"در حال شنیدن… طبیعی صحبت کنید.",
     start:"● شروع ضبط", stop:"■ توقف ضبط", analyze:"تلفظم را تحلیل کن", analyzing:"در حال تحلیل صدای شما…",
     note:"مربی صدای واقعی شما را تحلیل می‌کند و درباره وضوح، استرس و ریتم بازخورد عملی می‌دهد؛ این یک اندازه‌گیری آزمایشگاهی یا بالینی نیست.",
     clarity:"وضوح", rhythm:"ریتم", stress:"استرس", heard:"آنچه شنیدم", focus:"کلمات تمرکزی", coach:"یادداشت مربی", tryAgain:"دوباره امتحان کنید",
     micDenied:"دسترسی به میکروفون مسدود شده است. اجازه میکروفون را فعال کنید و دوباره امتحان کنید.",
     unsupported:"ضبط صدا در این مرورگر پشتیبانی نمی‌شود. Chrome، Edge یا Safari را امتحان کنید.",
     noAudio:"ابتدا جمله خود را ضبط کنید.", error:"نتوانستم این صدا را تحلیل کنم. دوباره امتحان کنید.",
-    examples:["کاری","روزمره","چالشی"]
+    examples:["کاری","روزمره","چالشی"],
+    ctaKicker:"گام بعدی",
+    ctaTitle:"با هوش مصنوعی تمرین کردید؛ حالا مکالمه خود را با یک مدرس واقعی تقویت کنید.",
+    ctaCopy:"هوش مصنوعی تمرین و بازخورد فوری می‌دهد. برای پیشرفت عمیق‌تر در مکالمه و تلفظ، با مدرسان Apex English ادامه دهید.",
+    ctaButton:"شروع آموزش با Apex English"
   },
   es: {
-    launch:"Pronunciación", title:"Pronunciation Coach", sub:"Graba una frase corta en inglés y recibe coaching basado en tu audio real.",
-    target:"Frase para practicar", ready:"Listo para grabar. Máximo 12 segundos.", recording:"Escuchando… habla de forma natural.",
+    launch:"Coach de pronunciación", title:"Coach de pronunciación",
+    sub:"Elige un ejemplo o escribe tu propia frase y recibe feedback instantáneo basado en tu voz real.",
+    target:"FRASE DE EJEMPLO / TU FRASE",
+    ready:"Listo para grabar. Máximo 12 segundos.", recording:"Escuchando… habla de forma natural.",
     start:"● Iniciar grabación", stop:"■ Detener", analyze:"Analizar mi pronunciación", analyzing:"Analizando tu grabación…",
     note:"El coach analiza la grabación real y ofrece comentarios prácticos sobre claridad, acento prosódico y ritmo. No es una medición clínica ni de laboratorio.",
     clarity:"Claridad", rhythm:"Ritmo", stress:"Acento", heard:"Lo que escuché", focus:"Palabras clave", coach:"Nota del coach", tryAgain:"Inténtalo de nuevo",
     micDenied:"El acceso al micrófono está bloqueado. Permítelo e inténtalo de nuevo.",
     unsupported:"Este navegador no admite la grabación. Prueba Chrome, Edge o Safari.",
     noAudio:"Primero graba la frase.", error:"No pude analizar esta grabación. Inténtalo de nuevo.",
-    examples:["Negocios","Diario","Reto"]
+    examples:["Negocios","Diario","Reto"],
+    ctaKicker:"SIGUIENTE PASO",
+    ctaTitle:"Ya practicaste con IA. Ahora mejora tu speaking con un profesor real.",
+    ctaCopy:"La IA ofrece práctica y feedback instantáneos. Para un desarrollo más completo de speaking y pronunciación, continúa con los profesores de Apex English.",
+    ctaButton:"Empezar con Apex English"
   },
   fr: {
-    launch:"Prononciation", title:"Pronunciation Coach", sub:"Enregistrez une courte phrase en anglais et recevez un coaching basé sur votre véritable audio.",
-    target:"Phrase à travailler", ready:"Prêt à enregistrer. 12 secondes maximum.", recording:"J'écoute… parlez naturellement.",
+    launch:"Coach de prononciation", title:"Coach de prononciation",
+    sub:"Choisissez un exemple ou écrivez votre propre phrase, puis recevez un retour immédiat basé sur votre véritable voix.",
+    target:"PHRASE EXEMPLE / VOTRE PHRASE",
+    ready:"Prêt à enregistrer. 12 secondes maximum.", recording:"J'écoute… parlez naturellement.",
     start:"● Commencer", stop:"■ Arrêter", analyze:"Analyser ma prononciation", analyzing:"Analyse de votre enregistrement…",
     note:"Le coach analyse l'enregistrement réel et donne des conseils pratiques sur la clarté, l'accentuation et le rythme. Ce n'est pas une mesure clinique ou de laboratoire.",
     clarity:"Clarté", rhythm:"Rythme", stress:"Accentuation", heard:"Ce que j'ai entendu", focus:"Mots à travailler", coach:"Conseil du coach", tryAgain:"Réessayez",
     micDenied:"L'accès au microphone est bloqué. Autorisez-le puis réessayez.",
     unsupported:"L'enregistrement audio n'est pas pris en charge par ce navigateur. Essayez Chrome, Edge ou Safari.",
     noAudio:"Enregistrez d'abord votre phrase.", error:"Je n'ai pas pu analyser cet enregistrement. Réessayez.",
-    examples:["Business","Quotidien","Défi"]
+    examples:["Business","Quotidien","Défi"],
+    ctaKicker:"ÉTAPE SUIVANTE",
+    ctaTitle:"Vous avez pratiqué avec l’IA. Développez maintenant votre expression avec un vrai formateur.",
+    ctaCopy:"L’IA offre une pratique et un feedback immédiats. Pour aller plus loin en expression orale et en prononciation, continuez avec les formateurs Apex English.",
+    ctaButton:"Commencer avec Apex English"
   },
   zh: {
-    launch:"发音", title:"发音教练", sub:"录制一句简短的英语，根据真实录音获得发音指导。",
-    target:"练习句子", ready:"准备录音，最长 12 秒。", recording:"正在聆听……请自然地说。",
+    launch:"发音教练", title:"发音教练",
+    sub:"选择示例句或输入自己的句子，根据真实录音立即获得反馈。",
+    target:"示例句 / 你的句子",
+    ready:"准备录音，最长 12 秒。", recording:"正在聆听……请自然地说。",
     start:"● 开始录音", stop:"■ 停止录音", analyze:"分析我的发音", analyzing:"正在分析录音……",
     note:"教练会分析真实录音，并针对清晰度、重音和节奏给出实用反馈；这不是临床或语音实验室测量。",
     clarity:"清晰度", rhythm:"节奏", stress:"重音", heard:"我听到的", focus:"重点词", coach:"教练建议", tryAgain:"再试一次",
     micDenied:"麦克风权限被阻止。请允许麦克风访问后重试。",
     unsupported:"此浏览器不支持录音。请尝试 Chrome、Edge 或 Safari。",
     noAudio:"请先录制句子。", error:"无法分析这段录音，请重试。",
-    examples:["商务","日常","挑战"]
+    examples:["商务","日常","挑战"],
+    ctaKicker:"下一步",
+    ctaTitle:"你已经通过 AI 练习。现在和真人老师一起提升口语。",
+    ctaCopy:"AI 提供即时练习和反馈。若想更深入提升口语与发音，可以继续跟随 Apex English 老师学习。",
+    ctaButton:"开始 Apex English 课程"
   },
   ja: {
-    launch:"発音", title:"発音コーチ", sub:"短い英語文を録音し、実際の音声に基づいたコーチングを受けられます。",
-    target:"練習する文", ready:"録音準備完了。最大12秒です。", recording:"聞いています…自然に話してください。",
+    launch:"発音コーチ", title:"発音コーチ",
+    sub:"例文を選ぶか自分の文を入力し、実際の録音に基づくフィードバックをすぐに受けられます。",
+    target:"例文 / 自分の文",
+    ready:"録音準備完了。最大12秒です。", recording:"聞いています…自然に話してください。",
     start:"● 録音開始", stop:"■ 録音停止", analyze:"発音を分析", analyzing:"録音を分析しています…",
     note:"実際の録音を分析し、明瞭さ・強勢・リズムについて実用的なフィードバックを行います。臨床的・音声学的な精密測定ではありません。",
     clarity:"明瞭さ", rhythm:"リズム", stress:"強勢", heard:"聞き取った内容", focus:"重点語", coach:"コーチメモ", tryAgain:"もう一度",
     micDenied:"マイクへのアクセスがブロックされています。許可して再試行してください。",
     unsupported:"このブラウザは録音に対応していません。Chrome、Edge、Safariをお試しください。",
     noAudio:"まず文を録音してください。", error:"録音を分析できませんでした。もう一度お試しください。",
-    examples:["ビジネス","日常","チャレンジ"]
+    examples:["ビジネス","日常","チャレンジ"],
+    ctaKicker:"次のステップ",
+    ctaTitle:"AIで練習したら、次は実際の講師とスピーキングを伸ばしましょう。",
+    ctaCopy:"AIはすぐに練習とフィードバックを提供します。より深いスピーキング・発音力向上には、Apex Englishの講師と続けて学べます。",
+    ctaButton:"Apex Englishで学習を始める"
   }
 };
 
@@ -4649,6 +4923,10 @@ const pronunciationHeard = document.getElementById('pronunciation-heard');
 const pronunciationFocusList = document.getElementById('pronunciation-focus-list');
 const pronunciationCoachNote = document.getElementById('pronunciation-coach-note');
 const pronunciationTryAgain = document.getElementById('pronunciation-try-again');
+const pronunciationCtaKicker = document.getElementById('pronunciation-cta-kicker');
+const pronunciationCtaTitle = document.getElementById('pronunciation-cta-title');
+const pronunciationCtaCopy = document.getElementById('pronunciation-cta-copy');
+const pronunciationCtaButton = document.getElementById('pronunciation-cta-button');
 const pronunciationExampleButtons = document.querySelectorAll('.pron-example');
 
 let pronStream = null;
@@ -4672,6 +4950,8 @@ function getPronUI(){
 function renderPronunciationUI(){
   const p = getPronUI();
   pronunciationLaunchLabel.textContent = p.launch;
+  pronunciationLaunch.setAttribute('aria-label', p.title || p.launch);
+  pronunciationLaunch.setAttribute('title', p.title || p.launch);
   pronunciationTitle.textContent = p.title;
   pronunciationSubtitle.textContent = p.sub;
   pronunciationTargetLabel.textContent = p.target;
@@ -4686,6 +4966,10 @@ function renderPronunciationUI(){
   pronunciationFocusLabel.textContent = p.focus;
   pronunciationCoachLabel.textContent = p.coach;
   pronunciationTryLabel.textContent = p.tryAgain;
+  if(pronunciationCtaKicker) pronunciationCtaKicker.textContent = p.ctaKicker || '';
+  if(pronunciationCtaTitle) pronunciationCtaTitle.textContent = p.ctaTitle || '';
+  if(pronunciationCtaCopy) pronunciationCtaCopy.textContent = p.ctaCopy || '';
+  if(pronunciationCtaButton) pronunciationCtaButton.textContent = p.ctaButton || '';
   pronunciationExampleButtons.forEach((btn, i) => {
     if(p.examples && p.examples[i]) btn.textContent = p.examples[i];
   });
