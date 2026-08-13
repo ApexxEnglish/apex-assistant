@@ -1230,6 +1230,7 @@ let session = {
 let voiceConversationActive = false;
 let isListening = false;
 let recognition = null;
+let micShouldKeepListening = false;
 
 function applyLanguage(lang){
   currentLang = lang;
@@ -1522,9 +1523,12 @@ function setMicListeningState(listening){
 
 
 function stopVoiceRecognition(){
-  if(recognition && isListening){
+  micShouldKeepListening = false;
+
+  if(recognition){
     try{ recognition.stop(); }catch(e){}
   }
+
   setMicListeningState(false);
 }
 
@@ -1542,9 +1546,11 @@ function startVoiceRecognition(){
     return;
   }
 
+  micShouldKeepListening = true;
+
   recognition = new Recognition();
   recognition.lang = getRecognitionLanguage();
-  recognition.continuous = false;
+  recognition.continuous = true;
   recognition.interimResults = true;
   recognition.maxAlternatives = 1;
 
@@ -1577,16 +1583,20 @@ function startVoiceRecognition(){
     setMicListeningState(false);
 
     if(event.error === 'not-allowed' || event.error === 'service-not-allowed'){
+      micShouldKeepListening = false;
       addBotMessage(f.voicePermission);
       return;
     }
 
     if(event.error === 'no-speech'){
+      // A short pause is normal while continuous listening is active.
+      if(micShouldKeepListening) return;
       addBotMessage(f.voiceNoSpeech);
       return;
     }
 
-    if(event.error !== 'aborted'){
+    if(event.error !== 'aborted' && event.error !== 'no-speech'){
+      micShouldKeepListening = false;
       addBotMessage(f.voiceError);
     }
   };
@@ -1598,15 +1608,23 @@ function startVoiceRecognition(){
       input.value = finalTranscript.trim();
       session.voiceMode = true;
       voiceConversationActive = true;
-      input.focus();
-      return;
-    }
-
-    if(!hadResult && !input.value.trim()){
-      return;
     }
 
     input.focus();
+
+    // Some browsers stop SpeechRecognition after a short silence even when
+    // continuous mode is enabled. Restart automatically until the user
+    // explicitly presses the microphone button to stop.
+    if(micShouldKeepListening){
+      setTimeout(() => {
+        try{
+          recognition.start();
+        }catch(e){
+          micShouldKeepListening = false;
+          setMicListeningState(false);
+        }
+      }, 250);
+    }
   };
 
   try{
