@@ -1691,30 +1691,45 @@ function chooseBestTranscript(result, expectedLang){
     alternatives.push(result[i].transcript || '');
   }
 
+  const best = alternatives[0] || '';
+
   if(!expectedLang.startsWith('en')){
-    return alternatives[0] || '';
+    return best;
   }
 
-  // When English is expected, prefer the alternative that most resembles
-  // Latin-script English. This prevents occasional Persian/Russian/etc.
-  // script output from winning even though the student spoke English.
-  const scoreEnglishLike = (value) => {
-    const s = (value || '').trim();
-    if(!s) return -999;
+  // Chrome's own confidence ranking (alternatives[0]) is normally more
+  // accurate than any re-scoring we do ourselves. The only failure mode
+  // worth correcting is when English was expected but the top result
+  // came back in a different script entirely (e.g. Persian/Cyrillic/
+  // CJK letters instead of Latin) - that means the recognizer briefly
+  // slipped into the wrong language model. In that case, and only that
+  // case, look through the other alternatives for a Latin-script option.
+  //
+  // Previously this function always re-ranked every alternative by
+  // counting common English words, which could promote a garbled
+  // alternative ("Android can't I usually go") over Chrome's actual
+  // best guess just because it happened to contain more filler words
+  // like "I"/"usually". That made recognition worse, not better, so
+  // the re-ranking is now used only as a narrow fallback.
+  const nonLatinLetters = (
+    best.match(/[\u0400-\u04FF\u0600-\u06FF\u4E00-\u9FFF\u3040-\u30FF]/g) || []
+  ).length;
+  const totalLetters = (best.match(/[^\s]/g) || []).length;
 
-    const latin = (s.match(/[A-Za-z]/g) || []).length;
-    const nonLatinLetters = (
-      s.match(/[\u0400-\u04FF\u0600-\u06FF\u4E00-\u9FFF\u3040-\u30FF]/g) || []
-    ).length;
+  const looksWrongScript = totalLetters > 0 && nonLatinLetters / totalLetters > 0.3;
 
-    const commonEnglish = (
-      s.toLowerCase().match(/\b(i|you|we|they|he|she|it|the|a|an|am|is|are|was|were|do|does|did|have|has|had|to|at|in|on|for|with|my|your|and|but|because|work|wake|eat|go|get|like|want|need)\b/g) || []
-    ).length;
+  if(!looksWrongScript){
+    return best;
+  }
 
-    return latin + (commonEnglish * 8) - (nonLatinLetters * 5);
-  };
+  const latinAlternative = alternatives.find(alt => {
+    if(!alt || !alt.trim()) return false;
+    const nonLatin = (alt.match(/[\u0400-\u04FF\u0600-\u06FF\u4E00-\u9FFF\u3040-\u30FF]/g) || []).length;
+    const total = (alt.match(/[^\s]/g) || []).length;
+    return total > 0 && nonLatin / total < 0.1;
+  });
 
-  return alternatives.sort((a,b) => scoreEnglishLike(b) - scoreEnglishLike(a))[0] || '';
+  return latinAlternative || best;
 }
 
 function setMicListeningState(listening){
