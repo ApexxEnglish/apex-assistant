@@ -167,6 +167,127 @@ border: 1px solid var(--line);
   }
   #close-btn:hover{ opacity:1; }
 
+
+  #coach-status{
+    display:flex;
+    align-items:center;
+    gap:7px;
+    padding:7px 12px;
+    background:var(--white);
+    border-bottom:1px solid var(--line);
+    overflow-x:auto;
+    scrollbar-width:none;
+  }
+
+  #coach-status::-webkit-scrollbar{ display:none; }
+
+  .coach-pill{
+    display:inline-flex;
+    align-items:center;
+    gap:5px;
+    min-height:25px;
+    padding:4px 8px;
+    border:1px solid var(--line);
+    border-radius:100px;
+    background:var(--paper);
+    color:var(--ink-soft);
+    font-family:'IBM Plex Mono', monospace;
+    font-size:0.62rem;
+    font-weight:600;
+    white-space:nowrap;
+  }
+
+  .coach-pill strong{
+    color:var(--ink);
+    font-weight:700;
+  }
+
+  #level-pill.has-level{
+    border-color:var(--marigold-deep);
+    background:#FFF8DD;
+  }
+
+  #speaking-pill.ready{
+    border-color:var(--correct);
+  }
+
+  #speaking-dot{
+    width:6px;
+    height:6px;
+    border-radius:50%;
+    background:var(--marigold-deep);
+    flex:0 0 auto;
+  }
+
+  .speaking-report{
+    align-self:stretch;
+    max-width:100%;
+    background:var(--white);
+    border:1px solid var(--line);
+    border-left:4px solid var(--marigold-deep);
+    border-radius:12px;
+    padding:13px 14px;
+    color:var(--ink);
+    box-shadow:0 7px 20px rgba(32,42,68,0.08);
+  }
+
+  .speaking-report-head{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    margin-bottom:10px;
+  }
+
+  .speaking-report-title{
+    font-family:'Lora', serif;
+    font-size:0.92rem;
+    font-weight:600;
+  }
+
+  .speaking-report-level{
+    padding:3px 7px;
+    border-radius:100px;
+    background:var(--ink);
+    color:var(--marigold);
+    font-family:'IBM Plex Mono', monospace;
+    font-size:0.6rem;
+    font-weight:700;
+  }
+
+  .speaking-report-grid{
+    display:grid;
+    gap:8px;
+  }
+
+  .speaking-report-item{
+    display:grid;
+    gap:2px;
+  }
+
+  .speaking-report-label{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:0.58rem;
+    font-weight:700;
+    color:var(--ink-soft);
+    text-transform:uppercase;
+    letter-spacing:0.04em;
+  }
+
+  .speaking-report-value{
+    font-size:0.82rem;
+    line-height:1.4;
+  }
+
+  .speaking-report-foot{
+    margin-top:10px;
+    padding-top:8px;
+    border-top:1px solid var(--line);
+    font-family:'IBM Plex Mono', monospace;
+    font-size:0.59rem;
+    color:var(--ink-soft);
+  }
+
   #lang-switch{
     display:flex;
     flex-wrap:wrap;
@@ -440,6 +561,10 @@ border: 1px solid var(--line);
     <button class="lang-btn" data-lang="fr">FR</button>
     <button class="lang-btn" data-lang="zh">ZH</button>
     <button class="lang-btn" data-lang="ja">JA</button>
+  </div>
+  <div id="coach-status">
+    <div class="coach-pill" id="level-pill"><span id="level-label">Level</span> <strong id="level-value">—</strong></div>
+    <div class="coach-pill" id="speaking-pill"><span id="speaking-dot"></span><span id="speaking-label">Speaking</span> <strong id="speaking-value">0/5</strong></div>
   </div>
   <div id="messages"></div>
   <div class="starter-row" id="starters"></div>
@@ -985,6 +1110,7 @@ You are Apex Assistant, the AI English coach embedded on Apex English
 USER SESSION:
 - Interface language: ${UI[lang].langName}
 - English level: ${level}
+- Level memory source: ${session.levelSource || "not set"}
 - Current learning mode: ${mode}
 - Current topic: ${topic}
 - Voice input active: ${session.voiceMode ? "yes" : "no"}
@@ -1321,6 +1447,12 @@ const speechLangSelect = document.getElementById('speech-lang-select');
 const micLangBadge = document.getElementById('mic-lang-badge');
 const voiceNotice = document.getElementById('voice-notice');
 const langButtons = document.querySelectorAll('.lang-btn');
+const levelPill = document.getElementById('level-pill');
+const levelLabel = document.getElementById('level-label');
+const levelValue = document.getElementById('level-value');
+const speakingPill = document.getElementById('speaking-pill');
+const speakingLabel = document.getElementById('speaking-label');
+const speakingValue = document.getElementById('speaking-value');
 
 function resizeChatInput(){
   // Single-line composer: keep a fixed height.
@@ -1340,12 +1472,164 @@ let currentLang = 'tr';
 
 let session = {
   level: null,
+  levelSource: null,
   mode: null,
   topic: null,
   phase: "level",
   voiceMode: false,
-  speechLang: 'tr-TR'
+  speechLang: 'tr-TR',
+  speakingCount: 0,
+  speakingSamples: [],
+  speakingReports: 0
 };
+
+
+const LEVEL_MEMORY_KEY = 'apexAssistantEnglishLevel';
+const LEVEL_SOURCE_KEY = 'apexAssistantEnglishLevelSource';
+const SPEAKING_REPORT_EVERY = 5;
+
+function getCoachStatusLabels(){
+  const labels = {
+    tr: { level:'Seviye', speaking:'Speaking', report:'Speaking Progress', strength:'Güçlü Yön', focus:'Odak Noktası', phrase:'Faydalı Kalıp', next:'Sonraki Hedef', signal:'Seviye Sinyali', foot:'Sonraki özet 5 yeni İngilizce sesli yanıttan sonra.' },
+    en: { level:'Level', speaking:'Speaking', report:'Speaking Progress', strength:'Strength', focus:'Main Focus', phrase:'Useful Phrase', next:'Next Goal', signal:'Level Signal', foot:'Next summary after 5 new English voice replies.' },
+    ru: { level:'Уровень', speaking:'Speaking', report:'Прогресс речи', strength:'Сильная сторона', focus:'Главный фокус', phrase:'Полезная фраза', next:'Следующая цель', signal:'Сигнал уровня', foot:'Следующий итог после 5 новых голосовых ответов на английском.' },
+    fa: { level:'سطح', speaking:'Speaking', report:'پیشرفت مکالمه', strength:'نقطه قوت', focus:'تمرکز اصلی', phrase:'عبارت کاربردی', next:'هدف بعدی', signal:'نشانه سطح', foot:'گزارش بعدی پس از ۵ پاسخ صوتی جدید به انگلیسی.' },
+    es: { level:'Nivel', speaking:'Speaking', report:'Progreso oral', strength:'Fortaleza', focus:'Enfoque principal', phrase:'Frase útil', next:'Próximo objetivo', signal:'Señal de nivel', foot:'Próximo resumen después de 5 nuevas respuestas de voz en inglés.' },
+    fr: { level:'Niveau', speaking:'Speaking', report:'Progression orale', strength:'Point fort', focus:'Priorité', phrase:'Expression utile', next:'Prochain objectif', signal:'Signal de niveau', foot:'Prochain bilan après 5 nouvelles réponses vocales en anglais.' },
+    zh: { level:'级别', speaking:'Speaking', report:'口语进度', strength:'优势', focus:'重点', phrase:'实用表达', next:'下一目标', signal:'级别趋势', foot:'再完成 5 次新的英语语音回答后生成下一份总结。' },
+    ja: { level:'レベル', speaking:'Speaking', report:'スピーキング進捗', strength:'強み', focus:'重点', phrase:'便利な表現', next:'次の目標', signal:'レベル傾向', foot:'英語の音声回答をさらに5回行うと次のまとめが表示されます。' }
+  };
+  return labels[currentLang] || labels.en;
+}
+
+function persistLevelMemory(level, source = 'selected'){
+  if(!['A1','A2','B1','B2','C1'].includes(level)) return;
+  try{
+    localStorage.setItem(LEVEL_MEMORY_KEY, level);
+    localStorage.setItem(LEVEL_SOURCE_KEY, source);
+  }catch(e){}
+}
+
+function restoreLevelMemory(){
+  try{
+    const saved = localStorage.getItem(LEVEL_MEMORY_KEY);
+    if(['A1','A2','B1','B2','C1'].includes(saved)){
+      session.level = saved;
+      session.levelSource = localStorage.getItem(LEVEL_SOURCE_KEY) || 'remembered';
+      session.phase = 'mode';
+    }
+  }catch(e){}
+}
+
+function updateCoachStatus(){
+  const labels = getCoachStatusLabels();
+  if(levelLabel) levelLabel.textContent = labels.level;
+  if(speakingLabel) speakingLabel.textContent = labels.speaking;
+
+  if(levelValue){
+    levelValue.textContent = session.level && session.level !== 'unknown' ? session.level : '—';
+  }
+  if(levelPill){
+    levelPill.classList.toggle('has-level', Boolean(session.level && session.level !== 'unknown'));
+  }
+
+  if(speakingValue){
+    speakingValue.textContent = `${session.speakingCount}/${SPEAKING_REPORT_EVERY}`;
+  }
+  if(speakingPill){
+    speakingPill.classList.toggle('ready', session.speakingCount >= SPEAKING_REPORT_EVERY);
+  }
+}
+
+function escapeHtml(value){
+  return String(value ?? '')
+    .replace(/&/g,'&amp;')
+    .replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;')
+    .replace(/\"/g,'&quot;')
+    .replace(/'/g,'&#039;');
+}
+
+function addSpeakingReportCard(report){
+  const labels = getCoachStatusLabels();
+  const card = document.createElement('div');
+  card.className = 'speaking-report';
+
+  const level = session.level && session.level !== 'unknown' ? session.level : '—';
+  card.innerHTML = `
+    <div class=\"speaking-report-head\">
+      <div class=\"speaking-report-title\">${escapeHtml(labels.report)}</div>
+      <div class=\"speaking-report-level\">${escapeHtml(level)}</div>
+    </div>
+    <div class=\"speaking-report-grid\">
+      <div class=\"speaking-report-item\"><div class=\"speaking-report-label\">${escapeHtml(labels.strength)}</div><div class=\"speaking-report-value\">${escapeHtml(report.strength || '—')}</div></div>
+      <div class=\"speaking-report-item\"><div class=\"speaking-report-label\">${escapeHtml(labels.focus)}</div><div class=\"speaking-report-value\">${escapeHtml(report.focus || '—')}</div></div>
+      <div class=\"speaking-report-item\"><div class=\"speaking-report-label\">${escapeHtml(labels.phrase)}</div><div class=\"speaking-report-value\">${escapeHtml(report.useful_phrase || '—')}</div></div>
+      <div class=\"speaking-report-item\"><div class=\"speaking-report-label\">${escapeHtml(labels.signal)}</div><div class=\"speaking-report-value\">${escapeHtml(report.level_signal || '—')}</div></div>
+      <div class=\"speaking-report-item\"><div class=\"speaking-report-label\">${escapeHtml(labels.next)}</div><div class=\"speaking-report-value\">${escapeHtml(report.next_goal || '—')}</div></div>
+    </div>
+    <div class=\"speaking-report-foot\">${escapeHtml(labels.foot)}</div>`;
+
+  messagesEl.appendChild(card);
+  requestAnimationFrame(() => {
+    const targetTop = card.offsetTop - messagesEl.offsetTop - 12;
+    messagesEl.scrollTo({ top: Math.max(0, targetTop), behavior:'smooth' });
+  });
+}
+
+function parseJsonReply(text){
+  const cleaned = String(text || '').trim().replace(/^```json\s*/i,'').replace(/^```\s*/,'').replace(/```$/,'').trim();
+  try{ return JSON.parse(cleaned); }catch(e){}
+  const start = cleaned.indexOf('{');
+  const end = cleaned.lastIndexOf('}');
+  if(start !== -1 && end > start){
+    try{ return JSON.parse(cleaned.slice(start, end + 1)); }catch(e){}
+  }
+  return null;
+}
+
+async function requestSpeakingReport(){
+  if(session.speakingSamples.length < SPEAKING_REPORT_EVERY) return;
+
+  const samples = session.speakingSamples.slice(-SPEAKING_REPORT_EVERY);
+  const level = session.level && session.level !== 'unknown' ? session.level : 'unknown';
+
+  const systemPrompt = `You are Apex Assistant's speaking progress analyst.
+Analyze ONLY the five English speech-to-text samples below.
+Current remembered CEFR level: ${level}.
+Report language: ${UI[currentLang].langName}.
+Do not claim to assess pronunciation or accent from transcripts.
+Do not automatically change the student's CEFR level.
+Return ONLY valid JSON with these exact keys:
+strength, focus, useful_phrase, level_signal, next_goal.
+Each value must be concise. level_signal should describe whether the current level looks stable, strengthening, or showing signs of readiness for the next level.`;
+
+  const userContent = samples.map((s, i) => `${i+1}. ${s}`).join('\n');
+
+  try{
+    const response = await fetch('/api/chat', {
+      method:'POST',
+      headers:{ 'Content-Type':'application/json' },
+      body:JSON.stringify({
+        systemPrompt,
+        messages:[{ role:'user', content:userContent }]
+      })
+    });
+    const data = await response.json();
+    if(!response.ok || !data.reply) return;
+
+    const report = parseJsonReply(data.reply);
+    if(!report) return;
+
+    addSpeakingReportCard(report);
+    session.speakingReports += 1;
+    session.speakingCount = 0;
+    session.speakingSamples = [];
+    updateCoachStatus();
+  }catch(err){
+    console.error('Speaking report error:', err);
+  }
+}
 
 let voiceConversationActive = false;
 let isListening = false;
@@ -1385,6 +1669,7 @@ function applyLanguage(lang){
   );
 
   renderCurrentChoices();
+  updateCoachStatus();
 }
 
 function resetComposer(){
@@ -1530,7 +1815,11 @@ launcher.addEventListener('click', () => {
   launcherWrap.classList.add('opened');
   if(history.length === 0){
     addBotMessage(UI[currentLang].greeting);
-    setTimeout(showLevelSelection, 250);
+    setTimeout(() => {
+      if(session.level && session.level !== 'unknown') showModeSelection();
+      else showLevelSelection();
+      updateCoachStatus();
+    }, 250);
   }
 });
 closeBtn.addEventListener('click', () => {
@@ -1551,6 +1840,8 @@ starters.addEventListener('click', (e) => {
   if(selectedLevel){
     if(selectedLevel === 'unknown'){
       session.level = 'unknown';
+      session.levelSource = 'diagnostic';
+      updateCoachStatus();
       session.mode = 'level_check';
       session.topic = null;
       session.phase = 'diagnostic';
@@ -1565,6 +1856,9 @@ starters.addEventListener('click', (e) => {
     }
 
     session.level = selectedLevel;
+    session.levelSource = 'selected';
+    persistLevelMemory(selectedLevel, 'selected');
+    updateCoachStatus();
     session.mode = null;
     session.topic = null;
     session.phase = 'mode';
@@ -1985,7 +2279,6 @@ function startVoiceRecognition(){
   session.voiceMode = false;
   voiceHadSpeech = false;
   voiceConversationActive = false;
-  voiceHadSpeech = false;
 
   micShouldKeepListening = true;
   ignoreRecognitionEnd = false;
@@ -2152,6 +2445,7 @@ function notifyOwner(visitorEmail, contextMessage){
   }).catch(() => {});
 }
 
+restoreLevelMemory();
 applyLanguage('tr');
 if(speechLangSelect) speechLangSelect.value = session.speechLang;
 updateMicLanguageIndicator();
@@ -2162,7 +2456,11 @@ setTimeout(() => {
     launcherWrap.classList.add('opened');
     if(history.length === 0){
       addBotMessage(UI[currentLang].greeting);
-      setTimeout(showLevelSelection, 250);
+      setTimeout(() => {
+        if(session.level && session.level !== 'unknown') showModeSelection();
+        else showLevelSelection();
+        updateCoachStatus();
+      }, 250);
     }
   }
 }, 30000);
@@ -2237,9 +2535,21 @@ async function sendMessage(options = {}){
   // Voice transcript has now been submitted manually.
   // Reset for the next message unless the microphone is used again.
   const submittedAsVoice = session.voiceMode === true;
+  const submittedSpeechLang = session.speechLang;
+  const isEnglishVoiceTurn = submittedAsVoice && submittedSpeechLang === 'en-US';
+
+  if(isEnglishVoiceTurn){
+    session.speakingCount += 1;
+    session.speakingSamples.push(text);
+    if(session.speakingSamples.length > SPEAKING_REPORT_EVERY){
+      session.speakingSamples = session.speakingSamples.slice(-SPEAKING_REPORT_EVERY);
+    }
+    updateCoachStatus();
+  }
 
   // Reset microphone-related state once this message is submitted.
   session.voiceMode = false;
+  voiceHadSpeech = false;
   voiceConversationActive = false;
   micShouldKeepListening = false;
   setMicListeningState(false);
@@ -2274,6 +2584,9 @@ async function sendMessage(options = {}){
 
     if(levelResult.level){
       session.level = levelResult.level;
+      session.levelSource = 'estimated';
+      persistLevelMemory(levelResult.level, 'estimated');
+      updateCoachStatus();
       session.mode = null;
       session.topic = null;
       session.phase = 'mode';
@@ -2283,6 +2596,10 @@ async function sendMessage(options = {}){
         addBotMessage(f.estimatedLevel(levelResult.level));
         showModeSelection();
       }, 300);
+    }
+
+    if(isEnglishVoiceTurn && session.speakingCount >= SPEAKING_REPORT_EVERY){
+      await requestSpeakingReport();
     }
   }catch(err){
     removeTyping();
@@ -2300,6 +2617,7 @@ changeModeBtn.addEventListener('click', () => {
   session.phase = 'mode';
 
   updateMicLanguageIndicator();
+  updateCoachStatus();
   showModeSelection();
 
   const f = FLOW_UI[currentLang] || FLOW_UI.en;
