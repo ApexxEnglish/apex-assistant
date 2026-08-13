@@ -776,6 +776,132 @@ border: 1px solid var(--line);
     }
   }
 
+
+  #profile-sync-card{
+    background:linear-gradient(180deg, #fff, #faf8f1);
+    border:1px solid var(--line);
+    border-radius:12px;
+    padding:12px;
+  }
+
+  #profile-sync-card.connected{
+    border-color:var(--correct);
+  }
+
+  .sync-head{
+    display:flex;
+    align-items:flex-start;
+    justify-content:space-between;
+    gap:10px;
+    margin-bottom:8px;
+  }
+
+  .sync-title{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:0.72rem;
+    font-weight:700;
+    color:var(--ink);
+  }
+
+  .sync-status{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:0.58rem;
+    font-weight:700;
+    padding:3px 7px;
+    border-radius:999px;
+    background:var(--paper);
+    border:1px solid var(--line);
+    color:var(--ink-soft);
+    white-space:nowrap;
+  }
+
+  .sync-status.connected{
+    background:#edf6f0;
+    color:var(--correct);
+    border-color:#a9cbb8;
+  }
+
+  .sync-copy{
+    margin:0 0 9px;
+    color:var(--ink-soft);
+    font-size:0.78rem;
+    line-height:1.45;
+  }
+
+  #sync-email-row{
+    display:flex;
+    gap:7px;
+  }
+
+  #sync-email-input{
+    flex:1;
+    min-width:0;
+    height:38px;
+    border:1px solid var(--line);
+    border-radius:8px;
+    padding:0 10px;
+    font-size:0.82rem;
+    color:var(--ink);
+    outline:none;
+  }
+
+  #sync-email-input:focus{
+    border-color:var(--marigold-deep);
+  }
+
+  #sync-profile-btn{
+    height:38px;
+    border:0;
+    border-radius:8px;
+    background:var(--ink);
+    color:var(--white);
+    padding:0 12px;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:0.64rem;
+    font-weight:700;
+    cursor:pointer;
+    white-space:nowrap;
+  }
+
+  #sync-profile-btn:disabled{
+    opacity:.55;
+    cursor:default;
+  }
+
+  #sync-message{
+    min-height:18px;
+    margin-top:7px;
+    font-size:0.72rem;
+    line-height:1.35;
+    color:var(--ink-soft);
+  }
+
+  #sync-privacy{
+    margin-top:5px;
+    font-size:0.64rem;
+    line-height:1.35;
+    color:var(--ink-soft);
+    opacity:.82;
+  }
+
+  #continue-lesson-btn{
+    width:100%;
+    border:0;
+    border-radius:10px;
+    padding:10px 12px;
+    background:var(--marigold);
+    color:var(--ink);
+    font-family:'IBM Plex Mono', monospace;
+    font-size:0.68rem;
+    font-weight:700;
+    cursor:pointer;
+  }
+
+  #continue-lesson-btn:disabled{
+    opacity:.55;
+    cursor:default;
+  }
+
 </style>
 </head>
 <body>
@@ -897,6 +1023,21 @@ border: 1px solid var(--line);
           <div class="progress-value" id="progress-speaking-value">0/5</div>
         </section>
 
+        <section class="progress-section" id="profile-sync-card">
+          <div class="sync-head">
+            <div class="sync-title" id="sync-title">SAVE THIS PROFILE</div>
+            <div class="sync-status" id="sync-status">Guest</div>
+          </div>
+          <p class="sync-copy" id="sync-copy">Keep using the assistant without an account. Add your email only if you want this learning profile linked to you.</p>
+          <div id="sync-email-row">
+            <input id="sync-email-input" type="email" autocomplete="email" placeholder="Email">
+            <button id="sync-profile-btn" type="button">Save</button>
+          </div>
+          <div id="sync-message" role="status" aria-live="polite"></div>
+          <div id="sync-privacy">İlerlemenizi kaydetmek için e-posta adresiniz kullanılır.</div>
+        </section>
+
+        <button id="continue-lesson-btn" type="button">Continue My Lesson</button>
         <button id="reset-progress-btn" type="button">Reset learning progress</button>
       </div>
     </div>
@@ -1748,6 +1889,12 @@ Your primary role is to help the user learn English.
 12. LEARNING PROFILE MEMORY
 ==================================================
 
+If the user asks to continue a previous lesson and their message includes saved-profile data,
+use that data as authoritative context for this session. Do not pretend to remember anything
+that is not included in the supplied profile data.
+
+
+
 When useful, silently help maintain a lightweight learning profile.
 
 If the student's response clearly reveals one recurring mistake, useful new phrase,
@@ -1811,6 +1958,17 @@ const progressStrengthsEmpty = document.getElementById('progress-strengths-empty
 const progressSessionLabel = document.getElementById('progress-session-label');
 const progressSpeakingValue = document.getElementById('progress-speaking-value');
 const resetProgressBtn = document.getElementById('reset-progress-btn');
+
+const profileSyncCard = document.getElementById('profile-sync-card');
+const syncTitle = document.getElementById('sync-title');
+const syncStatus = document.getElementById('sync-status');
+const syncCopy = document.getElementById('sync-copy');
+const syncEmailInput = document.getElementById('sync-email-input');
+const syncProfileBtn = document.getElementById('sync-profile-btn');
+const syncMessage = document.getElementById('sync-message');
+const syncPrivacy = document.getElementById('sync-privacy');
+const continueLessonBtn = document.getElementById('continue-lesson-btn');
+
 
 const levelPill = document.getElementById('level-pill');
 const levelLabel = document.getElementById('level-label');
@@ -2077,6 +2235,31 @@ const PROFILE_UI = {
   }
 };
 
+
+const SYNC_UI = {
+  en:{
+    title:'SAVE THIS PROFILE', guest:'Guest', connected:'Saved',
+    copy:'Keep using the assistant without an account. Add your email only if you want this learning profile linked to you.',
+    email:'Email', save:'Save', saved:'Profile saved on this device and linked to your email.',
+    invalid:'Enter a valid email address.', saving:'Saving…',
+    continue:'Continue My Lesson', noProfile:'Practice a little first so I can build a useful lesson for you.'
+  ,privacy:'Your email is used to save and link your learning progress.',},
+  tr:{
+    title:'İLERLEMEMİ KAYDET', guest:'Misafir', connected:'Kaydedildi',
+    copy:'İlerlemenizi kaydedin, bir sonraki derste kaldığınız yerden devam edelim. E-posta adresinizi ekleyin; seviyeniz ve öğrenme profiliniz sizinle kalsın.',
+    email:'E-posta', save:'İlerlememi Kaydet', saved:'Harika — ilerlemeniz kaydedildi. Bir sonraki derste kaldığınız yerden devam edebiliriz.',
+    invalid:'Geçerli bir e-posta adresi girin.', saving:'Kaydediliyor…',
+    continue:'Dersime Devam Et', noProfile:'Önce biraz pratik yapın; size uygun bir devam dersi hazırlayayım.'
+  },
+  ru:{title:'СОХРАНИТЬ ПРОФИЛЬ',guest:'Гость',connected:'Сохранено',copy:'Можно продолжать без аккаунта. Добавьте email, если хотите привязать прогресс к себе.',email:'Email',save:'Сохранить',saved:'Профиль сохранён на этом устройстве и привязан к email.',invalid:'Введите корректный email.',saving:'Сохранение…',continue:'Продолжить урок',noProfile:'Сначала немного попрактикуйтесь, чтобы я подготовил полезный урок.'},
+  fa:{title:'ذخیره پروفایل',guest:'مهمان',connected:'ذخیره شد',copy:'بدون ساخت حساب ادامه دهید. فقط اگر می‌خواهید پیشرفت به شما متصل شود، ایمیل را وارد کنید.',email:'ایمیل',save:'ذخیره',saved:'پروفایل روی این دستگاه ذخیره و به ایمیل شما متصل شد.',invalid:'یک ایمیل معتبر وارد کنید.',saving:'در حال ذخیره…',continue:'ادامه درس من',noProfile:'ابتدا کمی تمرین کنید تا درس بعدی مناسبی برایتان آماده کنم.'},
+  es:{title:'GUARDAR PERFIL',guest:'Invitado',connected:'Guardado',copy:'Puedes seguir sin cuenta. Añade tu email solo si quieres vincular este progreso contigo.',email:'Email',save:'Guardar',saved:'Perfil guardado en este dispositivo y vinculado a tu email.',invalid:'Introduce un email válido.',saving:'Guardando…',continue:'Continuar mi lección',noProfile:'Practica un poco primero para poder preparar una lección útil.'},
+  fr:{title:'ENREGISTRER LE PROFIL',guest:'Invité',connected:'Enregistré',copy:'Vous pouvez continuer sans compte. Ajoutez votre e-mail uniquement si vous souhaitez lier ces progrès à votre profil.',email:'E-mail',save:'Enregistrer',saved:'Profil enregistré sur cet appareil et lié à votre e-mail.',invalid:'Saisissez une adresse e-mail valide.',saving:'Enregistrement…',continue:'Continuer ma leçon',noProfile:'Pratiquez un peu d’abord afin que je prépare une leçon adaptée.'},
+  zh:{title:'保存学习档案',guest:'访客',connected:'已保存',copy:'无需账户也可继续使用。只有希望将学习进度与你关联时才填写邮箱。',email:'邮箱',save:'保存',saved:'学习档案已保存在此设备，并与你的邮箱关联。',invalid:'请输入有效的邮箱地址。',saving:'正在保存…',continue:'继续我的课程',noProfile:'先练习一点，我才能为你准备有用的后续课程。'},
+  ja:{title:'プロフィールを保存',guest:'ゲスト',connected:'保存済み',copy:'アカウントなしでも利用できます。進捗を自分に紐づけたい場合のみメールを追加してください。',email:'メール',save:'保存',saved:'プロフィールはこの端末に保存され、メールに紐づけられました。',invalid:'有効なメールアドレスを入力してください。',saving:'保存中…',continue:'レッスンを続ける',noProfile:'まず少し練習すると、適切な続きのレッスンを作れます。'}
+};
+
+
 function defaultLearningProfile(){
   return {
     level: null,
@@ -2085,6 +2268,9 @@ function defaultLearningProfile(){
     wordsPhrases: [],
     strengths: [],
     speakingCount: 0,
+    linkedEmail: '',
+    linkedAt: null,
+    lastLessonAt: null,
     lastUpdated: null
   };
 }
@@ -2166,6 +2352,117 @@ function renderProgressUI(){
   renderList(progressMistakesList, progressMistakesEmpty, learningProfile.commonMistakes);
   renderList(progressWordsList, progressWordsEmpty, learningProfile.wordsPhrases);
   renderList(progressStrengthsList, progressStrengthsEmpty, learningProfile.strengths);
+
+  const s = SYNC_UI[currentLang] || SYNC_UI.en;
+  const linked = Boolean(learningProfile.linkedEmail);
+
+  syncTitle.textContent = s.title;
+  syncStatus.textContent = linked ? s.connected : s.guest;
+  syncStatus.classList.toggle('connected', linked);
+  profileSyncCard.classList.toggle('connected', linked);
+  syncCopy.textContent = s.copy;
+  syncEmailInput.placeholder = s.email;
+  syncEmailInput.value = learningProfile.linkedEmail || '';
+  syncProfileBtn.textContent = s.save;
+  continueLessonBtn.textContent = s.continue;
+  if(syncPrivacy) syncPrivacy.textContent = s.privacy || '';
+}
+
+
+function isValidEmail(value){
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test((value || '').trim());
+}
+
+async function saveProfileWithEmail(){
+  const s = SYNC_UI[currentLang] || SYNC_UI.en;
+  const email = (syncEmailInput.value || '').trim();
+
+  if(!isValidEmail(email)){
+    syncMessage.textContent = s.invalid;
+    return;
+  }
+
+  syncProfileBtn.disabled = true;
+  syncProfileBtn.textContent = s.saving;
+  syncMessage.textContent = '';
+
+  learningProfile.linkedEmail = email;
+  learningProfile.linkedAt = new Date().toISOString();
+  saveLearningProfile();
+
+  // Use the existing lead notification endpoint. The learning profile itself
+  // remains local-first; this avoids blocking the assistant on login/account setup.
+  try{
+    await fetch('/api/notify', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        type:'learning_profile_link',
+        email,
+        source:'apex_assistant',
+        level:session.level || learningProfile.level || 'unknown',
+        nextGoal:learningProfile.nextGoal || '',
+        commonMistakes:learningProfile.commonMistakes || [],
+        wordsPhrases:learningProfile.wordsPhrases || [],
+        strengths:learningProfile.strengths || []
+      })
+    });
+  }catch(e){
+    // Local save still succeeds even if the notification service is unavailable.
+  }
+
+  syncMessage.textContent = s.saved;
+  syncProfileBtn.disabled = false;
+  syncProfileBtn.textContent = s.save;
+  renderProgressUI();
+}
+
+function buildContinueLessonPrompt(){
+  const level = session.level || learningProfile.level || 'unknown';
+  const mistakes = (learningProfile.commonMistakes || []).slice(0,3);
+  const words = (learningProfile.wordsPhrases || []).slice(0,3);
+  const strengths = (learningProfile.strengths || []).slice(0,2);
+  const goal = learningProfile.nextGoal || '';
+
+  const hasUsefulProfile =
+    level !== 'unknown' ||
+    mistakes.length ||
+    words.length ||
+    strengths.length ||
+    goal;
+
+  if(!hasUsefulProfile) return '';
+
+  return `Continue my English lesson using my saved learning profile.
+
+Level: ${level}
+Next goal: ${goal || 'not set'}
+Common mistakes: ${mistakes.length ? mistakes.join('; ') : 'none saved'}
+Useful words/phrases: ${words.length ? words.join('; ') : 'none saved'}
+Strengths: ${strengths.length ? strengths.join('; ') : 'none saved'}
+
+Start with a short personalized review, then give ONE practice task. Keep it concise and interactive.`;
+}
+
+function continueMyLesson(){
+  const s = SYNC_UI[currentLang] || SYNC_UI.en;
+  const prompt = buildContinueLessonPrompt();
+
+  if(!prompt){
+    syncMessage.textContent = s.noProfile;
+    return;
+  }
+
+  closeProgressPanel();
+
+  session.mode = 'teach';
+  session.topic = 'Personalized Review';
+  session.phase = 'active';
+  learningProfile.lastLessonAt = new Date().toISOString();
+  saveLearningProfile();
+
+  input.value = prompt;
+  sendMessage({ preserveVoiceMode:false });
 }
 
 function openProgressPanel(){
@@ -3030,6 +3327,15 @@ document.addEventListener('click', (e) => {
 openProgressBtn.addEventListener('click', openProgressPanel);
 closeProgressBtn.addEventListener('click', closeProgressPanel);
 resetProgressBtn.addEventListener('click', resetLearningProgress);
+syncProfileBtn.addEventListener('click', saveProfileWithEmail);
+continueLessonBtn.addEventListener('click', continueMyLesson);
+
+syncEmailInput.addEventListener('keydown', (e) => {
+  if(e.key === 'Enter' && !e.isComposing){
+    e.preventDefault();
+    saveProfileWithEmail();
+  }
+});
 
 progressPanel.addEventListener('click', (e) => {
   if(e.target === progressPanel){
