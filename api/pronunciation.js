@@ -27,19 +27,25 @@ function extractJson(text) {
   return null;
 }
 
-function normalizeResult(value) {
+function normalizeResult(value, sameFocusCount = 0, lastFocusWord = '') {
   const obj = value && typeof value === 'object' ? value : {};
   const clamp = n => Math.max(1, Math.min(5, Number(n) || 3));
 
   const heard = cleanString(obj.heard, 500);
   const heardLower = heard.toLowerCase();
 
-  const focusWords = Array.isArray(obj.focusWords)
-    ? obj.focusWords.slice(0, 4).map(item => ({
+  let focusWords = Array.isArray(obj.focusWords)
+    ? obj.focusWords.slice(0, 2).map(item => ({
         word: cleanString(item?.word, 80),
-        note: cleanString(item?.note, 240)
+        note: cleanString(item?.note, 180)
       })).filter(item => item.word && heardLower.includes(item.word.toLowerCase()))
     : [];
+
+  if (sameFocusCount >= 2 && lastFocusWord) {
+    focusWords = focusWords.filter(
+      item => item.word.toLowerCase() !== lastFocusWord
+    );
+  }
 
   return {
     clarity: clamp(obj.clarity),
@@ -47,8 +53,14 @@ function normalizeResult(value) {
     stress: clamp(obj.stress),
     heard,
     focusWords,
-    coachNote: cleanString(obj.coachNote, 900),
-    tryAgain: cleanString(obj.tryAgain, 300)
+    coachNote: cleanString(obj.coachNote, 600),
+    tryAgain: cleanString(obj.tryAgain, 220),
+    nextTaskType: [
+      'statement','yes_no_question','wh_question','negative',
+      'emotion','short_answer','own_sentence','targeted_drill'
+    ].includes(String(obj.nextTaskType || ''))
+      ? String(obj.nextTaskType)
+      : 'statement'
   };
 }
 
@@ -76,13 +88,18 @@ export default async function handler(req, res) {
     targetText,
     referenceText,
     uiLanguage = 'English',
-    level = 'unknown'
+    level = 'unknown',
+    journey = {}
   } = req.body || {};
 
   const audio = String(audioBase64 || '').trim();
   const reference = cleanString(referenceText || targetText, 240);
   const language = cleanString(uiLanguage, 80);
   const studentLevel = cleanString(level, 20);
+  const journeyTurn = Math.max(0, Math.min(50, Number(journey?.turn || 0)));
+  const lastFocusWord = cleanString(journey?.lastFocusWord, 80).toLowerCase();
+  const sameFocusCount = Math.max(0, Math.min(5, Number(journey?.sameFocusCount || 0)));
+  const previousTaskType = cleanString(journey?.taskType, 40) || 'statement';
 
   if (!audio) {
     return res.status(400).json({ error: 'Audio is required.' });
@@ -110,45 +127,83 @@ ${studentLevel}
 FEEDBACK LANGUAGE:
 ${language}
 
-MOST IMPORTANT RULE:
-Analyze WHAT THE LEARNER ACTUALLY SAID IN THE AUDIO.
-The optional reference text is only a practice suggestion. It is NOT authoritative.
-If the learner says a different English sentence, do NOT penalize them for not matching the reference.
-Do NOT force the reference sentence into the feedback.
+SESSION CONTEXT:
+- Journey turn: ${journeyTurn}
+- Previous task type: ${previousTaskType}
+- Previous focus word: ${lastFocusWord || '(none)'}
+- Same focus repeated: ${sameFocusCount} time(s)
 
-TASK:
-1. Listen to the audio and transcribe what you actually hear into "heard".
-2. Evaluate pronunciation only for the words/sentence actually spoken.
-3. Identify at most 1-3 clearly audible areas for improvement.
-4. "focusWords" must come from words you actually heard in the recording.
-5. "tryAgain" must be a SHORT TARGETED DRILL based on the clearest real issue you heard.
-6. If the main issue is one word, create a short natural English sentence containing that word.
-7. If the main issue involves rhythm/stress, create a short drill sentence that targets that exact rhythm/stress pattern.
-8. Do NOT copy the optional reference sentence unless the learner actually said it and repeating it is genuinely the best drill.
-9. If pronunciation is already strong and there is no clear issue, say so and give a slightly more challenging short sentence.
+CORE RULE:
+Analyze WHAT THE LEARNER ACTUALLY SAID IN THE AUDIO.
+The reference text is optional guidance only. If they say something different, assess what they actually said.
+
+COACHING PHILOSOPHY:
+Do not trap the learner on one tiny issue.
+Prioritize intelligibility and forward progress over perfection.
+A minor final consonant or small accent feature should not block progress if the sentence is clearly understandable.
+
+SCORING -> NEXT STEP RULES:
+- If clarity, rhythm and stress are ALL 5/5:
+  Congratulate briefly and move on. Do NOT ask them to repeat the same sentence.
+  Give a new short challenge using a DIFFERENT sentence type.
+- If the overall result is mostly 4/5 or better:
+  Mention at most one tiny improvement, then move on to a new sentence.
+- If the weakest score is 3/5:
+  Give ONE targeted short drill for the clearest real issue, then the next turn should move on.
+- If the weakest score is 1-2/5:
+  Give one easier short drill focused on the clearest issue.
+- Never require more than TWO turns on the same focus word.
+  If the same focus word has already repeated twice, say it is understandable enough for now and move on.
+
+TASK VARIETY:
+Rotate simple speaking tasks so the learner does not get stuck:
+statement -> yes/no question -> WH-question -> negative sentence -> emotion/exclamation -> short answer -> learner's own sentence -> repeat cycle.
+Choose the next task naturally and keep it short.
+
+"tryAgain" FIELD:
+This is actually the SINGLE NEXT STEP shown to the learner.
+It may be either:
+1) one short targeted drill, OR
+2) one new challenge sentence/instruction when they are ready to move on.
+Keep it concise.
+
+Examples of good progression:
+- Mastered statement -> "Now ask: Do you have any plans for the weekend?"
+- Mastered yes/no question -> "Now ask: What are you doing this weekend?"
+- Strong performance -> "Your turn: Say one sentence about your weekend."
+- Minor issue with 'plans' but understandable -> "Good enough — now say: What are your plans for Saturday?"
+- Clear issue with one word -> short drill containing that word once.
+
+FOCUS WORD RULES:
+- At most 1-2 focus words.
+- Focus words must come from words actually heard in the audio.
+- Do not keep the same focus word if it has already been repeated twice in the session.
+- Do not invent issues just to produce feedback.
 
 IMPORTANT LIMITS:
 - Do not claim laboratory-grade phonetic precision.
 - Do not infer ethnicity, nationality, identity, health, disability, or personality from the voice.
-- Do not score "accent quality" or tell the learner to erase their accent.
-- Focus only on intelligibility, clarity, word stress, sentence stress, rhythm, pacing, and clearly audible pronunciation issues.
-- If the audio does not support a phoneme-level claim, do not invent one.
-- Keep feedback encouraging, concise, and actionable.
-- Use the requested FEEDBACK LANGUAGE for notes, but keep English words/phrases in English.
-- Scores are coarse coaching ratings from 1 to 5, not percentages.
-- Never invent a pronunciation problem just to produce a drill.
+- Do not score accent quality or tell the learner to erase their accent.
+- Focus on intelligibility, clarity, word stress, sentence stress, rhythm and pacing.
+- Keep feedback brief, encouraging and actionable.
+- Use the requested FEEDBACK LANGUAGE for notes, but keep English practice text in English.
+- Scores are coarse 1-5 coaching ratings, not percentages.
 
-Return ONLY valid JSON in this exact shape:
+Choose "nextTaskType" from:
+"statement", "yes_no_question", "wh_question", "negative", "emotion", "short_answer", "own_sentence", "targeted_drill"
+
+Return ONLY valid JSON:
 {
   "clarity": 1,
   "rhythm": 1,
   "stress": 1,
   "heard": "brief transcript of what you actually heard",
   "focusWords": [
-    {"word": "word actually heard in the audio", "note": "short actionable note in the feedback language"}
+    {"word": "word actually heard", "note": "very short actionable note"}
   ],
-  "coachNote": "2-4 concise sentences in the feedback language",
-  "tryAgain": "one short targeted English drill sentence based on the clearest audible issue"
+  "coachNote": "1-3 concise sentences in the feedback language",
+  "tryAgain": "one concise next step for the learner",
+  "nextTaskType": "statement"
 }
 `.trim();
 
@@ -205,7 +260,7 @@ Return ONLY valid JSON in this exact shape:
 
     return res.status(200).json({
       ok: true,
-      result: normalizeResult(parsed)
+      result: normalizeResult(parsed, sameFocusCount, lastFocusWord)
     });
   } catch (err) {
     console.error('Pronunciation service error:', err);
