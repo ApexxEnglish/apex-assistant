@@ -317,22 +317,6 @@ border: 1px solid var(--line);
     font-size:0.8rem;
   }
 
-  #voice-notice{
-    display:none;
-    margin:0 12px 8px;
-    padding:9px 11px;
-    border:1px solid var(--marigold-deep);
-    border-radius:8px;
-    background:#FFF8DD;
-    color:var(--ink);
-    font-size:0.78rem;
-    line-height:1.4;
-  }
-
-  #voice-notice.visible{
-    display:block;
-  }
-
   #mic-btn.listening .mic-icon{
     display:none;
   }
@@ -398,7 +382,6 @@ border: 1px solid var(--line);
   </div>
   <div id="messages"></div>
   <div class="starter-row" id="starters"></div>
-  <div id="voice-notice" role="status" aria-live="polite"></div>
   <div id="mode-toolbar">
   <button id="change-mode-btn" type="button">
     ↩ Change Mode
@@ -574,6 +557,48 @@ const FLOW_UI = {
     pricing: "Pricing",
     levelTest: "Level Test",
     changeMode: "↩ Change Mode",
+    micStart: "話し始める",
+    micStop: "聞き取りを停止",
+    voiceUnsupported: "このブラウザでは音声入力がサポートされていません。Chrome または Safari で Apex Assistant を開いて、もう一度お試しください。",
+    voicePermission: "マイクへのアクセスがブロックされています。このサイトのマイク権限を許可して、もう一度お試しください。",
+    voiceNoSpeech: "音声をはっきり聞き取れませんでした。マイクを押してもう一度お試しください。",
+    voiceError: "音声入力を開始できませんでした。もう一度試すか、文字入力で続けてください。",
+    micStart: "开始说话",
+    micStop: "停止聆听",
+    voiceUnsupported: "此浏览器不支持语音输入。请使用 Chrome 或 Safari 打开 Apex Assistant 后重试。",
+    voicePermission: "麦克风权限已被阻止。请允许此网站使用麦克风后重试。",
+    voiceNoSpeech: "没有清楚听到你的声音。请再次点击麦克风重试。",
+    voiceError: "无法启动语音输入。请重试，或继续使用文字输入。",
+    micStart: "Commencer à parler",
+    micStop: "Arrêter l’écoute",
+    voiceUnsupported: "La saisie vocale n’est pas prise en charge par ce navigateur. Ouvrez Apex Assistant dans Chrome ou Safari et réessayez.",
+    voicePermission: "L’accès au microphone est bloqué. Autorisez le microphone pour ce site puis réessayez.",
+    voiceNoSpeech: "Je ne vous ai pas entendu clairement. Appuyez sur le microphone et réessayez.",
+    voiceError: "La saisie vocale n’a pas pu démarrer. Réessayez ou continuez en écrivant.",
+    micStart: "Empezar a hablar",
+    micStop: "Dejar de escuchar",
+    voiceUnsupported: "La entrada de voz no es compatible con este navegador. Abre Apex Assistant en Chrome o Safari e inténtalo de nuevo.",
+    voicePermission: "El acceso al micrófono está bloqueado. Permite el uso del micrófono para este sitio e inténtalo de nuevo.",
+    voiceNoSpeech: "No pude oírte con claridad. Pulsa el micrófono e inténtalo de nuevo.",
+    voiceError: "No se pudo iniciar la entrada de voz. Inténtalo de nuevo o continúa escribiendo.",
+    micStart: "شروع صحبت",
+    micStop: "توقف شنیدن",
+    voiceUnsupported: "ورودی صوتی در این مرورگر پشتیبانی نمی‌شود. لطفاً Apex Assistant را در Chrome یا Safari باز کنید و دوباره امتحان کنید.",
+    voicePermission: "دسترسی به میکروفون مسدود شده است. لطفاً اجازه میکروفون را برای این سایت فعال کنید و دوباره امتحان کنید.",
+    voiceNoSpeech: "صدای شما را واضح دریافت نکردم. دوباره روی میکروفون بزنید و امتحان کنید.",
+    voiceError: "ورودی صوتی شروع نشد. دوباره امتحان کنید یا با تایپ ادامه دهید.",
+    micStart: "Начать говорить",
+    micStop: "Остановить прослушивание",
+    voiceUnsupported: "Голосовой ввод не поддерживается в этом браузере. Откройте Apex Assistant в Chrome или Safari и попробуйте снова.",
+    voicePermission: "Доступ к микрофону заблокирован. Разрешите доступ к микрофону для этого сайта и попробуйте снова.",
+    voiceNoSpeech: "Мне не удалось четко распознать речь. Нажмите на микрофон и попробуйте снова.",
+    voiceError: "Не удалось запустить голосовой ввод. Попробуйте снова или продолжите вводить текст.",
+    micStart: "Konuşmaya başla",
+    micStop: "Dinlemeyi durdur",
+    voiceUnsupported: "Sesli giriş bu tarayıcıda desteklenmiyor. Lütfen Apex Assistant’ı Chrome veya Safari’de açıp tekrar deneyin.",
+    voicePermission: "Mikrofon erişimi engellendi. Lütfen bu site için mikrofon izni verip tekrar deneyin.",
+    voiceNoSpeech: "Sesinizi net alamadım. Mikrofona tekrar basıp yeniden deneyin.",
+    voiceError: "Sesli giriş başlatılamadı. Tekrar deneyebilir veya yazarak devam edebilirsiniz.",
     micStart: "Start speaking",
     micStop: "Stop listening",
     voiceUnsupported: "Voice input is not supported in this browser. Please open Apex Assistant in Chrome or Safari and try again.",
@@ -618,12 +643,6 @@ const FLOW_UI = {
     pricing: "Fiyatlar",
     levelTest: "Seviye Testi",
     changeMode: "↩ Mod Değiştir",
-    micStart: "Konuşmaya başla",
-    micStop: "Dinlemeyi durdur",
-    voiceUnsupported: "Sesli giriş bu tarayıcıda desteklenmiyor. Lütfen Apex Assistant'ı Chrome veya Safari'de açıp tekrar deneyin.",
-    voicePermission: "Mikrofon erişimi engellendi. Lütfen bu site için mikrofon izni verip tekrar deneyin.",
-    voiceNoSpeech: "Sesinizi net alamadım. Mikrofona tekrar basıp yeniden deneyin.",
-    voiceError: "Sesli giriş başlatılamadı. Tekrar deneyebilir veya yazarak devam edebilirsiniz.",
     chooseTeachTopic: "Ne öğrenmek istiyorsunuz?",
     grammar: "Gramer",
     vocabulary: "Kelime",
@@ -662,12 +681,6 @@ const FLOW_UI = {
     pricing: "Цены",
     levelTest: "Тест уровня",
     changeMode: "↩ Сменить режим",
-    micStart: "Начать говорить",
-    micStop: "Остановить прослушивание",
-    voiceUnsupported: "Голосовой ввод не поддерживается в этом браузере. Откройте Apex Assistant в Chrome или Safari и попробуйте снова.",
-    voicePermission: "Доступ к микрофону заблокирован. Разрешите доступ к микрофону для этого сайта и попробуйте снова.",
-    voiceNoSpeech: "Мне не удалось четко распознать речь. Нажмите на микрофон и попробуйте снова.",
-    voiceError: "Не удалось запустить голосовой ввод. Попробуйте снова или продолжите вводить текст.",
     chooseTeachTopic: "Что вы хотите изучить?",
     grammar: "Грамматика",
     vocabulary: "Словарный запас",
@@ -706,12 +719,6 @@ const FLOW_UI = {
     pricing: "قیمت‌ها",
     levelTest: "تست سطح",
     changeMode: "↩ تغییر حالت",
-    micStart: "شروع صحبت",
-    micStop: "توقف شنیدن",
-    voiceUnsupported: "ورودی صوتی در این مرورگر پشتیبانی نمی‌شود. لطفاً Apex Assistant را در Chrome یا Safari باز کنید و دوباره امتحان کنید.",
-    voicePermission: "دسترسی به میکروفون مسدود شده است. لطفاً اجازه میکروفون را برای این سایت فعال کنید و دوباره امتحان کنید.",
-    voiceNoSpeech: "صدای شما را واضح دریافت نکردم. دوباره روی میکروفون بزنید و امتحان کنید.",
-    voiceError: "ورودی صوتی شروع نشد. دوباره امتحان کنید یا با تایپ ادامه دهید.",
     chooseTeachTopic: "می‌خواهید چه چیزی یاد بگیرید؟",
     grammar: "گرامر",
     vocabulary: "واژگان",
@@ -750,12 +757,6 @@ const FLOW_UI = {
     pricing: "Precios",
     levelTest: "Prueba de nivel",
     changeMode: "↩ Cambiar modo",
-    micStart: "Empezar a hablar",
-    micStop: "Dejar de escuchar",
-    voiceUnsupported: "La entrada de voz no es compatible con este navegador. Abre Apex Assistant en Chrome o Safari e inténtalo de nuevo.",
-    voicePermission: "El acceso al micrófono está bloqueado. Permite el uso del micrófono para este sitio e inténtalo de nuevo.",
-    voiceNoSpeech: "No pude oírte con claridad. Pulsa el micrófono e inténtalo de nuevo.",
-    voiceError: "No se pudo iniciar la entrada de voz. Inténtalo de nuevo o continúa escribiendo.",
     chooseTeachTopic: "¿Qué te gustaría aprender?",
     grammar: "Gramática",
     vocabulary: "Vocabulario",
@@ -794,12 +795,6 @@ const FLOW_UI = {
     pricing: "Tarifs",
     levelTest: "Test de niveau",
     changeMode: "↩ Changer de mode",
-    micStart: "Commencer à parler",
-    micStop: "Arrêter l’écoute",
-    voiceUnsupported: "La saisie vocale n’est pas prise en charge par ce navigateur. Ouvrez Apex Assistant dans Chrome ou Safari et réessayez.",
-    voicePermission: "L’accès au microphone est bloqué. Autorisez le microphone pour ce site puis réessayez.",
-    voiceNoSpeech: "Je ne vous ai pas entendu clairement. Appuyez sur le microphone et réessayez.",
-    voiceError: "La saisie vocale n’a pas pu démarrer. Réessayez ou continuez en écrivant.",
     chooseTeachTopic: "Que voulez-vous apprendre ?",
     grammar: "Grammaire",
     vocabulary: "Vocabulaire",
@@ -838,12 +833,6 @@ const FLOW_UI = {
     pricing: "价格",
     levelTest: "水平测试",
     changeMode: "↩ 切换模式",
-    micStart: "开始说话",
-    micStop: "停止聆听",
-    voiceUnsupported: "此浏览器不支持语音输入。请使用 Chrome 或 Safari 打开 Apex Assistant 后重试。",
-    voicePermission: "麦克风权限已被阻止。请允许此网站使用麦克风后重试。",
-    voiceNoSpeech: "没有清楚听到你的声音。请再次点击麦克风重试。",
-    voiceError: "无法启动语音输入。请重试，或继续使用文字输入。",
     chooseTeachTopic: "你想学习什么？",
     grammar: "语法",
     vocabulary: "词汇",
@@ -882,12 +871,6 @@ const FLOW_UI = {
     pricing: "料金",
     levelTest: "レベルテスト",
     changeMode: "↩ モード変更",
-    micStart: "話し始める",
-    micStop: "聞き取りを停止",
-    voiceUnsupported: "このブラウザでは音声入力がサポートされていません。Chrome または Safari で Apex Assistant を開いて、もう一度お試しください。",
-    voicePermission: "マイクへのアクセスがブロックされています。このサイトのマイク権限を許可して、もう一度お試しください。",
-    voiceNoSpeech: "音声をはっきり聞き取れませんでした。マイクを押してもう一度お試しください。",
-    voiceError: "音声入力を開始できませんでした。もう一度試すか、文字入力で続けてください。",
     chooseTeachTopic: "何を学びたいですか？",
     grammar: "文法",
     vocabulary: "単語",
@@ -1235,7 +1218,6 @@ const headerSub = document.getElementById('header-sub');
 const modeToolbar = document.getElementById('mode-toolbar');
 const changeModeBtn = document.getElementById('change-mode-btn');
 const micBtn = document.getElementById('mic-btn');
-const voiceNotice = document.getElementById('voice-notice');
 const langButtons = document.querySelectorAll('.lang-btn');
 
 function resizeChatInput(){
@@ -1273,7 +1255,6 @@ function applyLanguage(lang){
   currentLang = lang;
   const t = UI[lang];
   const f = FLOW_UI[lang] || FLOW_UI.en;
-  hideVoiceNotice();
 
   headerTitle.textContent = t.title;
   headerSub.textContent = t.sub;
@@ -1540,19 +1521,6 @@ starters.addEventListener('click', (e) => {
 });
 
 
-
-function showVoiceNotice(message){
-  if(!voiceNotice) return;
-  voiceNotice.textContent = message;
-  voiceNotice.classList.add('visible');
-}
-
-function hideVoiceNotice(){
-  if(!voiceNotice) return;
-  voiceNotice.textContent = '';
-  voiceNotice.classList.remove('visible');
-}
-
 function getSpeechRecognitionConstructor(){
   return window.SpeechRecognition || window.webkitSpeechRecognition || null;
 }
@@ -1561,66 +1529,29 @@ function getVoiceBrowserSupport(){
   const ua = navigator.userAgent || '';
   const Recognition = getSpeechRecognitionConstructor();
 
-  const isOpera = /OPR\/|Opera|Opera Mini|Opera Mobi/i.test(ua);
-  const isFirefox = /Firefox|FxiOS/i.test(ua);
-  const isSamsung = /SamsungBrowser/i.test(ua);
+  const isOpera = /OPR\/|Opera/i.test(ua);
   const isIOS = /iPad|iPhone|iPod/i.test(ua);
-  const isAndroid = /Android/i.test(ua);
+  const isIOSSafari = isIOS
+    && /Safari/i.test(ua)
+    && !/CriOS|FxiOS|EdgiOS|OPiOS|DuckDuckGo/i.test(ua);
 
-  const isChromeDesktop =
-    /Chrome\/|Chromium\//i.test(ua) &&
-    !isOpera &&
-    !isAndroid &&
-    !/EdgA|EdgiOS/i.test(ua);
-
-  const isEdgeDesktop =
-    /Edg\//i.test(ua) &&
-    !isAndroid;
-
-  const isChromeAndroid =
-    isAndroid &&
-    /Chrome\//i.test(ua) &&
-    !isOpera &&
-    !isSamsung;
-
-  const isIOSSafari =
-    isIOS &&
-    /Safari/i.test(ua) &&
-    !/CriOS|FxiOS|EdgiOS|OPiOS|DuckDuckGo|GSA/i.test(ua);
-
-  const isMacSafari =
-    !isIOS &&
-    /Macintosh/i.test(ua) &&
-    /Safari/i.test(ua) &&
-    !/Chrome|Chromium|Edg|OPR/i.test(ua);
-
-  // Explicitly unsupported / unreliable browsers.
-  if(isOpera || isFirefox || isSamsung){
-    return { supported:false, Recognition:null, reason:'browser' };
+  // Opera may expose part of the API but still fail to provide usable
+  // SpeechRecognition in practice, so show a clear fallback message.
+  if(isOpera){
+    return { supported: false, Recognition: null };
   }
 
-  // On iOS, use Safari only.
+  // On iOS, prefer Safari. Other iOS browsers may expose the same engine
+  // inconsistently and often do not provide reliable speech recognition.
   if(isIOS && !isIOSSafari){
-    return { supported:false, Recognition:null, reason:'ios-browser' };
+    return { supported: false, Recognition: null };
   }
 
   if(!Recognition){
-    return { supported:false, Recognition:null, reason:'api' };
+    return { supported: false, Recognition: null };
   }
 
-  if(
-    isChromeDesktop ||
-    isEdgeDesktop ||
-    isChromeAndroid ||
-    isIOSSafari ||
-    isMacSafari
-  ){
-    return { supported:true, Recognition, reason:'ok' };
-  }
-
-  // Unknown browsers are treated conservatively so the user gets guidance
-  // instead of tapping a microphone that silently does nothing.
-  return { supported:false, Recognition:null, reason:'unknown' };
+  return { supported: true, Recognition };
 }
 
 function getRecognitionLanguage(){
@@ -1635,66 +1566,18 @@ function getRecognitionLanguage(){
     ja: 'ja-JP'
   };
 
-  // This assistant is an English-practice tool: almost everything spoken
-  // into the mic is meant to be English, even before the student has
-  // explicitly entered "correction"/"practice"/"teach"/"level_check" mode
-  // (e.g. on the level-selection or mode-selection screens, or the very
-  // first message). Previously this function only forced en-US for those
-  // four modes and otherwise fell back to the *interface* language
-  // (tr-TR, ru-RU, fa-IR, etc.) via `speechLanguages[currentLang]`. That
-  // meant that as soon as the Turkish (or Russian/Persian/...) UI was
-  // selected but no learning mode was active yet, the recognizer was
-  // listening for Turkish/Russian/Persian phonetics — so English speech
-  // in that window was transcribed poorly or as gibberish. This is why
-  // "Turkish part -> speaking Turkish" worked but "Turkish part ->
-  // speaking English" did not, even within the same session.
-  //
-  // Only fall back to the interface language for the small set of modes
-  // where the student is genuinely expected to speak their own language
-  // (there currently are none defined, but the flag below keeps this
-  // extensible without reintroducing the bug by accident).
-  const nativeLanguageExpectedMode = false; // no mode currently expects native-language speech
-
-  if(nativeLanguageExpectedMode){
-    return speechLanguages[currentLang] || 'en-US';
+  // In English-learning modes, spoken answers are expected to be English,
+  // even when the interface language is Turkish/Russian/etc.
+  if(
+    session.mode === 'correction' ||
+    session.mode === 'practice' ||
+    session.mode === 'level_check'
+  ){
+    return 'en-US';
   }
 
-  return 'en-US';
-}
-
-
-function chooseBestTranscript(result, expectedLang){
-  if(!result || !result.length) return '';
-
-  const alternatives = [];
-  for(let i = 0; i < result.length; i++){
-    alternatives.push(result[i].transcript || '');
-  }
-
-  if(!expectedLang.startsWith('en')){
-    return alternatives[0] || '';
-  }
-
-  // When English is expected, prefer the alternative that most resembles
-  // Latin-script English. This prevents occasional Persian/Russian/etc.
-  // script output from winning even though the student spoke English.
-  const scoreEnglishLike = (value) => {
-    const s = (value || '').trim();
-    if(!s) return -999;
-
-    const latin = (s.match(/[A-Za-z]/g) || []).length;
-    const nonLatinLetters = (
-      s.match(/[\u0400-\u04FF\u0600-\u06FF\u4E00-\u9FFF\u3040-\u30FF]/g) || []
-    ).length;
-
-    const commonEnglish = (
-      s.toLowerCase().match(/\b(i|you|we|they|he|she|it|the|a|an|am|is|are|was|were|do|does|did|have|has|had|to|at|in|on|for|with|my|your|and|but|because|work|wake|eat|go|get|like|want|need)\b/g) || []
-    ).length;
-
-    return latin + (commonEnglish * 8) - (nonLatinLetters * 5);
-  };
-
-  return alternatives.sort((a,b) => scoreEnglishLike(b) - scoreEnglishLike(a))[0] || '';
+  // Outside those modes, recognize the currently selected interface language.
+  return speechLanguages[currentLang] || 'en-US';
 }
 
 function setMicListeningState(listening){
@@ -1741,12 +1624,9 @@ function startVoiceRecognition(){
   const f = FLOW_UI[currentLang] || FLOW_UI.en;
 
   if(!support.supported || !Recognition){
-    showVoiceNotice(f.voiceUnsupported);
     addBotMessage(f.voiceUnsupported);
     return;
   }
-
-  hideVoiceNotice();
 
   if(isListening){
     stopVoiceRecognition();
@@ -1764,10 +1644,8 @@ function startVoiceRecognition(){
   recognitionSessionId += 1;
   const thisRecognitionSession = recognitionSessionId;
 
-  const recognitionLanguage = getRecognitionLanguage();
-
   recognition = new Recognition();
-  recognition.lang = recognitionLanguage;
+  recognition.lang = getRecognitionLanguage();
   recognition.continuous = true;
   recognition.interimResults = true;
   recognition.maxAlternatives = 3;
@@ -1785,10 +1663,7 @@ function startVoiceRecognition(){
     let interimTranscript = '';
 
     for(let i = event.resultIndex; i < event.results.length; i++){
-      const transcript = chooseBestTranscript(
-        event.results[i],
-        recognitionLanguage
-      );
+      const transcript = event.results[i][0].transcript;
 
       if(event.results[i].isFinal){
         finalTranscript += transcript;
@@ -1810,7 +1685,6 @@ function startVoiceRecognition(){
 
     if(event.error === 'not-allowed' || event.error === 'service-not-allowed'){
       micShouldKeepListening = false;
-      showVoiceNotice(f.voicePermission);
       addBotMessage(f.voicePermission);
       return;
     }
@@ -1828,14 +1702,12 @@ function startVoiceRecognition(){
       event.error === 'language-not-supported'
     ){
       micShouldKeepListening = false;
-      showVoiceNotice(f.voiceUnsupported);
       addBotMessage(f.voiceUnsupported);
       return;
     }
 
     if(event.error !== 'aborted' && event.error !== 'no-speech'){
       micShouldKeepListening = false;
-      showVoiceNotice(f.voiceError);
       addBotMessage(f.voiceError);
     }
   };
@@ -1876,9 +1748,7 @@ function startVoiceRecognition(){
   try{
     recognition.start();
   }catch(err){
-    micShouldKeepListening = false;
     setMicListeningState(false);
-    showVoiceNotice(f.voiceError);
     addBotMessage(f.voiceError);
   }
 }
