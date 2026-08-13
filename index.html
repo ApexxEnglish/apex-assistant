@@ -278,6 +278,49 @@ border: 1px solid var(--line);
     cursor:default;
   }
 
+  #mic-btn{
+    width:44px;
+    min-width:44px;
+    padding:0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:1rem;
+    background:var(--white);
+    color:var(--ink);
+    border:1px solid var(--line);
+    position:relative;
+  }
+
+  #mic-btn:hover{
+    border-color:var(--marigold-deep);
+  }
+
+  #mic-btn.listening{
+    background:var(--marigold);
+    border-color:var(--marigold-deep);
+    color:var(--ink);
+    animation:mic-pulse 1.15s ease-in-out infinite;
+  }
+
+  @keyframes mic-pulse{
+    0%,100%{ transform:scale(1); }
+    50%{ transform:scale(1.06); }
+  }
+
+  #mic-btn .mic-stop{
+    display:none;
+    font-size:0.8rem;
+  }
+
+  #mic-btn.listening .mic-icon{
+    display:none;
+  }
+
+  #mic-btn.listening .mic-stop{
+    display:inline;
+  }
+
   .starter-row{
     display:flex;
     flex-wrap:wrap;
@@ -342,6 +385,10 @@ border: 1px solid var(--line);
 </div>
   <div id="input-row">
     <input id="chat-input" type="text" placeholder="Type a question or a sentence..." />
+    <button id="mic-btn" type="button" aria-label="Start speaking" title="Start speaking">
+      <span class="mic-icon">🎙️</span>
+      <span class="mic-stop">■</span>
+    </button>
     <button id="send-btn">Send</button>
   </div>
 </div>
@@ -506,6 +553,54 @@ const FLOW_UI = {
     pricing: "Pricing",
     levelTest: "Level Test",
     changeMode: "↩ Change Mode",
+    micStart: "話し始める",
+    micStop: "聞き取りを停止",
+    voiceUnsupported: "このブラウザでは音声入力がサポートされていません。Chrome または Safari で Apex Assistant を開いて、もう一度お試しください。",
+    voicePermission: "マイクへのアクセスがブロックされています。このサイトのマイク権限を許可して、もう一度お試しください。",
+    voiceNoSpeech: "音声をはっきり聞き取れませんでした。マイクを押してもう一度お試しください。",
+    voiceError: "音声入力を開始できませんでした。もう一度試すか、文字入力で続けてください。",
+    micStart: "开始说话",
+    micStop: "停止聆听",
+    voiceUnsupported: "此浏览器不支持语音输入。请使用 Chrome 或 Safari 打开 Apex Assistant 后重试。",
+    voicePermission: "麦克风权限已被阻止。请允许此网站使用麦克风后重试。",
+    voiceNoSpeech: "没有清楚听到你的声音。请再次点击麦克风重试。",
+    voiceError: "无法启动语音输入。请重试，或继续使用文字输入。",
+    micStart: "Commencer à parler",
+    micStop: "Arrêter l’écoute",
+    voiceUnsupported: "La saisie vocale n’est pas prise en charge par ce navigateur. Ouvrez Apex Assistant dans Chrome ou Safari et réessayez.",
+    voicePermission: "L’accès au microphone est bloqué. Autorisez le microphone pour ce site puis réessayez.",
+    voiceNoSpeech: "Je ne vous ai pas entendu clairement. Appuyez sur le microphone et réessayez.",
+    voiceError: "La saisie vocale n’a pas pu démarrer. Réessayez ou continuez en écrivant.",
+    micStart: "Empezar a hablar",
+    micStop: "Dejar de escuchar",
+    voiceUnsupported: "La entrada de voz no es compatible con este navegador. Abre Apex Assistant en Chrome o Safari e inténtalo de nuevo.",
+    voicePermission: "El acceso al micrófono está bloqueado. Permite el uso del micrófono para este sitio e inténtalo de nuevo.",
+    voiceNoSpeech: "No pude oírte con claridad. Pulsa el micrófono e inténtalo de nuevo.",
+    voiceError: "No se pudo iniciar la entrada de voz. Inténtalo de nuevo o continúa escribiendo.",
+    micStart: "شروع صحبت",
+    micStop: "توقف شنیدن",
+    voiceUnsupported: "ورودی صوتی در این مرورگر پشتیبانی نمی‌شود. لطفاً Apex Assistant را در Chrome یا Safari باز کنید و دوباره امتحان کنید.",
+    voicePermission: "دسترسی به میکروفون مسدود شده است. لطفاً اجازه میکروفون را برای این سایت فعال کنید و دوباره امتحان کنید.",
+    voiceNoSpeech: "صدای شما را واضح دریافت نکردم. دوباره روی میکروفون بزنید و امتحان کنید.",
+    voiceError: "ورودی صوتی شروع نشد. دوباره امتحان کنید یا با تایپ ادامه دهید.",
+    micStart: "Начать говорить",
+    micStop: "Остановить прослушивание",
+    voiceUnsupported: "Голосовой ввод не поддерживается в этом браузере. Откройте Apex Assistant в Chrome или Safari и попробуйте снова.",
+    voicePermission: "Доступ к микрофону заблокирован. Разрешите доступ к микрофону для этого сайта и попробуйте снова.",
+    voiceNoSpeech: "Мне не удалось четко распознать речь. Нажмите на микрофон и попробуйте снова.",
+    voiceError: "Не удалось запустить голосовой ввод. Попробуйте снова или продолжите вводить текст.",
+    micStart: "Konuşmaya başla",
+    micStop: "Dinlemeyi durdur",
+    voiceUnsupported: "Sesli giriş bu tarayıcıda desteklenmiyor. Lütfen Apex Assistant’ı Chrome veya Safari’de açıp tekrar deneyin.",
+    voicePermission: "Mikrofon erişimi engellendi. Lütfen bu site için mikrofon izni verip tekrar deneyin.",
+    voiceNoSpeech: "Sesinizi net alamadım. Mikrofona tekrar basıp yeniden deneyin.",
+    voiceError: "Sesli giriş başlatılamadı. Tekrar deneyebilir veya yazarak devam edebilirsiniz.",
+    micStart: "Start speaking",
+    micStop: "Stop listening",
+    voiceUnsupported: "Voice input is not supported in this browser. Please open Apex Assistant in Chrome or Safari and try again.",
+    voicePermission: "Microphone access was blocked. Please allow microphone permission for this site and try again.",
+    voiceNoSpeech: "I couldn't hear anything clearly. Tap the microphone and try again.",
+    voiceError: "Voice input could not start. Please try again, or continue by typing.",
     chooseTeachTopic: "What would you like to learn?",
     grammar: "Grammar",
     vocabulary: "Vocabulary",
@@ -815,6 +910,7 @@ USER SESSION:
 - English level: ${level}
 - Current learning mode: ${mode}
 - Current topic: ${topic}
+- Voice input active: ${session.voiceMode ? "yes" : "no"}
 
 Your goal is not only to answer questions. You should actively help the
 student improve their English according to their level.
@@ -996,7 +1092,21 @@ After every answer:
 - Ask ONE next interview question.
 
 ==================================================
-8. COURSE / APEX SUPPORT
+8. VOICE / SPEAKING COACH
+==================================================
+
+When Voice input active is "yes", treat the user's message as a transcript of spoken English.
+
+- Do NOT claim to evaluate pronunciation, accent, stress, or individual sounds from transcript text alone.
+- Focus on grammar, vocabulary, clarity, fluency-friendly phrasing, and natural spoken English.
+- Briefly react to what the student meant.
+- Correct only important mistakes.
+- Give one more natural spoken alternative when useful.
+- Keep feedback concise so the exchange feels like a real conversation.
+- End with ONE next question in English when the user is in practice or interview mode.
+
+==================================================
+9. COURSE / APEX SUPPORT
 ==================================================
 
 You may answer questions about Apex English programs.
@@ -1045,7 +1155,7 @@ https://www.apexenglish.net/
 Do not invent URLs.
 
 ==================================================
-9. COMMERCIAL INTENT / LEAD COLLECTION
+10. COMMERCIAL INTENT / LEAD COLLECTION
 ==================================================
 
 Do NOT ask for contact information during normal English practice.
@@ -1072,7 +1182,7 @@ When the visitor provides an email address, include:
 Do not show this marker as normal conversational text.
 
 ==================================================
-10. GENERAL BEHAVIOR
+11. GENERAL BEHAVIOR
 ==================================================
 
 Write explanations and instructions in ${UI[lang].langName}.
@@ -1103,6 +1213,7 @@ const headerTitle = document.getElementById('header-title');
 const headerSub = document.getElementById('header-sub');
 const modeToolbar = document.getElementById('mode-toolbar');
 const changeModeBtn = document.getElementById('change-mode-btn');
+const micBtn = document.getElementById('mic-btn');
 const langButtons = document.querySelectorAll('.lang-btn');
 
 let history = [];
@@ -1112,8 +1223,13 @@ let session = {
   level: null,
   mode: null,
   topic: null,
-  phase: "level"
+  phase: "level",
+  voiceMode: false
 };
+
+let voiceConversationActive = false;
+let isListening = false;
+let recognition = null;
 
 function applyLanguage(lang){
   currentLang = lang;
@@ -1125,6 +1241,8 @@ function applyLanguage(lang){
   input.placeholder = t.placeholder;
   sendBtn.textContent = t.send;
   changeModeBtn.textContent = f.changeMode;
+  micBtn.setAttribute('aria-label', isListening ? f.micStop : f.micStart);
+  micBtn.title = isListening ? f.micStop : f.micStart;
 
   const firstBotMessage = messagesEl.querySelector('.msg.bot');
   if(firstBotMessage && history.length === 0){
@@ -1272,7 +1390,11 @@ launcher.addEventListener('click', () => {
     setTimeout(showLevelSelection, 250);
   }
 });
-closeBtn.addEventListener('click', () => panel.classList.remove('open'));
+closeBtn.addEventListener('click', () => {
+  stopVoiceRecognition();
+  if('speechSynthesis' in window) window.speechSynthesis.cancel();
+  panel.classList.remove('open');
+});
 
 starters.addEventListener('click', (e) => {
   const target = e.target.closest('.starter');
@@ -1379,6 +1501,155 @@ starters.addEventListener('click', (e) => {
   sendMessage();
 });
 
+
+function getSpeechRecognitionConstructor(){
+  return window.SpeechRecognition || window.webkitSpeechRecognition || null;
+}
+
+function getRecognitionLanguage(){
+  // English is intentional: the microphone is for English speaking practice.
+  return 'en-US';
+}
+
+function setMicListeningState(listening){
+  isListening = listening;
+  const f = FLOW_UI[currentLang] || FLOW_UI.en;
+
+  micBtn.classList.toggle('listening', listening);
+  micBtn.setAttribute('aria-pressed', listening ? 'true' : 'false');
+  micBtn.setAttribute('aria-label', listening ? f.micStop : f.micStart);
+  micBtn.title = listening ? f.micStop : f.micStart;
+}
+
+function stripForSpeech(text){
+  return text
+    .replace(/\[WRONG\](.*?)\[\/WRONG\]/gi, '$1')
+    .replace(/\[RIGHT\](.*?)\[\/RIGHT\]/gi, '$1')
+    .replace(/\*\*(.*?)\*\*/g, '$1')
+    .replace(/https?:\/\/\S+/g, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+function speakBotReply(text){
+  if(!voiceConversationActive) return;
+  if(!('speechSynthesis' in window) || typeof SpeechSynthesisUtterance === 'undefined') return;
+
+  const cleanText = stripForSpeech(text);
+  if(!cleanText) return;
+
+  window.speechSynthesis.cancel();
+
+  const utterance = new SpeechSynthesisUtterance(cleanText);
+  utterance.lang = 'en-US';
+  utterance.rate = 0.96;
+  utterance.pitch = 1;
+
+  window.speechSynthesis.speak(utterance);
+}
+
+function stopVoiceRecognition(){
+  if(recognition && isListening){
+    try{ recognition.stop(); }catch(e){}
+  }
+  setMicListeningState(false);
+}
+
+function startVoiceRecognition(){
+  const Recognition = getSpeechRecognitionConstructor();
+  const f = FLOW_UI[currentLang] || FLOW_UI.en;
+
+  if(!Recognition){
+    addBotMessage(f.voiceUnsupported);
+    return;
+  }
+
+  if(isListening){
+    stopVoiceRecognition();
+    return;
+  }
+
+  if('speechSynthesis' in window){
+    window.speechSynthesis.cancel();
+  }
+
+  recognition = new Recognition();
+  recognition.lang = getRecognitionLanguage();
+  recognition.continuous = false;
+  recognition.interimResults = true;
+  recognition.maxAlternatives = 1;
+
+  let finalTranscript = '';
+  let hadResult = false;
+
+  recognition.onstart = () => {
+    setMicListeningState(true);
+    voiceConversationActive = true;
+  };
+
+  recognition.onresult = (event) => {
+    hadResult = true;
+    let interimTranscript = '';
+
+    for(let i = event.resultIndex; i < event.results.length; i++){
+      const transcript = event.results[i][0].transcript;
+
+      if(event.results[i].isFinal){
+        finalTranscript += transcript;
+      }else{
+        interimTranscript += transcript;
+      }
+    }
+
+    input.value = (finalTranscript || interimTranscript).trim();
+  };
+
+  recognition.onerror = (event) => {
+    setMicListeningState(false);
+
+    if(event.error === 'not-allowed' || event.error === 'service-not-allowed'){
+      addBotMessage(f.voicePermission);
+      return;
+    }
+
+    if(event.error === 'no-speech'){
+      addBotMessage(f.voiceNoSpeech);
+      return;
+    }
+
+    if(event.error !== 'aborted'){
+      addBotMessage(f.voiceError);
+    }
+  };
+
+  recognition.onend = () => {
+    setMicListeningState(false);
+
+    const transcript = input.value.trim();
+
+    if(finalTranscript.trim()){
+      input.value = finalTranscript.trim();
+      session.voiceMode = true;
+      voiceConversationActive = true;
+      sendMessage({ preserveVoiceMode: true });
+      return;
+    }
+
+    if(!hadResult && !transcript){
+      return;
+    }
+  };
+
+  try{
+    recognition.start();
+  }catch(err){
+    setMicListeningState(false);
+    addBotMessage(f.voiceError);
+  }
+}
+
+micBtn.addEventListener('click', startVoiceRecognition);
+
 function extractCapturedEmail(text){
   const match = text.match(/\[EMAIL\](.*?)\[\/EMAIL\]/i);
   if(!match){ return { cleaned: text, email: null }; }
@@ -1472,9 +1743,14 @@ function removeTyping(){
   if(el) el.remove();
 }
 
-async function sendMessage(){
+async function sendMessage(options = {}){
   const text = input.value.trim();
   if(!text) return;
+
+  if(!options.preserveVoiceMode && !session.voiceMode){
+    voiceConversationActive = false;
+  }
+
   input.value = '';
   sendBtn.disabled = true;
   addUserMessage(text);
@@ -1502,6 +1778,7 @@ async function sendMessage(){
 
     addBotMessage(levelResult.cleaned);
     history.push({ role: 'assistant', content: levelResult.cleaned });
+    speakBotReply(levelResult.cleaned);
 
     if(emailResult.email){
       notifyOwner(emailResult.email, text);
@@ -1537,8 +1814,18 @@ changeModeBtn.addEventListener('click', () => {
   const f = FLOW_UI[currentLang] || FLOW_UI.en;
   addBotMessage(f.modeChanged);
 });
-sendBtn.addEventListener('click', sendMessage);
-input.addEventListener('keydown', (e) => { if(e.key === 'Enter') sendMessage(); });
+sendBtn.addEventListener('click', () => {
+  session.voiceMode = false;
+  voiceConversationActive = false;
+  sendMessage();
+});
+input.addEventListener('keydown', (e) => {
+  if(e.key === 'Enter'){
+    session.voiceMode = false;
+    voiceConversationActive = false;
+    sendMessage();
+  }
+});
 </script>
 
 </body>
