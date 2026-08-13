@@ -1273,6 +1273,7 @@ function applyLanguage(lang){
   currentLang = lang;
   const t = UI[lang];
   const f = FLOW_UI[lang] || FLOW_UI.en;
+  resetComposer();
   hideVoiceNotice();
 
   headerTitle.textContent = t.title;
@@ -1293,6 +1294,15 @@ function applyLanguage(lang){
   );
 
   renderCurrentChoices();
+}
+
+function resetComposer(){
+  // Navigating via a button (level/mode/topic pick, change-mode) should
+  // never carry forward stale text left in the box - most commonly an
+  // old voice transcript that was never sent. Leftover text like that
+  // made the app look "confused" or "stuck" on a previous language/topic
+  // even though nothing was actually wrong with the recognizer itself.
+  stopVoiceRecognition({ clearInput: true });
 }
 
 function clearStarters(){
@@ -1437,6 +1447,8 @@ closeBtn.addEventListener('click', () => {
 starters.addEventListener('click', (e) => {
   const target = e.target.closest('.starter');
   if(!target) return;
+
+  resetComposer();
 
   const f = FLOW_UI[currentLang] || FLOW_UI.en;
 
@@ -2088,6 +2100,8 @@ async function sendMessage(options = {}){
   }
 }
 changeModeBtn.addEventListener('click', () => {
+  resetComposer();
+
   session.mode = null;
   session.topic = null;
   session.phase = 'mode';
