@@ -317,6 +317,31 @@ border: 1px solid var(--line);
     font-size:0.8rem;
   }
 
+  #mic-lang-badge{
+    position:absolute;
+    right:3px;
+    bottom:2px;
+    min-width:18px;
+    height:13px;
+    padding:0 3px;
+    border-radius:5px;
+    background:var(--ink);
+    color:var(--marigold);
+    border:1px solid rgba(255,255,255,0.75);
+    font-family:'IBM Plex Mono', monospace;
+    font-size:0.48rem;
+    font-weight:700;
+    line-height:11px;
+    text-align:center;
+    pointer-events:none;
+  }
+
+  #mic-btn.listening #mic-lang-badge{
+    background:var(--white);
+    color:var(--ink);
+    border-color:var(--ink);
+  }
+
   #voice-notice{
     display:none;
     margin:0 12px 8px;
@@ -409,6 +434,7 @@ border: 1px solid var(--line);
     <button id="mic-btn" type="button" aria-label="Start speaking" title="Start speaking">
       <span class="mic-icon">🎙️</span>
       <span class="mic-stop">■</span>
+      <span id="mic-lang-badge">TR</span>
     </button>
     <button id="send-btn">Send</button>
   </div>
@@ -1118,13 +1144,34 @@ After every answer:
 
 When Voice input active is "yes", treat the user's message as a transcript of spoken English.
 
+IMPORTANT:
+- The interface/explanation language remains ${UI[lang].langName}.
+- The student's spoken practice language is English.
+- Never translate the student's English transcript into the interface language.
+- Preserve the English sentence exactly under WHAT YOU SAID.
 - Do NOT claim to evaluate pronunciation, accent, stress, or individual sounds from transcript text alone.
-- Focus on grammar, vocabulary, clarity, fluency-friendly phrasing, and natural spoken English.
-- Briefly react to what the student meant.
-- Correct only important mistakes.
-- Give one more natural spoken alternative when useful.
-- Keep feedback concise so the exchange feels like a real conversation.
-- End with ONE next question in English when the user is in practice or interview mode.
+
+Use this concise speaking-coach format:
+
+WHAT YOU SAID:
+Repeat the English transcript.
+
+CORRECTED:
+Give the corrected English sentence only if a meaningful correction is needed.
+If it is already correct, write "Correct."
+
+MORE NATURAL:
+Give one natural spoken-English alternative when useful.
+
+COACH NOTE:
+Give one short grammar, vocabulary, or fluency note in ${UI[lang].langName}.
+Maximum 2 short sentences.
+
+NEXT:
+Ask ONE short follow-up question in English when continuing a practice, teaching, or interview conversation.
+
+Do not over-correct tiny style differences.
+Do not give long lectures.
 
 ==================================================
 9. COURSE / APEX SUPPORT
@@ -1235,6 +1282,7 @@ const headerSub = document.getElementById('header-sub');
 const modeToolbar = document.getElementById('mode-toolbar');
 const changeModeBtn = document.getElementById('change-mode-btn');
 const micBtn = document.getElementById('mic-btn');
+const micLangBadge = document.getElementById('mic-lang-badge');
 const voiceNotice = document.getElementById('voice-notice');
 const langButtons = document.querySelectorAll('.lang-btn');
 
@@ -1259,7 +1307,8 @@ let session = {
   mode: null,
   topic: null,
   phase: "level",
-  voiceMode: false
+  voiceMode: false,
+  speechLang: null
 };
 
 let voiceConversationActive = false;
@@ -1284,7 +1333,7 @@ function applyLanguage(lang){
   sendBtn.textContent = t.send;
   changeModeBtn.textContent = f.changeMode;
   micBtn.setAttribute('aria-label', isListening ? f.micStop : f.micStart);
-  micBtn.title = isListening ? f.micStop : f.micStart;
+  updateMicLanguageIndicator();
 
   const firstBotMessage = messagesEl.querySelector('.msg.bot');
   if(firstBotMessage && history.length === 0){
@@ -1463,6 +1512,7 @@ starters.addEventListener('click', (e) => {
     if(selectedLevel === 'unknown'){
       session.level = 'unknown';
       session.mode = 'level_check';
+      session.speechLang = 'en';
       session.topic = null;
       session.phase = 'diagnostic';
 
@@ -1490,7 +1540,9 @@ starters.addEventListener('click', (e) => {
   const selectedMode = target.dataset.mode;
   if(selectedMode){
     session.mode = selectedMode;
+    session.speechLang = ['correction','teach','practice'].includes(selectedMode) ? 'en' : null;
     session.topic = null;
+    updateMicLanguageIndicator();
 
     if(selectedMode === 'correction'){
       session.phase = 'active';
@@ -1665,7 +1717,46 @@ function getVoiceBrowserSupport(){
   return { supported:false, Recognition:null, reason:'unknown' };
 }
 
-function getRecognitionLanguage(){
+
+function detectEnglishLearningIntent(text){
+  const s = (text || '').toLocaleLowerCase();
+
+  const patterns = [
+    // English
+    'teach me english', 'learn english', 'practice english', 'practise english',
+    'speak english', 'english practice', 'correct my english',
+
+    // Turkish
+    'bana ingilizce öğret', 'ingilizce öğret', 'ingilizce öğren',
+    'ingilizce pratik', 'ingilizce konuş', 'ingilizcemi düzelt',
+
+    // Russian
+    'научи меня английскому', 'учи меня английскому',
+    'учить английский', 'практиковать английский', 'говорить по-английски',
+
+    // Persian
+    'به من انگلیسی', 'انگلیسی یاد', 'انگلیسی تمرین',
+    'انگلیسی صحبت', 'انگلیسی حرف',
+
+    // Spanish
+    'enséñame inglés', 'enseñame inglés', 'aprender inglés',
+    'practicar inglés', 'hablar inglés',
+
+    // French
+    "apprends-moi l'anglais", "apprendre l'anglais",
+    "pratiquer l'anglais", 'parler anglais',
+
+    // Chinese
+    '教我英语', '学英语', '学习英语', '练习英语', '说英语',
+
+    // Japanese
+    '英語を教えて', '英語を学', '英語を練習', '英語で話'
+  ];
+
+  return patterns.some(pattern => s.includes(pattern));
+}
+
+function getInterfaceSpeechLanguage(){
   const speechLanguages = {
     tr: 'tr-TR',
     en: 'en-US',
@@ -1677,8 +1768,54 @@ function getRecognitionLanguage(){
     ja: 'ja-JP'
   };
 
-  // The four explicit English-practice modes always need English
-  // recognition, regardless of the interface language.
+  return speechLanguages[currentLang] || 'en-US';
+}
+
+function getMicLanguageCode(){
+  const lang = getRecognitionLanguage();
+  const map = {
+    'tr-TR':'TR',
+    'en-US':'EN',
+    'ru-RU':'RU',
+    'fa-IR':'FA',
+    'es-ES':'ES',
+    'fr-FR':'FR',
+    'zh-CN':'ZH',
+    'ja-JP':'JA'
+  };
+
+  return map[lang] || 'EN';
+}
+
+function updateMicLanguageIndicator(){
+  if(!micLangBadge) return;
+
+  const code = getMicLanguageCode();
+  micLangBadge.textContent = code;
+
+  const names = {
+    TR:'Türkçe',
+    EN:'English',
+    RU:'Русский',
+    FA:'فارسی',
+    ES:'Español',
+    FR:'Français',
+    ZH:'中文',
+    JA:'日本語'
+  };
+
+  const f = FLOW_UI[currentLang] || FLOW_UI.en;
+  const action = isListening ? f.micStop : f.micStart;
+  micBtn.title = `${action} · Mic: ${names[code] || code}`;
+}
+
+function getRecognitionLanguage(){
+  // Once an English-learning flow starts, keep the microphone locked
+  // to English until the user explicitly returns to the main mode menu.
+  if(session.speechLang === 'en'){
+    return 'en-US';
+  }
+
   const englishLearningMode =
     session.mode === 'correction' ||
     session.mode === 'practice' ||
@@ -1689,10 +1826,7 @@ function getRecognitionLanguage(){
     return 'en-US';
   }
 
-  // Outside those modes (level/mode selection, general support questions),
-  // follow the selected UI language so e.g. a Persian speaker asking a
-  // pricing question in Persian is recognized correctly.
-  return speechLanguages[currentLang] || 'en-US';
+  return getInterfaceSpeechLanguage();
 }
 
 
@@ -1781,7 +1915,7 @@ function setMicListeningState(listening){
   micBtn.classList.toggle('listening', listening);
   micBtn.setAttribute('aria-pressed', listening ? 'true' : 'false');
   micBtn.setAttribute('aria-label', listening ? f.micStop : f.micStart);
-  micBtn.title = listening ? f.micStop : f.micStart;
+  updateMicLanguageIndicator();
 }
 
 
@@ -1852,6 +1986,8 @@ function startVoiceRecognition(){
   recognitionSessionId += 1;
   const thisRecognitionSession = recognitionSessionId;
 
+  // Lock the language for this recognition session. Auto-restarts reuse
+  // the same recognizer/language instead of recalculating from UI changes.
   const recognitionLanguage = getRecognitionLanguage();
 
   recognition = new Recognition();
@@ -2005,6 +2141,7 @@ function notifyOwner(visitorEmail, contextMessage){
 }
 
 applyLanguage('tr');
+updateMicLanguageIndicator();
 
 setTimeout(() => {
   if(!userHasToggled && !panel.classList.contains('open')){
@@ -2070,6 +2207,11 @@ function removeTyping(){
 async function sendMessage(options = {}){
   const text = input.value.trim();
   if(!text) return;
+
+  if(detectEnglishLearningIntent(text)){
+    session.speechLang = 'en';
+    updateMicLanguageIndicator();
+  }
 
   if(!options.preserveVoiceMode && !session.voiceMode){
     voiceConversationActive = false;
@@ -2146,8 +2288,10 @@ changeModeBtn.addEventListener('click', () => {
 
   session.mode = null;
   session.topic = null;
+  session.speechLang = null;
   session.phase = 'mode';
 
+  updateMicLanguageIndicator();
   showModeSelection();
 
   const f = FLOW_UI[currentLang] || FLOW_UI.en;
