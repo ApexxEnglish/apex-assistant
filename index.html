@@ -250,17 +250,22 @@ border: 1px solid var(--line);
     background:var(--white);
     border-top:1px solid var(--line);
   }
-  #input-row input{
+  #input-row textarea{
     flex:1;
     border:1px solid var(--line);
     border-radius:8px;
     padding:10px 12px;
     font-family:'IBM Plex Sans', sans-serif;
     font-size:16px;
+    line-height:1.4;
     outline:none;
     color:var(--ink);
+    resize:none;
+    min-height:42px;
+    max-height:120px;
+    overflow-y:auto;
   }
-  #input-row input:focus{
+  #input-row textarea:focus{
     border-color:var(--marigold-deep);
   }
   #input-row button{
@@ -384,7 +389,7 @@ border: 1px solid var(--line);
   </button>
 </div>
   <div id="input-row">
-    <input id="chat-input" type="text" placeholder="Type a question or a sentence..." />
+    <textarea id="chat-input" rows="1" placeholder="Type a question or a sentence..."></textarea>
     <button id="mic-btn" type="button" aria-label="Start speaking" title="Start speaking">
       <span class="mic-icon">🎙️</span>
       <span class="mic-stop">■</span>
@@ -1216,6 +1221,12 @@ const changeModeBtn = document.getElementById('change-mode-btn');
 const micBtn = document.getElementById('mic-btn');
 const langButtons = document.querySelectorAll('.lang-btn');
 
+function resizeChatInput(){
+  input.style.height = 'auto';
+  input.style.height = Math.min(input.scrollHeight, 120) + 'px';
+}
+
+
 let history = [];
 let currentLang = 'tr';
 
@@ -1231,6 +1242,8 @@ let voiceConversationActive = false;
 let isListening = false;
 let recognition = null;
 let micShouldKeepListening = false;
+let recognitionSessionId = 0;
+let ignoreRecognitionEnd = false;
 
 function applyLanguage(lang){
   currentLang = lang;
@@ -1392,7 +1405,7 @@ launcher.addEventListener('click', () => {
   }
 });
 closeBtn.addEventListener('click', () => {
-  stopVoiceRecognition();
+  stopVoiceRecognition({ clearInput: false });
   panel.classList.remove('open');
 });
 
@@ -1561,14 +1574,31 @@ function setMicListeningState(listening){
 }
 
 
-function stopVoiceRecognition(){
+function stopVoiceRecognition({ clearInput = false } = {}){
   micShouldKeepListening = false;
+  ignoreRecognitionEnd = true;
+  recognitionSessionId += 1;
 
   if(recognition){
-    try{ recognition.stop(); }catch(e){}
+    try{ recognition.onend = null; }catch(e){}
+    try{ recognition.onresult = null; }catch(e){}
+    try{ recognition.onerror = null; }catch(e){}
+    try{ recognition.abort(); }catch(e){
+      try{ recognition.stop(); }catch(_){}
+    }
   }
 
+  recognition = null;
   setMicListeningState(false);
+
+  if(clearInput){
+    input.value = '';
+    resizeChatInput();
+  }
+
+  setTimeout(() => {
+    ignoreRecognitionEnd = false;
+  }, 100);
 }
 
 function startVoiceRecognition(){
@@ -1588,10 +1618,14 @@ function startVoiceRecognition(){
 
   // A fresh microphone session should not append to an older transcript.
   input.value = '';
+  resizeChatInput();
   session.voiceMode = false;
   voiceConversationActive = false;
 
   micShouldKeepListening = true;
+  ignoreRecognitionEnd = false;
+  recognitionSessionId += 1;
+  const thisRecognitionSession = recognitionSessionId;
 
   recognition = new Recognition();
   recognition.lang = getRecognitionLanguage();
@@ -1621,7 +1655,13 @@ function startVoiceRecognition(){
       }
     }
 
-    input.value = (finalTranscript || interimTranscript).trim();
+    const combinedTranscript = (finalTranscript + ' ' + interimTranscript)
+      .replace(/\s+/g, ' ')
+      .trim();
+
+    input.value = combinedTranscript;
+    resizeChatInput();
+    input.scrollTop = input.scrollHeight;
   };
 
   recognition.onerror = (event) => {
@@ -1657,10 +1697,15 @@ function startVoiceRecognition(){
   };
 
   recognition.onend = () => {
+    if(ignoreRecognitionEnd || thisRecognitionSession !== recognitionSessionId){
+      return;
+    }
+
     setMicListeningState(false);
 
     if(finalTranscript.trim()){
       input.value = finalTranscript.trim();
+      resizeChatInput();
       session.voiceMode = true;
       voiceConversationActive = true;
     }
@@ -1670,8 +1715,10 @@ function startVoiceRecognition(){
     // Some browsers stop SpeechRecognition after a short silence even when
     // continuous mode is enabled. Restart automatically until the user
     // explicitly presses the microphone button to stop.
-    if(micShouldKeepListening){
+    if(micShouldKeepListening && thisRecognitionSession === recognitionSessionId){
       setTimeout(() => {
+        if(!micShouldKeepListening || thisRecognitionSession !== recognitionSessionId) return;
+
         try{
           recognition.start();
         }catch(e){
@@ -1793,7 +1840,9 @@ async function sendMessage(options = {}){
     voiceConversationActive = false;
   }
 
+  // Clear the composer immediately after submit.
   input.value = '';
+  resizeChatInput();
   sendBtn.disabled = true;
   addUserMessage(text);
   history.push({ role: 'user', content: text });
@@ -1871,7 +1920,7 @@ sendBtn.addEventListener('click', () => {
   const preserveVoiceMode = session.voiceMode === true;
 
   // Sending the message should also finish the current microphone session.
-  stopVoiceRecognition();
+  stopVoiceRecognition({ clearInput: false });
 
   if(!preserveVoiceMode){
     voiceConversationActive = false;
@@ -1879,12 +1928,16 @@ sendBtn.addEventListener('click', () => {
 
   sendMessage({ preserveVoiceMode });
 });
+input.addEventListener('input', resizeChatInput);
+
 input.addEventListener('keydown', (e) => {
-  if(e.key === 'Enter'){
+  if(e.key === 'Enter' && !e.shiftKey){
+    e.preventDefault();
+
     const preserveVoiceMode = session.voiceMode === true;
 
     // Enter should behave exactly like the Send button.
-    stopVoiceRecognition();
+    stopVoiceRecognition({ clearInput: false });
 
     if(!preserveVoiceMode){
       voiceConversationActive = false;
