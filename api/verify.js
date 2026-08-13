@@ -16,6 +16,36 @@ function generateCode() {
   return String(crypto.randomInt(100000, 1000000));
 }
 
+function base64url(value) {
+  return Buffer
+    .from(value)
+    .toString('base64')
+    .replace(/\+/g, '-')
+    .replace(/\//g, '_')
+    .replace(/=+$/g, '');
+}
+
+function createSessionToken(email, secret) {
+  const payload = {
+    email,
+    exp: Date.now() + 30 * 24 * 60 * 60 * 1000
+  };
+
+  const encodedPayload = base64url(
+    JSON.stringify(payload)
+  );
+
+  const signature = crypto
+    .createHmac('sha256', secret)
+    .update(encodedPayload)
+    .digest('base64')
+    .replace(/\+/g, '-')
+    .replace(/\//g, '_')
+    .replace(/=+$/g, '');
+
+  return `${encodedPayload}.${signature}`;
+}
+
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
@@ -26,21 +56,25 @@ export default async function handler(req, res) {
   }
 
   if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' });
+    return res.status(405).json({
+      error: 'Method not allowed'
+    });
   }
 
   const {
     SUPABASE_URL,
     SUPABASE_SECRET_KEY,
     GMAIL_USER,
-    GMAIL_APP_PASSWORD
+    GMAIL_APP_PASSWORD,
+    PROFILE_SESSION_SECRET
   } = process.env;
 
   if (
     !SUPABASE_URL ||
     !SUPABASE_SECRET_KEY ||
     !GMAIL_USER ||
-    !GMAIL_APP_PASSWORD
+    !GMAIL_APP_PASSWORD ||
+    !PROFILE_SESSION_SECRET
   ) {
     return res.status(500).json({
       error: 'Required environment variables are missing.'
@@ -67,9 +101,9 @@ export default async function handler(req, res) {
 
   try {
 
-    // ==================================================
-    // SEND 6-DIGIT CODE
-    // ==================================================
+    // ==========================================
+    // SEND CODE
+    // ==========================================
     if (action === 'send') {
       const code = generateCode();
       const codeHash = hashCode(email, code);
@@ -78,7 +112,7 @@ export default async function handler(req, res) {
         Date.now() + 10 * 60 * 1000
       ).toISOString();
 
-      // Delete older unused codes for this email
+      // Delete older unused codes
       await fetch(
         `${verificationEndpoint}?email=eq.${encodeURIComponent(email)}&verified_at=is.null`,
         {
@@ -104,9 +138,13 @@ export default async function handler(req, res) {
       );
 
       if (!saveResponse.ok) {
-        const errorData = await saveResponse.json().catch(() => ({}));
+        const errorData =
+          await saveResponse.json().catch(() => ({}));
 
-        console.error('Supabase verification save error:', errorData);
+        console.error(
+          'Supabase verification save error:',
+          errorData
+        );
 
         return res.status(500).json({
           error: 'Verification code could not be saved.'
@@ -125,7 +163,8 @@ export default async function handler(req, res) {
         from: GMAIL_USER,
         to: email,
 
-        subject: 'Apex Assistant — Doğrulama Kodunuz',
+        subject:
+          'Apex Assistant — Doğrulama Kodunuz',
 
         text:
           `Apex Assistant doğrulama kodunuz:\n\n` +
@@ -140,15 +179,18 @@ export default async function handler(req, res) {
       });
     }
 
-    // ==================================================
+    // ==========================================
     // VERIFY CODE
-    // ==================================================
+    // ==========================================
     if (action === 'verify') {
-      const code = String(body.code || '').trim();
+      const code = String(
+        body.code || ''
+      ).trim();
 
       if (!/^\d{6}$/.test(code)) {
         return res.status(400).json({
-          error: 'A valid 6-digit code is required.'
+          error:
+            'A valid 6-digit code is required.'
         });
       }
 
@@ -168,16 +210,23 @@ export default async function handler(req, res) {
       const rows = await response.json();
 
       if (!response.ok) {
-        console.error('Supabase verification lookup error:', rows);
+        console.error(
+          'Supabase verification lookup error:',
+          rows
+        );
 
         return res.status(500).json({
           error: 'Verification lookup failed.'
         });
       }
 
-      if (!Array.isArray(rows) || rows.length === 0) {
+      if (
+        !Array.isArray(rows) ||
+        rows.length === 0
+      ) {
         return res.status(400).json({
-          error: 'No active verification code found.'
+          error:
+            'No active verification code found.'
         });
       }
 
@@ -185,14 +234,17 @@ export default async function handler(req, res) {
 
       if (
         !verification.expires_at ||
-        new Date(verification.expires_at).getTime() < Date.now()
+        new Date(
+          verification.expires_at
+        ).getTime() < Date.now()
       ) {
         return res.status(400).json({
           error: 'Verification code expired.'
         });
       }
 
-      const submittedHash = hashCode(email, code);
+      const submittedHash =
+        hashCode(email, code);
 
       const storedBuffer = Buffer.from(
         verification.code_hash,
@@ -205,7 +257,8 @@ export default async function handler(req, res) {
       );
 
       const isValid =
-        storedBuffer.length === submittedBuffer.length &&
+        storedBuffer.length ===
+          submittedBuffer.length &&
         crypto.timingSafeEqual(
           storedBuffer,
           submittedBuffer
@@ -213,12 +266,15 @@ export default async function handler(req, res) {
 
       if (!isValid) {
         return res.status(400).json({
-          error: 'Verification code is incorrect.'
+          error:
+            'Verification code is incorrect.'
         });
       }
 
       const markResponse = await fetch(
-        `${verificationEndpoint}?id=eq.${encodeURIComponent(verification.id)}`,
+        `${verificationEndpoint}?id=eq.${encodeURIComponent(
+          verification.id
+        )}`,
         {
           method: 'PATCH',
           headers: {
@@ -226,21 +282,30 @@ export default async function handler(req, res) {
             Prefer: 'return=minimal'
           },
           body: JSON.stringify({
-            verified_at: new Date().toISOString()
+            verified_at:
+              new Date().toISOString()
           })
         }
       );
 
       if (!markResponse.ok) {
         return res.status(500).json({
-          error: 'Verification could not be completed.'
+          error:
+            'Verification could not be completed.'
         });
       }
+
+      const sessionToken =
+        createSessionToken(
+          email,
+          PROFILE_SESSION_SECRET
+        );
 
       return res.status(200).json({
         ok: true,
         verified: true,
-        email
+        email,
+        sessionToken
       });
     }
 
@@ -249,10 +314,14 @@ export default async function handler(req, res) {
     });
 
   } catch (err) {
-    console.error('Verify API error:', err);
+    console.error(
+      'Verify API error:',
+      err
+    );
 
     return res.status(500).json({
-      error: 'Verification service failed.'
+      error:
+        'Verification service failed.'
     });
   }
 }
