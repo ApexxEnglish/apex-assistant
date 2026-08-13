@@ -1269,6 +1269,7 @@ let micShouldKeepListening = false;
 let recognitionSessionId = 0;
 let ignoreRecognitionEnd = false;
 let voiceHadSpeech = false;
+let voiceNoticeTimer = null;
 
 function applyLanguage(lang){
   currentLang = lang;
@@ -1560,12 +1561,36 @@ starters.addEventListener('click', (e) => {
 
 function showVoiceNotice(message){
   if(!voiceNotice) return;
-  voiceNotice.textContent = message;
+
+  const f = FLOW_UI[currentLang] || FLOW_UI.en;
+  const fallback = f.voiceUnsupported || FLOW_UI.en.voiceUnsupported ||
+    'Voice input is not available in this browser. Please use Google Chrome or Safari.';
+
+  const safeMessage = (typeof message === 'string' && message.trim())
+    ? message.trim()
+    : fallback;
+
+  voiceNotice.textContent = safeMessage;
   voiceNotice.classList.add('visible');
+
+  // Uyarı ekranda kalmasın; 7 saniye sonra otomatik kaybolsun.
+  if(voiceNoticeTimer){
+    clearTimeout(voiceNoticeTimer);
+  }
+
+  voiceNoticeTimer = setTimeout(() => {
+    hideVoiceNotice();
+  }, 7000);
 }
 
 function hideVoiceNotice(){
   if(!voiceNotice) return;
+
+  if(voiceNoticeTimer){
+    clearTimeout(voiceNoticeTimer);
+    voiceNoticeTimer = null;
+  }
+
   voiceNotice.textContent = '';
   voiceNotice.classList.remove('visible');
 }
