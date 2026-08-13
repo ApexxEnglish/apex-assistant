@@ -1087,6 +1087,305 @@ border: 1px solid var(--line);
     cursor:default;
   }
 
+
+  /* ==================================================
+     v19 — Pronunciation Coach
+     Compact entry beside language tabs, full mini-panel
+     ================================================== */
+  #pronunciation-launch{
+    margin-left:auto;
+    display:inline-flex;
+    align-items:center;
+    gap:5px;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:0.59rem;
+    font-weight:700;
+    letter-spacing:0.01em;
+    background:var(--ink);
+    color:var(--marigold);
+    border:1px solid var(--ink);
+    border-radius:100px;
+    padding:4px 9px;
+    cursor:pointer;
+    white-space:nowrap;
+  }
+  #pronunciation-launch:hover{ transform:translateY(-1px); }
+  #pronunciation-launch .pron-icon{ font-size:0.8rem; line-height:1; }
+
+  #pronunciation-panel{
+    position:absolute;
+    inset:0;
+    z-index:45;
+    display:none;
+    align-items:flex-start;
+    justify-content:center;
+    padding:58px 14px 14px;
+    background:rgba(245,242,235,.96);
+    backdrop-filter:blur(7px);
+  }
+  #pronunciation-panel.open{ display:flex; }
+
+  #pronunciation-card{
+    width:min(460px,100%);
+    max-height:calc(100% - 6px);
+    overflow-y:auto;
+    background:var(--white);
+    border:1px solid var(--line);
+    border-radius:18px;
+    box-shadow:0 18px 55px rgba(31,31,28,.16);
+  }
+  #pronunciation-card > header{
+    position:sticky;
+    top:0;
+    z-index:2;
+    display:flex;
+    align-items:flex-start;
+    justify-content:space-between;
+    gap:12px;
+    padding:14px 15px 12px;
+    background:rgba(255,255,255,.96);
+    border-bottom:1px solid var(--line);
+    backdrop-filter:blur(6px);
+  }
+  #pronunciation-card .pron-title{
+    font-size:0.95rem;
+    font-weight:750;
+    line-height:1.2;
+  }
+  #pronunciation-card .pron-sub{
+    margin-top:3px;
+    font-size:0.69rem;
+    color:var(--ink-soft);
+    line-height:1.35;
+  }
+  #pronunciation-close{
+    border:0;
+    background:transparent;
+    color:var(--ink-soft);
+    font-size:1rem;
+    cursor:pointer;
+    padding:2px 4px;
+  }
+  #pronunciation-body{ padding:14px 15px 16px; }
+
+  .pron-label{
+    display:block;
+    margin-bottom:6px;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:0.58rem;
+    font-weight:700;
+    letter-spacing:.045em;
+    text-transform:uppercase;
+    color:var(--ink-soft);
+  }
+  #pronunciation-target{
+    width:100%;
+    min-height:68px;
+    resize:vertical;
+    padding:10px 11px;
+    border:1px solid var(--line);
+    border-radius:11px;
+    background:var(--paper);
+    color:var(--ink);
+    font:500 0.84rem/1.45 'DM Sans',sans-serif;
+    outline:none;
+  }
+  #pronunciation-target:focus{
+    border-color:var(--ink);
+    background:var(--white);
+  }
+
+  #pronunciation-example-row{
+    display:flex;
+    flex-wrap:wrap;
+    gap:6px;
+    margin-top:8px;
+  }
+  .pron-example{
+    border:1px solid var(--line);
+    border-radius:100px;
+    background:var(--white);
+    color:var(--ink-soft);
+    padding:5px 8px;
+    font-size:0.68rem;
+    cursor:pointer;
+  }
+
+  #pronunciation-recorder{
+    margin-top:14px;
+    padding:12px;
+    border:1px solid var(--line);
+    border-radius:13px;
+    background:var(--paper);
+  }
+  #pronunciation-recorder-top{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+  }
+  #pronunciation-status{
+    font-size:0.72rem;
+    color:var(--ink-soft);
+    line-height:1.35;
+  }
+  #pronunciation-timer{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:0.66rem;
+    font-weight:700;
+    color:var(--ink-soft);
+  }
+  #pronunciation-meter{
+    height:5px;
+    margin-top:9px;
+    overflow:hidden;
+    border-radius:99px;
+    background:#e9e5dc;
+  }
+  #pronunciation-meter > span{
+    display:block;
+    width:0%;
+    height:100%;
+    background:var(--ink);
+    transition:width .12s linear;
+  }
+
+  #pronunciation-actions{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:8px;
+    margin-top:10px;
+  }
+  .pron-action{
+    min-height:38px;
+    border-radius:10px;
+    border:1px solid var(--line);
+    font-size:0.75rem;
+    font-weight:700;
+    cursor:pointer;
+  }
+  #pronunciation-record{
+    background:var(--ink);
+    color:var(--marigold);
+    border-color:var(--ink);
+  }
+  #pronunciation-record.recording{
+    background:#7b3030;
+    color:#fff;
+    border-color:#7b3030;
+  }
+  #pronunciation-analyze{
+    background:var(--marigold);
+    color:var(--ink);
+  }
+  #pronunciation-analyze:disabled,
+  #pronunciation-record:disabled{
+    opacity:.45;
+    cursor:not-allowed;
+  }
+
+  #pronunciation-note{
+    margin-top:9px;
+    font-size:0.64rem;
+    line-height:1.4;
+    color:var(--ink-soft);
+  }
+  #pronunciation-result{
+    display:none;
+    margin-top:14px;
+    border-top:1px solid var(--line);
+    padding-top:13px;
+  }
+  #pronunciation-result.show{ display:block; }
+
+  .pron-score-row{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:7px;
+  }
+  .pron-score{
+    padding:9px 7px;
+    border:1px solid var(--line);
+    border-radius:10px;
+    background:var(--paper);
+    text-align:center;
+  }
+  .pron-score span{
+    display:block;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:.52rem;
+    font-weight:700;
+    color:var(--ink-soft);
+    text-transform:uppercase;
+  }
+  .pron-score strong{
+    display:block;
+    margin-top:3px;
+    font-size:.88rem;
+  }
+
+  .pron-result-section{
+    margin-top:11px;
+    padding:10px 11px;
+    border:1px solid var(--line);
+    border-radius:10px;
+    background:var(--white);
+  }
+  .pron-result-heading{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:.56rem;
+    font-weight:700;
+    letter-spacing:.04em;
+    color:var(--ink-soft);
+    text-transform:uppercase;
+    margin-bottom:5px;
+  }
+  .pron-result-text{
+    font-size:.77rem;
+    line-height:1.45;
+  }
+  #pronunciation-focus-list{
+    display:flex;
+    flex-direction:column;
+    gap:5px;
+  }
+  .pron-focus-item{
+    padding:7px 8px;
+    border-radius:8px;
+    background:var(--paper);
+    font-size:.73rem;
+    line-height:1.4;
+  }
+  .pron-focus-item strong{ font-weight:750; }
+
+  #pronunciation-panel[dir="rtl"] #pronunciation-card,
+  #pronunciation-panel[dir="rtl"] #pronunciation-target,
+  #pronunciation-panel[dir="rtl"] .pron-result-text,
+  #pronunciation-panel[dir="rtl"] .pron-focus-item{
+    text-align:right;
+  }
+
+  @media(max-width:560px){
+    #lang-switch{
+      align-items:center;
+      padding:7px 10px;
+    }
+    #pronunciation-launch{
+      padding:4px 7px;
+      font-size:.56rem;
+    }
+    #pronunciation-launch .pron-label-short{ display:none; }
+    #pronunciation-panel{
+      padding:50px 8px 8px;
+    }
+    #pronunciation-card{
+      border-radius:15px;
+      max-height:calc(100% - 2px);
+    }
+    #pronunciation-body{ padding:12px; }
+    #pronunciation-actions{ grid-template-columns:1fr; }
+  }
+
 </style>
 </head>
 <body>
@@ -1121,6 +1420,10 @@ border: 1px solid var(--line);
     <button class="lang-btn" data-lang="fr">FR</button>
     <button class="lang-btn" data-lang="zh">ZH</button>
     <button class="lang-btn" data-lang="ja">JA</button>
+    <button id="pronunciation-launch" type="button" aria-label="Pronunciation Coach" title="Pronunciation Coach">
+      <span class="pron-icon">🗣️</span>
+      <span class="pron-label-short" id="pronunciation-launch-label">Pronunciation</span>
+    </button>
   </div>
   <div id="coach-status">
     <div class="coach-pill" id="level-pill"><span id="level-label">Level</span> <strong id="level-value">—</strong></div>
@@ -1163,6 +1466,73 @@ border: 1px solid var(--line);
       </div>
     </div>
     <button id="send-btn">Send</button>
+  </div>
+
+
+  <div id="pronunciation-panel" aria-hidden="true">
+    <div id="pronunciation-card" role="dialog" aria-modal="true" aria-labelledby="pronunciation-title">
+      <header>
+        <div>
+          <div class="pron-title" id="pronunciation-title">Pronunciation Coach</div>
+          <div class="pron-sub" id="pronunciation-subtitle">Record a short English sentence and get audio-based coaching.</div>
+        </div>
+        <button id="pronunciation-close" type="button" aria-label="Close">✕</button>
+      </header>
+
+      <div id="pronunciation-body">
+        <label class="pron-label" id="pronunciation-target-label" for="pronunciation-target">Sentence to practise</label>
+        <textarea id="pronunciation-target" maxlength="240">I would like to improve my English pronunciation.</textarea>
+
+        <div id="pronunciation-example-row">
+          <button class="pron-example" type="button" data-pron-example="Could you please send me the updated report by Friday?">Business</button>
+          <button class="pron-example" type="button" data-pron-example="I really enjoyed meeting everyone at the conference.">Everyday</button>
+          <button class="pron-example" type="button" data-pron-example="I am comfortable explaining complex ideas in English.">Challenge</button>
+        </div>
+
+        <div id="pronunciation-recorder">
+          <div id="pronunciation-recorder-top">
+            <div id="pronunciation-status">Ready to record. Maximum 12 seconds.</div>
+            <div id="pronunciation-timer">00:00</div>
+          </div>
+          <div id="pronunciation-meter"><span></span></div>
+
+          <div id="pronunciation-actions">
+            <button class="pron-action" id="pronunciation-record" type="button">● Start recording</button>
+            <button class="pron-action" id="pronunciation-analyze" type="button" disabled>Analyze my pronunciation</button>
+          </div>
+
+          <div id="pronunciation-note">The coach analyzes the actual recording. It gives practical feedback on clarity, stress and rhythm, but it is not a clinical or phonetics-lab measurement.</div>
+        </div>
+
+        <div id="pronunciation-result" aria-live="polite">
+          <div class="pron-score-row">
+            <div class="pron-score"><span id="pronunciation-clarity-label">Clarity</span><strong id="pronunciation-clarity">—</strong></div>
+            <div class="pron-score"><span id="pronunciation-rhythm-label">Rhythm</span><strong id="pronunciation-rhythm">—</strong></div>
+            <div class="pron-score"><span id="pronunciation-stress-label">Stress</span><strong id="pronunciation-stress">—</strong></div>
+          </div>
+
+          <div class="pron-result-section">
+            <div class="pron-result-heading" id="pronunciation-heard-label">What I heard</div>
+            <div class="pron-result-text" id="pronunciation-heard">—</div>
+          </div>
+
+          <div class="pron-result-section">
+            <div class="pron-result-heading" id="pronunciation-focus-label">Focus words</div>
+            <div id="pronunciation-focus-list"></div>
+          </div>
+
+          <div class="pron-result-section">
+            <div class="pron-result-heading" id="pronunciation-coach-label">Coach note</div>
+            <div class="pron-result-text" id="pronunciation-coach-note">—</div>
+          </div>
+
+          <div class="pron-result-section">
+            <div class="pron-result-heading" id="pronunciation-try-label">Try again</div>
+            <div class="pron-result-text" id="pronunciation-try-again">—</div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 
   <div id="progress-panel" aria-hidden="true">
@@ -1380,6 +1750,99 @@ const UI = {
       { label: "料金", msg: "レッスンの料金はいくらですか？", notify: true, instant: true },
       { label: "お問い合わせ", msg: "連絡先を共有していただけますか？" }
     ]
+  }
+};
+
+
+
+const PRON_UI = {
+  en: {
+    launch:"Pronunciation", title:"Pronunciation Coach", sub:"Record a short English sentence and get audio-based coaching.",
+    target:"Sentence to practise", ready:"Ready to record. Maximum 12 seconds.", recording:"Listening… speak naturally.",
+    start:"● Start recording", stop:"■ Stop recording", analyze:"Analyze my pronunciation", analyzing:"Analyzing your recording…",
+    note:"The coach analyzes the actual recording. It gives practical feedback on clarity, stress and rhythm, but it is not a clinical or phonetics-lab measurement.",
+    clarity:"Clarity", rhythm:"Rhythm", stress:"Stress", heard:"What I heard", focus:"Focus words", coach:"Coach note", tryAgain:"Try again",
+    micDenied:"Microphone access was blocked. Please allow microphone permission and try again.",
+    unsupported:"Audio recording is not supported in this browser. Please try Chrome, Edge or Safari.",
+    noAudio:"Record your sentence first.", error:"I couldn't analyze this recording. Please try again.",
+    examples:["Business","Everyday","Challenge"]
+  },
+  tr: {
+    launch:"Telaffuz", title:"Pronunciation Coach", sub:"Kısa bir İngilizce cümle kaydedin; gerçek ses kaydınıza göre koçluk alın.",
+    target:"Çalışılacak cümle", ready:"Kayda hazır. En fazla 12 saniye.", recording:"Dinliyorum… doğal şekilde konuşun.",
+    start:"● Kaydı Başlat", stop:"■ Kaydı Durdur", analyze:"Telaffuzumu Analiz Et", analyzing:"Ses kaydınız analiz ediliyor…",
+    note:"Koç gerçek ses kaydını analiz eder. Netlik, vurgu ve ritim için pratik geri bildirim verir; klinik veya fonetik laboratuvar ölçümü değildir.",
+    clarity:"Netlik", rhythm:"Ritim", stress:"Vurgu", heard:"Duyduğum", focus:"Odak kelimeler", coach:"Koç notu", tryAgain:"Tekrar dene",
+    micDenied:"Mikrofon erişimi engellendi. Mikrofon izni verip tekrar deneyin.",
+    unsupported:"Bu tarayıcı ses kaydını desteklemiyor. Chrome, Edge veya Safari ile deneyin.",
+    noAudio:"Önce cümlenizi kaydedin.", error:"Bu kaydı analiz edemedim. Lütfen tekrar deneyin.",
+    examples:["Business","Günlük","Zorlayıcı"]
+  },
+  ru: {
+    launch:"Произношение", title:"Pronunciation Coach", sub:"Запишите короткую английскую фразу и получите рекомендации по реальной аудиозаписи.",
+    target:"Фраза для практики", ready:"Готово к записи. Максимум 12 секунд.", recording:"Слушаю… говорите естественно.",
+    start:"● Начать запись", stop:"■ Остановить", analyze:"Анализ произношения", analyzing:"Анализирую запись…",
+    note:"Коуч анализирует реальную запись и дает практические советы по ясности, ударению и ритму. Это не лабораторное фонетическое измерение.",
+    clarity:"Ясность", rhythm:"Ритм", stress:"Ударение", heard:"Что я услышал", focus:"Слова для работы", coach:"Совет коуча", tryAgain:"Попробуйте снова",
+    micDenied:"Доступ к микрофону заблокирован. Разрешите его и попробуйте снова.",
+    unsupported:"Запись аудио не поддерживается этим браузером. Попробуйте Chrome, Edge или Safari.",
+    noAudio:"Сначала запишите фразу.", error:"Не удалось проанализировать запись. Попробуйте снова.",
+    examples:["Деловой","Разговорный","Сложнее"]
+  },
+  fa: {
+    launch:"تلفظ", title:"مربی تلفظ", sub:"یک جمله کوتاه انگلیسی ضبط کنید و بر اساس صدای واقعی خود بازخورد بگیرید.",
+    target:"جمله برای تمرین", ready:"آماده ضبط. حداکثر ۱۲ ثانیه.", recording:"در حال شنیدن… طبیعی صحبت کنید.",
+    start:"● شروع ضبط", stop:"■ توقف ضبط", analyze:"تلفظم را تحلیل کن", analyzing:"در حال تحلیل صدای شما…",
+    note:"مربی صدای واقعی شما را تحلیل می‌کند و درباره وضوح، استرس و ریتم بازخورد عملی می‌دهد؛ این یک اندازه‌گیری آزمایشگاهی یا بالینی نیست.",
+    clarity:"وضوح", rhythm:"ریتم", stress:"استرس", heard:"آنچه شنیدم", focus:"کلمات تمرکزی", coach:"یادداشت مربی", tryAgain:"دوباره امتحان کنید",
+    micDenied:"دسترسی به میکروفون مسدود شده است. اجازه میکروفون را فعال کنید و دوباره امتحان کنید.",
+    unsupported:"ضبط صدا در این مرورگر پشتیبانی نمی‌شود. Chrome، Edge یا Safari را امتحان کنید.",
+    noAudio:"ابتدا جمله خود را ضبط کنید.", error:"نتوانستم این صدا را تحلیل کنم. دوباره امتحان کنید.",
+    examples:["کاری","روزمره","چالشی"]
+  },
+  es: {
+    launch:"Pronunciación", title:"Pronunciation Coach", sub:"Graba una frase corta en inglés y recibe coaching basado en tu audio real.",
+    target:"Frase para practicar", ready:"Listo para grabar. Máximo 12 segundos.", recording:"Escuchando… habla de forma natural.",
+    start:"● Iniciar grabación", stop:"■ Detener", analyze:"Analizar mi pronunciación", analyzing:"Analizando tu grabación…",
+    note:"El coach analiza la grabación real y ofrece comentarios prácticos sobre claridad, acento prosódico y ritmo. No es una medición clínica ni de laboratorio.",
+    clarity:"Claridad", rhythm:"Ritmo", stress:"Acento", heard:"Lo que escuché", focus:"Palabras clave", coach:"Nota del coach", tryAgain:"Inténtalo de nuevo",
+    micDenied:"El acceso al micrófono está bloqueado. Permítelo e inténtalo de nuevo.",
+    unsupported:"Este navegador no admite la grabación. Prueba Chrome, Edge o Safari.",
+    noAudio:"Primero graba la frase.", error:"No pude analizar esta grabación. Inténtalo de nuevo.",
+    examples:["Negocios","Diario","Reto"]
+  },
+  fr: {
+    launch:"Prononciation", title:"Pronunciation Coach", sub:"Enregistrez une courte phrase en anglais et recevez un coaching basé sur votre véritable audio.",
+    target:"Phrase à travailler", ready:"Prêt à enregistrer. 12 secondes maximum.", recording:"J'écoute… parlez naturellement.",
+    start:"● Commencer", stop:"■ Arrêter", analyze:"Analyser ma prononciation", analyzing:"Analyse de votre enregistrement…",
+    note:"Le coach analyse l'enregistrement réel et donne des conseils pratiques sur la clarté, l'accentuation et le rythme. Ce n'est pas une mesure clinique ou de laboratoire.",
+    clarity:"Clarté", rhythm:"Rythme", stress:"Accentuation", heard:"Ce que j'ai entendu", focus:"Mots à travailler", coach:"Conseil du coach", tryAgain:"Réessayez",
+    micDenied:"L'accès au microphone est bloqué. Autorisez-le puis réessayez.",
+    unsupported:"L'enregistrement audio n'est pas pris en charge par ce navigateur. Essayez Chrome, Edge ou Safari.",
+    noAudio:"Enregistrez d'abord votre phrase.", error:"Je n'ai pas pu analyser cet enregistrement. Réessayez.",
+    examples:["Business","Quotidien","Défi"]
+  },
+  zh: {
+    launch:"发音", title:"发音教练", sub:"录制一句简短的英语，根据真实录音获得发音指导。",
+    target:"练习句子", ready:"准备录音，最长 12 秒。", recording:"正在聆听……请自然地说。",
+    start:"● 开始录音", stop:"■ 停止录音", analyze:"分析我的发音", analyzing:"正在分析录音……",
+    note:"教练会分析真实录音，并针对清晰度、重音和节奏给出实用反馈；这不是临床或语音实验室测量。",
+    clarity:"清晰度", rhythm:"节奏", stress:"重音", heard:"我听到的", focus:"重点词", coach:"教练建议", tryAgain:"再试一次",
+    micDenied:"麦克风权限被阻止。请允许麦克风访问后重试。",
+    unsupported:"此浏览器不支持录音。请尝试 Chrome、Edge 或 Safari。",
+    noAudio:"请先录制句子。", error:"无法分析这段录音，请重试。",
+    examples:["商务","日常","挑战"]
+  },
+  ja: {
+    launch:"発音", title:"発音コーチ", sub:"短い英語文を録音し、実際の音声に基づいたコーチングを受けられます。",
+    target:"練習する文", ready:"録音準備完了。最大12秒です。", recording:"聞いています…自然に話してください。",
+    start:"● 録音開始", stop:"■ 録音停止", analyze:"発音を分析", analyzing:"録音を分析しています…",
+    note:"実際の録音を分析し、明瞭さ・強勢・リズムについて実用的なフィードバックを行います。臨床的・音声学的な精密測定ではありません。",
+    clarity:"明瞭さ", rhythm:"リズム", stress:"強勢", heard:"聞き取った内容", focus:"重点語", coach:"コーチメモ", tryAgain:"もう一度",
+    micDenied:"マイクへのアクセスがブロックされています。許可して再試行してください。",
+    unsupported:"このブラウザは録音に対応していません。Chrome、Edge、Safariをお試しください。",
+    noAudio:"まず文を録音してください。", error:"録音を分析できませんでした。もう一度お試しください。",
+    examples:["ビジネス","日常","チャレンジ"]
   }
 };
 
@@ -4153,6 +4616,382 @@ input.addEventListener('keydown', (e) => {
     sendMessage({ preserveVoiceMode });
   }
 });
+
+// ==================================================
+// v19 — Pronunciation Coach (real audio -> WAV -> Gemini)
+// ==================================================
+const pronunciationLaunch = document.getElementById('pronunciation-launch');
+const pronunciationLaunchLabel = document.getElementById('pronunciation-launch-label');
+const pronunciationPanel = document.getElementById('pronunciation-panel');
+const pronunciationClose = document.getElementById('pronunciation-close');
+const pronunciationTitle = document.getElementById('pronunciation-title');
+const pronunciationSubtitle = document.getElementById('pronunciation-subtitle');
+const pronunciationTargetLabel = document.getElementById('pronunciation-target-label');
+const pronunciationTarget = document.getElementById('pronunciation-target');
+const pronunciationStatus = document.getElementById('pronunciation-status');
+const pronunciationTimer = document.getElementById('pronunciation-timer');
+const pronunciationMeterBar = document.querySelector('#pronunciation-meter > span');
+const pronunciationRecord = document.getElementById('pronunciation-record');
+const pronunciationAnalyze = document.getElementById('pronunciation-analyze');
+const pronunciationNote = document.getElementById('pronunciation-note');
+const pronunciationResult = document.getElementById('pronunciation-result');
+const pronunciationClarityLabel = document.getElementById('pronunciation-clarity-label');
+const pronunciationRhythmLabel = document.getElementById('pronunciation-rhythm-label');
+const pronunciationStressLabel = document.getElementById('pronunciation-stress-label');
+const pronunciationHeardLabel = document.getElementById('pronunciation-heard-label');
+const pronunciationFocusLabel = document.getElementById('pronunciation-focus-label');
+const pronunciationCoachLabel = document.getElementById('pronunciation-coach-label');
+const pronunciationTryLabel = document.getElementById('pronunciation-try-label');
+const pronunciationClarity = document.getElementById('pronunciation-clarity');
+const pronunciationRhythm = document.getElementById('pronunciation-rhythm');
+const pronunciationStress = document.getElementById('pronunciation-stress');
+const pronunciationHeard = document.getElementById('pronunciation-heard');
+const pronunciationFocusList = document.getElementById('pronunciation-focus-list');
+const pronunciationCoachNote = document.getElementById('pronunciation-coach-note');
+const pronunciationTryAgain = document.getElementById('pronunciation-try-again');
+const pronunciationExampleButtons = document.querySelectorAll('.pron-example');
+
+let pronStream = null;
+let pronAudioContext = null;
+let pronSourceNode = null;
+let pronProcessorNode = null;
+let pronSilentGain = null;
+let pronChunks = [];
+let pronSampleRate = 44100;
+let pronRecording = false;
+let pronStartedAt = 0;
+let pronTimerInterval = null;
+let pronAutoStopTimer = null;
+let pronWavBlob = null;
+let pronPeak = 0;
+
+function getPronUI(){
+  return PRON_UI[currentLang] || PRON_UI.en;
+}
+
+function renderPronunciationUI(){
+  const p = getPronUI();
+  pronunciationLaunchLabel.textContent = p.launch;
+  pronunciationTitle.textContent = p.title;
+  pronunciationSubtitle.textContent = p.sub;
+  pronunciationTargetLabel.textContent = p.target;
+  if(!pronRecording) pronunciationStatus.textContent = pronWavBlob ? p.noAudio.replace(p.noAudio, p.ready) : p.ready;
+  pronunciationRecord.textContent = pronRecording ? p.stop : p.start;
+  pronunciationAnalyze.textContent = p.analyze;
+  pronunciationNote.textContent = p.note;
+  pronunciationClarityLabel.textContent = p.clarity;
+  pronunciationRhythmLabel.textContent = p.rhythm;
+  pronunciationStressLabel.textContent = p.stress;
+  pronunciationHeardLabel.textContent = p.heard;
+  pronunciationFocusLabel.textContent = p.focus;
+  pronunciationCoachLabel.textContent = p.coach;
+  pronunciationTryLabel.textContent = p.tryAgain;
+  pronunciationExampleButtons.forEach((btn, i) => {
+    if(p.examples && p.examples[i]) btn.textContent = p.examples[i];
+  });
+  const rtl = currentLang === 'fa';
+  pronunciationPanel.setAttribute('dir', rtl ? 'rtl' : 'ltr');
+}
+
+function openPronunciationCoach(){
+  stopVoiceRecognition({ clearInput:false });
+  renderPronunciationUI();
+  pronunciationPanel.classList.add('open');
+  pronunciationPanel.setAttribute('aria-hidden','false');
+  pronunciationTarget.focus();
+}
+
+function closePronunciationCoach(){
+  if(pronRecording) stopPronunciationRecording();
+  pronunciationPanel.classList.remove('open');
+  pronunciationPanel.setAttribute('aria-hidden','true');
+}
+
+function updatePronTimer(){
+  if(!pronRecording) return;
+  const elapsed = Math.min(12, (Date.now() - pronStartedAt) / 1000);
+  pronunciationTimer.textContent = `00:${String(Math.floor(elapsed)).padStart(2,'0')}`;
+  pronunciationMeterBar.style.width = `${Math.min(100, (elapsed / 12) * 100)}%`;
+}
+
+async function startPronunciationRecording(){
+  const p = getPronUI();
+
+  if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia || !(window.AudioContext || window.webkitAudioContext)){
+    pronunciationStatus.textContent = p.unsupported;
+    return;
+  }
+
+  try{
+    pronWavBlob = null;
+    pronunciationAnalyze.disabled = true;
+    pronunciationResult.classList.remove('show');
+    pronunciationMeterBar.style.width = '0%';
+    pronunciationTimer.textContent = '00:00';
+    pronPeak = 0;
+
+    pronStream = await navigator.mediaDevices.getUserMedia({
+      audio:{
+        channelCount:1,
+        echoCancellation:true,
+        noiseSuppression:true,
+        autoGainControl:true
+      }
+    });
+
+    const AC = window.AudioContext || window.webkitAudioContext;
+    pronAudioContext = new AC();
+    pronSampleRate = pronAudioContext.sampleRate || 44100;
+    pronChunks = [];
+
+    pronSourceNode = pronAudioContext.createMediaStreamSource(pronStream);
+    // ScriptProcessor is deliberately used here for broad browser compatibility.
+    pronProcessorNode = pronAudioContext.createScriptProcessor(4096, 1, 1);
+    pronSilentGain = pronAudioContext.createGain();
+    pronSilentGain.gain.value = 0;
+
+    pronProcessorNode.onaudioprocess = (event) => {
+      if(!pronRecording) return;
+      const inputData = event.inputBuffer.getChannelData(0);
+      const copy = new Float32Array(inputData.length);
+      copy.set(inputData);
+      pronChunks.push(copy);
+
+      let localPeak = 0;
+      for(let i=0;i<inputData.length;i++){
+        const a = Math.abs(inputData[i]);
+        if(a > localPeak) localPeak = a;
+      }
+      pronPeak = Math.max(pronPeak * .88, localPeak);
+    };
+
+    pronSourceNode.connect(pronProcessorNode);
+    pronProcessorNode.connect(pronSilentGain);
+    pronSilentGain.connect(pronAudioContext.destination);
+
+    pronRecording = true;
+    pronStartedAt = Date.now();
+    pronunciationRecord.classList.add('recording');
+    pronunciationRecord.textContent = p.stop;
+    pronunciationStatus.textContent = p.recording;
+
+    pronTimerInterval = setInterval(updatePronTimer, 150);
+    pronAutoStopTimer = setTimeout(stopPronunciationRecording, 12000);
+  }catch(err){
+    console.error('Pronunciation mic error:', err);
+    pronunciationStatus.textContent =
+      (err && (err.name === 'NotAllowedError' || err.name === 'SecurityError'))
+        ? p.micDenied
+        : p.unsupported;
+  }
+}
+
+function mergeFloat32(chunks){
+  const length = chunks.reduce((sum, c) => sum + c.length, 0);
+  const merged = new Float32Array(length);
+  let offset = 0;
+  for(const chunk of chunks){
+    merged.set(chunk, offset);
+    offset += chunk.length;
+  }
+  return merged;
+}
+
+function encodeWav(samples, sampleRate){
+  const buffer = new ArrayBuffer(44 + samples.length * 2);
+  const view = new DataView(buffer);
+
+  function writeString(offset, value){
+    for(let i=0;i<value.length;i++) view.setUint8(offset+i, value.charCodeAt(i));
+  }
+
+  writeString(0, 'RIFF');
+  view.setUint32(4, 36 + samples.length * 2, true);
+  writeString(8, 'WAVE');
+  writeString(12, 'fmt ');
+  view.setUint32(16, 16, true);
+  view.setUint16(20, 1, true);      // PCM
+  view.setUint16(22, 1, true);      // mono
+  view.setUint32(24, sampleRate, true);
+  view.setUint32(28, sampleRate * 2, true);
+  view.setUint16(32, 2, true);
+  view.setUint16(34, 16, true);
+  writeString(36, 'data');
+  view.setUint32(40, samples.length * 2, true);
+
+  let offset = 44;
+  for(let i=0;i<samples.length;i++,offset+=2){
+    const s = Math.max(-1, Math.min(1, samples[i]));
+    view.setInt16(offset, s < 0 ? s * 0x8000 : s * 0x7fff, true);
+  }
+  return new Blob([view], {type:'audio/wav'});
+}
+
+async function stopPronunciationRecording(){
+  if(!pronRecording) return;
+
+  pronRecording = false;
+  clearInterval(pronTimerInterval);
+  clearTimeout(pronAutoStopTimer);
+  pronTimerInterval = null;
+  pronAutoStopTimer = null;
+
+  try{ if(pronProcessorNode) pronProcessorNode.disconnect(); }catch(e){}
+  try{ if(pronSourceNode) pronSourceNode.disconnect(); }catch(e){}
+  try{ if(pronSilentGain) pronSilentGain.disconnect(); }catch(e){}
+  try{ if(pronStream) pronStream.getTracks().forEach(t => t.stop()); }catch(e){}
+  try{ if(pronAudioContext && pronAudioContext.state !== 'closed') await pronAudioContext.close(); }catch(e){}
+
+  pronProcessorNode = null;
+  pronSourceNode = null;
+  pronSilentGain = null;
+  pronStream = null;
+  pronAudioContext = null;
+
+  const p = getPronUI();
+  const samples = mergeFloat32(pronChunks);
+  pronChunks = [];
+
+  pronunciationRecord.classList.remove('recording');
+  pronunciationRecord.textContent = p.start;
+
+  if(samples.length < Math.max(2000, pronSampleRate * .35) || pronPeak < .008){
+    pronWavBlob = null;
+    pronunciationAnalyze.disabled = true;
+    pronunciationStatus.textContent = p.noAudio;
+    return;
+  }
+
+  pronWavBlob = encodeWav(samples, pronSampleRate);
+  pronunciationAnalyze.disabled = false;
+  pronunciationStatus.textContent = p.ready;
+}
+
+function blobToBase64(blob){
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      const result = String(reader.result || '');
+      resolve(result.includes(',') ? result.split(',')[1] : result);
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(blob);
+  });
+}
+
+function scoreText(value){
+  const n = Math.max(1, Math.min(5, Number(value) || 0));
+  return n ? `${n}/5` : '—';
+}
+
+function renderPronunciationResult(result){
+  pronunciationClarity.textContent = scoreText(result.clarity);
+  pronunciationRhythm.textContent = scoreText(result.rhythm);
+  pronunciationStress.textContent = scoreText(result.stress);
+  pronunciationHeard.textContent = result.heard || '—';
+  pronunciationCoachNote.textContent = result.coachNote || '—';
+  pronunciationTryAgain.textContent = result.tryAgain || pronunciationTarget.value.trim() || '—';
+
+  pronunciationFocusList.innerHTML = '';
+  const focus = Array.isArray(result.focusWords) ? result.focusWords.slice(0,4) : [];
+  if(!focus.length){
+    const div = document.createElement('div');
+    div.className = 'pron-focus-item';
+    div.textContent = '—';
+    pronunciationFocusList.appendChild(div);
+  }else{
+    focus.forEach(item => {
+      const div = document.createElement('div');
+      div.className = 'pron-focus-item';
+      const strong = document.createElement('strong');
+      strong.textContent = item.word || '';
+      div.appendChild(strong);
+      if(item.note){
+        div.appendChild(document.createTextNode(` — ${item.note}`));
+      }
+      pronunciationFocusList.appendChild(div);
+    });
+  }
+
+  pronunciationResult.classList.add('show');
+  pronunciationResult.scrollIntoView({behavior:'smooth', block:'nearest'});
+}
+
+async function analyzePronunciation(){
+  const p = getPronUI();
+  const targetText = pronunciationTarget.value.trim();
+
+  if(!pronWavBlob){
+    pronunciationStatus.textContent = p.noAudio;
+    return;
+  }
+  if(!targetText){
+    pronunciationTarget.focus();
+    return;
+  }
+
+  pronunciationAnalyze.disabled = true;
+  pronunciationRecord.disabled = true;
+  pronunciationAnalyze.textContent = p.analyzing;
+  pronunciationStatus.textContent = p.analyzing;
+
+  try{
+    const audioBase64 = await blobToBase64(pronWavBlob);
+
+    const response = await fetch('/api/pronunciation', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        audioBase64,
+        mimeType:'audio/wav',
+        targetText,
+        uiLanguage:(UI[currentLang] && UI[currentLang].langName) || 'English',
+        level:session.level || learningProfile.level || 'unknown'
+      })
+    });
+
+    const data = await response.json().catch(() => ({}));
+
+    if(!response.ok || !data.result){
+      console.error('Pronunciation API error:', data);
+      pronunciationStatus.textContent = p.error;
+      return;
+    }
+
+    renderPronunciationResult(data.result);
+    pronunciationStatus.textContent = p.ready;
+  }catch(err){
+    console.error('Pronunciation analyze error:', err);
+    pronunciationStatus.textContent = p.error;
+  }finally{
+    pronunciationAnalyze.disabled = !pronWavBlob;
+    pronunciationRecord.disabled = false;
+    pronunciationAnalyze.textContent = p.analyze;
+  }
+}
+
+pronunciationLaunch.addEventListener('click', openPronunciationCoach);
+pronunciationClose.addEventListener('click', closePronunciationCoach);
+pronunciationRecord.addEventListener('click', () => {
+  if(pronRecording) stopPronunciationRecording();
+  else startPronunciationRecording();
+});
+pronunciationAnalyze.addEventListener('click', analyzePronunciation);
+pronunciationExampleButtons.forEach(btn => {
+  btn.addEventListener('click', () => {
+    pronunciationTarget.value = btn.dataset.pronExample || '';
+    pronunciationTarget.focus();
+  });
+});
+langButtons.forEach(btn => btn.addEventListener('click', () => {
+  setTimeout(renderPronunciationUI, 0);
+}));
+pronunciationPanel.addEventListener('click', (e) => {
+  if(e.target === pronunciationPanel) closePronunciationCoach();
+});
+
+renderPronunciationUI();
+
 </script>
 
 </body>
@@ -4160,6 +4999,10 @@ input.addEventListener('keydown', (e) => {
 
 <script>
 document.addEventListener('keydown', (e) => {
+  if(e.key === 'Escape' && pronunciationPanel && pronunciationPanel.classList.contains('open')){
+    closePronunciationCoach();
+    return;
+  }
   if(e.key === 'Escape' && progressPanel && progressPanel.classList.contains('open')){
     closeProgressPanel();
   }
