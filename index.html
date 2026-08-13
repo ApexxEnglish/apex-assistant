@@ -120,7 +120,7 @@ right: 28px;
 width: 520px;
 max-width: calc(100vw - 40px);
 
-height: 620px;
+height: 580px;
 max-height: calc(100vh - 140px);
 
 background: var(--white);
@@ -1268,6 +1268,7 @@ let recognition = null;
 let micShouldKeepListening = false;
 let recognitionSessionId = 0;
 let ignoreRecognitionEnd = false;
+let voiceHadSpeech = false;
 
 function applyLanguage(lang){
   currentLang = lang;
@@ -1431,7 +1432,10 @@ langButtons.forEach(btn => {
   btn.addEventListener('click', () => applyLanguage(btn.dataset.lang));
 });
 
+let userHasToggled = false;
+
 launcher.addEventListener('click', () => {
+  userHasToggled = true;
   panel.classList.add('open');
   launcherWrap.classList.add('opened');
   if(history.length === 0){
@@ -1440,6 +1444,7 @@ launcher.addEventListener('click', () => {
   }
 });
 closeBtn.addEventListener('click', () => {
+  userHasToggled = true;
   stopVoiceRecognition({ clearInput: false });
   panel.classList.remove('open');
 });
@@ -1756,6 +1761,12 @@ function setMicListeningState(listening){
 
 
 function stopVoiceRecognition({ clearInput = false } = {}){
+  const recognitionWasActive = Boolean(recognition) || isListening;
+
+  if(recognitionWasActive && voiceHadSpeech){
+    session.voiceMode = true;
+  }
+
   micShouldKeepListening = false;
   ignoreRecognitionEnd = true;
   recognitionSessionId += 1;
@@ -1774,6 +1785,9 @@ function stopVoiceRecognition({ clearInput = false } = {}){
 
   if(clearInput){
     input.value = '';
+    input.scrollLeft = 0;
+    session.voiceMode = false;
+    voiceHadSpeech = false;
     resizeChatInput();
   }
 
@@ -1804,7 +1818,9 @@ function startVoiceRecognition(){
   input.value = '';
   input.scrollLeft = 0;
   session.voiceMode = false;
+  voiceHadSpeech = false;
   voiceConversationActive = false;
+  voiceHadSpeech = false;
 
   micShouldKeepListening = true;
   ignoreRecognitionEnd = false;
@@ -1847,6 +1863,11 @@ function startVoiceRecognition(){
     const combinedTranscript = (finalTranscript + ' ' + interimTranscript)
       .replace(/\s+/g, ' ')
       .trim();
+
+    if(combinedTranscript){
+      voiceHadSpeech = true;
+      session.voiceMode = true;
+    }
 
     input.value = combinedTranscript;
     moveInputCaretToEnd();
@@ -1959,10 +1980,6 @@ function notifyOwner(visitorEmail, contextMessage){
 }
 
 applyLanguage('tr');
-
-let userHasToggled = false;
-launcher.addEventListener('click', () => { userHasToggled = true; });
-closeBtn.addEventListener('click', () => { userHasToggled = true; });
 
 setTimeout(() => {
   if(!userHasToggled && !panel.classList.contains('open')){
@@ -2112,10 +2129,9 @@ changeModeBtn.addEventListener('click', () => {
   addBotMessage(f.modeChanged);
 });
 sendBtn.addEventListener('click', () => {
-  const preserveVoiceMode = session.voiceMode === true;
-
-  // Sending the message should also finish the current microphone session.
   stopVoiceRecognition({ clearInput: false });
+
+  const preserveVoiceMode = session.voiceMode === true;
 
   if(!preserveVoiceMode){
     voiceConversationActive = false;
@@ -2124,12 +2140,12 @@ sendBtn.addEventListener('click', () => {
   sendMessage({ preserveVoiceMode });
 });
 input.addEventListener('keydown', (e) => {
-  if(e.key === 'Enter'){
+  if(e.key === 'Enter' && !e.isComposing){
     e.preventDefault();
 
-    const preserveVoiceMode = session.voiceMode === true;
-
     stopVoiceRecognition({ clearInput: false });
+
+    const preserveVoiceMode = session.voiceMode === true;
 
     if(!preserveVoiceMode){
       voiceConversationActive = false;
