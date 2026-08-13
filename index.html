@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<!-- Apex Assistant v18 Cloud Profile Pro: email OTP + secure cloud sync + cross-device restore -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -947,6 +948,111 @@ border: 1px solid var(--line);
     cursor:default;
   }
 
+
+  #sync-code-row{
+    display:none;
+    grid-template-columns:minmax(0,1fr) auto;
+    gap:7px;
+    margin-top:7px;
+  }
+
+  #sync-code-row.open{
+    display:grid;
+  }
+
+  #sync-code-input{
+    min-width:0;
+    height:38px;
+    border:1px solid var(--line);
+    border-radius:8px;
+    padding:0 10px;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:0.9rem;
+    font-weight:700;
+    letter-spacing:.16em;
+    color:var(--ink);
+    outline:none;
+  }
+
+  #sync-code-input:focus{
+    border-color:var(--marigold-deep);
+  }
+
+  #sync-verify-btn{
+    height:38px;
+    border:0;
+    border-radius:8px;
+    background:var(--marigold);
+    color:var(--ink);
+    padding:0 12px;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:0.64rem;
+    font-weight:700;
+    cursor:pointer;
+    white-space:nowrap;
+  }
+
+  #sync-verify-btn:disabled{
+    opacity:.55;
+    cursor:default;
+  }
+
+  #sync-resend-btn{
+    display:none;
+    margin-top:6px;
+    border:0;
+    padding:0;
+    background:transparent;
+    color:var(--ink-soft);
+    font-family:'IBM Plex Mono', monospace;
+    font-size:0.62rem;
+    font-weight:700;
+    text-decoration:underline;
+    cursor:pointer;
+  }
+
+  #sync-resend-btn.open{
+    display:inline-block;
+  }
+
+  #sync-cloud-note{
+    display:none;
+    margin-top:6px;
+    padding:7px 8px;
+    border-radius:8px;
+    background:#edf6f0;
+    border:1px solid #c7dfd1;
+    color:var(--correct);
+    font-size:0.68rem;
+    line-height:1.35;
+    font-weight:600;
+  }
+
+  #sync-cloud-note.open{
+    display:block;
+  }
+
+  @media (max-width:600px){
+    #sync-email-row,
+    #sync-code-row{
+      grid-template-columns:minmax(0,1fr);
+    }
+
+    #sync-email-row{
+      display:grid;
+    }
+
+    #sync-profile-btn,
+    #sync-verify-btn{
+      width:100%;
+    }
+
+    #sync-code-input{
+      text-align:center;
+      font-size:1rem;
+    }
+  }
+
   #sync-message{
     min-height:18px;
     margin-top:7px;
@@ -1112,7 +1218,13 @@ border: 1px solid var(--line);
             <input id="sync-email-input" type="email" autocomplete="email" placeholder="Email">
             <button id="sync-profile-btn" type="button">Save</button>
           </div>
+          <div id="sync-code-row">
+            <input id="sync-code-input" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="6-digit code" aria-label="Verification code">
+            <button id="sync-verify-btn" type="button">Verify</button>
+          </div>
+          <button id="sync-resend-btn" type="button">Resend code</button>
           <div id="sync-message" role="status" aria-live="polite"></div>
+          <div id="sync-cloud-note"></div>
           <div id="sync-privacy">İlerlemenizi kaydetmek için e-posta adresiniz kullanılır.</div>
         </section>
 
@@ -2046,7 +2158,12 @@ const syncStatus = document.getElementById('sync-status');
 const syncCopy = document.getElementById('sync-copy');
 const syncEmailInput = document.getElementById('sync-email-input');
 const syncProfileBtn = document.getElementById('sync-profile-btn');
+const syncCodeRow = document.getElementById('sync-code-row');
+const syncCodeInput = document.getElementById('sync-code-input');
+const syncVerifyBtn = document.getElementById('sync-verify-btn');
+const syncResendBtn = document.getElementById('sync-resend-btn');
 const syncMessage = document.getElementById('sync-message');
+const syncCloudNote = document.getElementById('sync-cloud-note');
 const syncPrivacy = document.getElementById('sync-privacy');
 const continueLessonBtn = document.getElementById('continue-lesson-btn');
 
@@ -2239,6 +2356,41 @@ Each value must be concise. level_signal should describe whether the current lev
 
 const LEARNING_PROFILE_KEY = 'apexLearningProfileV1';
 
+const CLOUD_AUTH_KEY = 'apexCloudProfileAuthV1';
+let cloudAuth = { email:'', sessionToken:'', verifiedAt:null };
+let pendingVerificationEmail = '';
+let cloudSyncTimer = null;
+let cloudSyncPaused = false;
+
+function loadCloudAuth(){
+  try{
+    const raw = localStorage.getItem(CLOUD_AUTH_KEY);
+    if(!raw) return;
+    const parsed = JSON.parse(raw);
+    cloudAuth = {
+      email:String(parsed.email || '').trim().toLowerCase(),
+      sessionToken:String(parsed.sessionToken || ''),
+      verifiedAt:parsed.verifiedAt || null
+    };
+  }catch(e){}
+}
+
+function saveCloudAuth(){
+  try{
+    localStorage.setItem(CLOUD_AUTH_KEY, JSON.stringify(cloudAuth));
+  }catch(e){}
+}
+
+function clearCloudAuth(){
+  cloudAuth = { email:'', sessionToken:'', verifiedAt:null };
+  try{ localStorage.removeItem(CLOUD_AUTH_KEY); }catch(e){}
+}
+
+function hasCloudAuthFor(email){
+  const clean = String(email || '').trim().toLowerCase();
+  return Boolean(clean && cloudAuth.email === clean && cloudAuth.sessionToken);
+}
+
 const PROFILE_UI = {
   en:{
     button:'My Progress', title:'My Progress', subtitle:'Your learning profile',
@@ -2319,25 +2471,47 @@ const PROFILE_UI = {
 
 const SYNC_UI = {
   en:{
-    title:'SAVE THIS PROFILE', guest:'Guest', connected:'Saved',
-    copy:'Keep using the assistant without an account. Add your email only if you want this learning profile linked to you.',
-    email:'Email', save:'Save', saved:'Profile saved on this device and linked to your email.',
-    invalid:'Enter a valid email address.', saving:'Saving…',
-    continue:'Continue My Lesson', noProfile:'Practice a little first so I can build a useful lesson for you.'
-  ,privacy:'Your email is used to save and link your learning progress.',},
-  tr:{
-    title:'İLERLEMEMİ KAYDET', guest:'Misafir', connected:'Kaydedildi',
-    copy:'İlerlemenizi kaydedin, bir sonraki derste kaldığınız yerden devam edelim. E-posta adresinizi ekleyin; seviyeniz ve öğrenme profiliniz sizinle kalsın.',
-    email:'E-posta', save:'İlerlememi Kaydet', saved:'Harika — ilerlemeniz kaydedildi. Bir sonraki derste kaldığınız yerden devam edebiliriz.',
-    invalid:'Geçerli bir e-posta adresi girin.', saving:'Kaydediliyor…',
-    continue:'Dersime Devam Et', noProfile:'Önce biraz pratik yapın; size uygun bir devam dersi hazırlayayım.'
+    title:'SAVE MY PROGRESS', guest:'Guest', connected:'Cloud saved',
+    copy:'Save your progress and continue where you left off next time. Add your email to keep your level and learning profile with you.',
+    email:'Email', save:'Save My Progress', saved:'Great — your progress is securely saved to your profile.',
+    invalid:'Enter a valid email address.', saving:'Sending code…', code:'6-digit code', verify:'Verify & Save', verifying:'Verifying…',
+    codeSent:'We sent a 6-digit code to your email. Enter it here to securely save or restore your profile.',
+    resend:'Resend code', resent:'A new verification code has been sent.', wrongCode:'The code is incorrect or expired. Please try again.',
+    restored:'Welcome back — your saved learning profile has been restored.', cloud:'Cloud profile active • Your progress will sync automatically on this device.',
+    sessionExpired:'For security, please verify your email again to reconnect cloud progress.',
+    continue:'Continue My Lesson', noProfile:'Practice a little first so I can build a useful lesson for you.',
+    privacy:'Your email is used only to verify and link your learning progress.'
   },
-  ru:{title:'СОХРАНИТЬ ПРОФИЛЬ',guest:'Гость',connected:'Сохранено',copy:'Можно продолжать без аккаунта. Добавьте email, если хотите привязать прогресс к себе.',email:'Email',save:'Сохранить',saved:'Профиль сохранён на этом устройстве и привязан к email.',invalid:'Введите корректный email.',saving:'Сохранение…',continue:'Продолжить урок',noProfile:'Сначала немного попрактикуйтесь, чтобы я подготовил полезный урок.'},
-  fa:{title:'ذخیره پروفایل',guest:'مهمان',connected:'ذخیره شد',copy:'بدون ساخت حساب ادامه دهید. فقط اگر می‌خواهید پیشرفت به شما متصل شود، ایمیل را وارد کنید.',email:'ایمیل',save:'ذخیره',saved:'پروفایل روی این دستگاه ذخیره و به ایمیل شما متصل شد.',invalid:'یک ایمیل معتبر وارد کنید.',saving:'در حال ذخیره…',continue:'ادامه درس من',noProfile:'ابتدا کمی تمرین کنید تا درس بعدی مناسبی برایتان آماده کنم.'},
-  es:{title:'GUARDAR PERFIL',guest:'Invitado',connected:'Guardado',copy:'Puedes seguir sin cuenta. Añade tu email solo si quieres vincular este progreso contigo.',email:'Email',save:'Guardar',saved:'Perfil guardado en este dispositivo y vinculado a tu email.',invalid:'Introduce un email válido.',saving:'Guardando…',continue:'Continuar mi lección',noProfile:'Practica un poco primero para poder preparar una lección útil.'},
-  fr:{title:'ENREGISTRER LE PROFIL',guest:'Invité',connected:'Enregistré',copy:'Vous pouvez continuer sans compte. Ajoutez votre e-mail uniquement si vous souhaitez lier ces progrès à votre profil.',email:'E-mail',save:'Enregistrer',saved:'Profil enregistré sur cet appareil et lié à votre e-mail.',invalid:'Saisissez une adresse e-mail valide.',saving:'Enregistrement…',continue:'Continuer ma leçon',noProfile:'Pratiquez un peu d’abord afin que je prépare une leçon adaptée.'},
-  zh:{title:'保存学习档案',guest:'访客',connected:'已保存',copy:'无需账户也可继续使用。只有希望将学习进度与你关联时才填写邮箱。',email:'邮箱',save:'保存',saved:'学习档案已保存在此设备，并与你的邮箱关联。',invalid:'请输入有效的邮箱地址。',saving:'正在保存…',continue:'继续我的课程',noProfile:'先练习一点，我才能为你准备有用的后续课程。'},
-  ja:{title:'プロフィールを保存',guest:'ゲスト',connected:'保存済み',copy:'アカウントなしでも利用できます。進捗を自分に紐づけたい場合のみメールを追加してください。',email:'メール',save:'保存',saved:'プロフィールはこの端末に保存され、メールに紐づけられました。',invalid:'有効なメールアドレスを入力してください。',saving:'保存中…',continue:'レッスンを続ける',noProfile:'まず少し練習すると、適切な続きのレッスンを作れます。'}
+  tr:{
+    title:'İLERLEMEMİ KAYDET', guest:'Misafir', connected:'Buluta kaydedildi',
+    copy:'İlerlemenizi kaydedin, bir sonraki derste kaldığınız yerden devam edelim. E-posta adresinizi ekleyin; seviyeniz ve öğrenme profiliniz sizinle kalsın.',
+    email:'E-posta', save:'İlerlememi Kaydet', saved:'Harika — ilerlemeniz güvenli şekilde profilinize kaydedildi.',
+    invalid:'Geçerli bir e-posta adresi girin.', saving:'Kod gönderiliyor…', code:'6 haneli kod', verify:'Doğrula ve Kaydet', verifying:'Doğrulanıyor…',
+    codeSent:'E-postanıza 6 haneli bir kod gönderdik. Profilinizi güvenle kaydetmek veya geri getirmek için kodu girin.',
+    resend:'Kodu tekrar gönder', resent:'Yeni doğrulama kodu gönderildi.', wrongCode:'Kod hatalı veya süresi dolmuş. Lütfen tekrar deneyin.',
+    restored:'Tekrar hoş geldiniz — kayıtlı öğrenme profiliniz geri yüklendi.', cloud:'Bulut profili aktif • İlerlemeniz bu cihazda otomatik olarak eşitlenecek.',
+    sessionExpired:'Güvenlik için bulut profilinizi yeniden bağlamak üzere e-postanızı tekrar doğrulayın.',
+    continue:'Dersime Devam Et', noProfile:'Önce biraz pratik yapın; size uygun bir devam dersi hazırlayayım.',
+    privacy:'E-posta adresiniz yalnızca öğrenme ilerlemenizi doğrulamak ve profilinizle eşleştirmek için kullanılır.'
+  },
+  ru:{
+    title:'СОХРАНИТЬ ПРОГРЕСС',guest:'Гость',connected:'Сохранено в облаке',copy:'Сохраните прогресс и в следующий раз продолжите с того же места. Добавьте email, чтобы сохранить уровень и учебный профиль.',email:'Email',save:'Сохранить прогресс',saved:'Готово — ваш прогресс безопасно сохранён.',invalid:'Введите корректный email.',saving:'Отправляем код…',code:'6-значный код',verify:'Проверить и сохранить',verifying:'Проверяем…',codeSent:'Мы отправили 6-значный код на ваш email. Введите его, чтобы безопасно сохранить или восстановить профиль.',resend:'Отправить код снова',resent:'Новый код отправлен.',wrongCode:'Код неверен или истёк. Попробуйте ещё раз.',restored:'С возвращением — ваш учебный профиль восстановлен.',cloud:'Облачный профиль активен • Прогресс будет синхронизироваться автоматически.',sessionExpired:'Для безопасности подтвердите email ещё раз.',continue:'Продолжить урок',noProfile:'Сначала немного попрактикуйтесь, чтобы я подготовил полезный урок.',privacy:'Email используется только для проверки и привязки учебного прогресса.'
+  },
+  fa:{
+    title:'ذخیره پیشرفت',guest:'مهمان',connected:'ذخیره در فضای ابری',copy:'پیشرفت خود را ذخیره کنید تا جلسه بعد از همان‌جایی که متوقف شدید ادامه دهیم. ایمیل خود را وارد کنید تا سطح و پروفایل یادگیری شما همراهتان بماند.',email:'ایمیل',save:'ذخیره پیشرفت',saved:'عالی — پیشرفت شما با امنیت در پروفایلتان ذخیره شد.',invalid:'یک ایمیل معتبر وارد کنید.',saving:'در حال ارسال کد…',code:'کد ۶ رقمی',verify:'تأیید و ذخیره',verifying:'در حال تأیید…',codeSent:'یک کد ۶ رقمی به ایمیل شما فرستادیم. برای ذخیره یا بازیابی امن پروفایل، کد را وارد کنید.',resend:'ارسال دوباره کد',resent:'کد تأیید جدید ارسال شد.',wrongCode:'کد نادرست است یا منقضی شده. دوباره تلاش کنید.',restored:'خوش آمدید — پروفایل یادگیری ذخیره‌شده شما بازیابی شد.',cloud:'پروفایل ابری فعال است • پیشرفت شما در این دستگاه خودکار همگام می‌شود.',sessionExpired:'برای امنیت، ایمیل خود را دوباره تأیید کنید.',continue:'ادامه درس من',noProfile:'ابتدا کمی تمرین کنید تا درس بعدی مناسبی برایتان آماده کنم.',privacy:'ایمیل شما فقط برای تأیید هویت و اتصال پیشرفت یادگیری به پروفایل استفاده می‌شود.'
+  },
+  es:{
+    title:'GUARDAR MI PROGRESO',guest:'Invitado',connected:'Guardado en la nube',copy:'Guarda tu progreso y continúa donde lo dejaste la próxima vez. Añade tu email para conservar tu nivel y perfil de aprendizaje.',email:'Email',save:'Guardar mi progreso',saved:'Perfecto — tu progreso se ha guardado de forma segura.',invalid:'Introduce un email válido.',saving:'Enviando código…',code:'Código de 6 dígitos',verify:'Verificar y guardar',verifying:'Verificando…',codeSent:'Te enviamos un código de 6 dígitos por email. Introdúcelo para guardar o recuperar tu perfil de forma segura.',resend:'Reenviar código',resent:'Se ha enviado un nuevo código.',wrongCode:'El código es incorrecto o ha caducado.',restored:'Bienvenido de nuevo — tu perfil de aprendizaje se ha restaurado.',cloud:'Perfil en la nube activo • Tu progreso se sincronizará automáticamente.',sessionExpired:'Por seguridad, verifica de nuevo tu email.',continue:'Continuar mi lección',noProfile:'Practica un poco primero para poder preparar una lección útil.',privacy:'Tu email se usa solo para verificar y vincular tu progreso de aprendizaje.'
+  },
+  fr:{
+    title:'ENREGISTRER MES PROGRÈS',guest:'Invité',connected:'Enregistré dans le cloud',copy:'Enregistrez vos progrès et reprenez là où vous vous êtes arrêté la prochaine fois. Ajoutez votre e-mail pour conserver votre niveau et votre profil.',email:'E-mail',save:'Enregistrer mes progrès',saved:'Parfait — vos progrès sont enregistrés en toute sécurité.',invalid:'Saisissez une adresse e-mail valide.',saving:'Envoi du code…',code:'Code à 6 chiffres',verify:'Vérifier et enregistrer',verifying:'Vérification…',codeSent:'Un code à 6 chiffres a été envoyé à votre e-mail. Saisissez-le pour enregistrer ou restaurer votre profil en toute sécurité.',resend:'Renvoyer le code',resent:'Un nouveau code a été envoyé.',wrongCode:'Le code est incorrect ou a expiré.',restored:'Bon retour — votre profil d’apprentissage a été restauré.',cloud:'Profil cloud actif • Vos progrès seront synchronisés automatiquement.',sessionExpired:'Pour votre sécurité, vérifiez à nouveau votre e-mail.',continue:'Continuer ma leçon',noProfile:'Pratiquez un peu d’abord afin que je prépare une leçon adaptée.',privacy:'Votre e-mail sert uniquement à vérifier et relier vos progrès d’apprentissage.'
+  },
+  zh:{
+    title:'保存学习进度',guest:'访客',connected:'已保存到云端',copy:'保存学习进度，下次从上次的位置继续。添加邮箱即可保留你的等级和学习档案。',email:'邮箱',save:'保存学习进度',saved:'很好——你的学习进度已安全保存。',invalid:'请输入有效的邮箱地址。',saving:'正在发送验证码…',code:'6位验证码',verify:'验证并保存',verifying:'正在验证…',codeSent:'我们已向你的邮箱发送6位验证码。输入验证码即可安全保存或恢复学习档案。',resend:'重新发送验证码',resent:'新的验证码已发送。',wrongCode:'验证码错误或已过期，请重试。',restored:'欢迎回来——你的学习档案已恢复。',cloud:'云端档案已启用 • 学习进度将自动同步。',sessionExpired:'为确保安全，请重新验证邮箱。',continue:'继续我的课程',noProfile:'先练习一点，我才能为你准备有用的后续课程。',privacy:'邮箱仅用于验证身份并关联你的学习进度。'
+  },
+  ja:{
+    title:'学習進捗を保存',guest:'ゲスト',connected:'クラウド保存済み',copy:'進捗を保存して、次回は続きから学習できます。メールを追加するとレベルと学習プロフィールを保持できます。',email:'メール',save:'進捗を保存',saved:'学習進捗を安全に保存しました。',invalid:'有効なメールアドレスを入力してください。',saving:'コードを送信中…',code:'6桁のコード',verify:'確認して保存',verifying:'確認中…',codeSent:'メールに6桁の確認コードを送りました。プロフィールを安全に保存・復元するにはコードを入力してください。',resend:'コードを再送',resent:'新しい確認コードを送信しました。',wrongCode:'コードが正しくないか、有効期限が切れています。',restored:'おかえりなさい。保存済みの学習プロフィールを復元しました。',cloud:'クラウドプロフィール有効 • 進捗は自動同期されます。',sessionExpired:'安全のため、メールをもう一度確認してください。',continue:'レッスンを続ける',noProfile:'まず少し練習すると、適切な続きのレッスンを作れます。',privacy:'メールは本人確認と学習進捗の紐づけにのみ使用されます。'
+  }
 };
 
 
@@ -2383,6 +2557,7 @@ function saveLearningProfile(){
     localStorage.setItem(LEARNING_PROFILE_KEY, JSON.stringify(learningProfile));
   }catch(e){}
   renderProgressUI();
+  scheduleCloudProfileSync();
 }
 
 function uniquePush(list, value, maxItems){
@@ -2435,16 +2610,24 @@ function renderProgressUI(){
   renderList(progressStrengthsList, progressStrengthsEmpty, learningProfile.strengths);
 
   const s = SYNC_UI[currentLang] || SYNC_UI.en;
-  const linked = Boolean(learningProfile.linkedEmail);
+  const linkedEmail = learningProfile.linkedEmail || cloudAuth.email || '';
+  const cloudLinked = hasCloudAuthFor(linkedEmail);
 
   syncTitle.textContent = s.title;
-  syncStatus.textContent = linked ? s.connected : s.guest;
-  syncStatus.classList.toggle('connected', linked);
-  profileSyncCard.classList.toggle('connected', linked);
+  syncStatus.textContent = cloudLinked ? s.connected : s.guest;
+  syncStatus.classList.toggle('connected', cloudLinked);
+  profileSyncCard.classList.toggle('connected', cloudLinked);
   syncCopy.textContent = s.copy;
   syncEmailInput.placeholder = s.email;
-  syncEmailInput.value = learningProfile.linkedEmail || '';
+  if(document.activeElement !== syncEmailInput){
+    syncEmailInput.value = linkedEmail;
+  }
   syncProfileBtn.textContent = s.save;
+  syncCodeInput.placeholder = s.code;
+  syncVerifyBtn.textContent = s.verify;
+  syncResendBtn.textContent = s.resend;
+  syncCloudNote.textContent = s.cloud;
+  syncCloudNote.classList.toggle('open', cloudLinked);
   continueLessonBtn.textContent = s.continue;
   if(syncPrivacy) syncPrivacy.textContent = s.privacy || '';
 }
@@ -2454,48 +2637,284 @@ function isValidEmail(value){
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test((value || '').trim());
 }
 
+async function apiJson(url, body){
+  const response = await fetch(url, {
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify(body)
+  });
+
+  const data = await response.json().catch(() => ({}));
+  return { response, data };
+}
+
+function profilePayload(){
+  return {
+    level:session.level || learningProfile.level || null,
+    nextGoal:learningProfile.nextGoal || '',
+    commonMistakes:Array.isArray(learningProfile.commonMistakes) ? learningProfile.commonMistakes : [],
+    wordsPhrases:Array.isArray(learningProfile.wordsPhrases) ? learningProfile.wordsPhrases : [],
+    strengths:Array.isArray(learningProfile.strengths) ? learningProfile.strengths : [],
+    speakingCount:Number(learningProfile.speakingCount || 0),
+    linkedAt:learningProfile.linkedAt || new Date().toISOString(),
+    lastLessonAt:learningProfile.lastLessonAt || null
+  };
+}
+
+function mergeUnique(primary, secondary, maxItems){
+  const result = [];
+  [...(primary || []), ...(secondary || [])].forEach(item => {
+    const clean = String(item || '').trim();
+    if(!clean) return;
+    if(!result.some(x => x.toLocaleLowerCase() === clean.toLocaleLowerCase())) result.push(clean);
+  });
+  return result.slice(0, maxItems);
+}
+
+function mergeCloudProfile(cloudProfile){
+  if(!cloudProfile) return;
+
+  const cloudTime = Date.parse(cloudProfile.updatedAt || '') || 0;
+  const localTime = Date.parse(learningProfile.lastUpdated || '') || 0;
+  const cloudIsNewer = cloudTime > localTime;
+
+  const merged = {
+    ...defaultLearningProfile(),
+    ...learningProfile,
+    linkedEmail:cloudProfile.email || learningProfile.linkedEmail || cloudAuth.email,
+    linkedAt:cloudProfile.linkedAt || learningProfile.linkedAt || new Date().toISOString(),
+    level:cloudIsNewer
+      ? (cloudProfile.level || learningProfile.level)
+      : (learningProfile.level || cloudProfile.level),
+    nextGoal:cloudIsNewer
+      ? (cloudProfile.nextGoal || learningProfile.nextGoal || '')
+      : (learningProfile.nextGoal || cloudProfile.nextGoal || ''),
+    commonMistakes:mergeUnique(cloudProfile.commonMistakes, learningProfile.commonMistakes, 5),
+    wordsPhrases:mergeUnique(cloudProfile.wordsPhrases, learningProfile.wordsPhrases, 8),
+    strengths:mergeUnique(cloudProfile.strengths, learningProfile.strengths, 5),
+    speakingCount:Math.max(Number(cloudProfile.speakingCount || 0), Number(learningProfile.speakingCount || 0)),
+    lastLessonAt:(Date.parse(cloudProfile.lastLessonAt || '') || 0) > (Date.parse(learningProfile.lastLessonAt || '') || 0)
+      ? cloudProfile.lastLessonAt
+      : learningProfile.lastLessonAt,
+    lastUpdated:cloudProfile.updatedAt || learningProfile.lastUpdated || new Date().toISOString()
+  };
+
+  learningProfile = merged;
+  if(learningProfile.level){
+    session.level = learningProfile.level;
+  }
+}
+
+async function saveCloudProfileNow({ silent = false } = {}){
+  const email = String(learningProfile.linkedEmail || cloudAuth.email || '').trim().toLowerCase();
+  if(!hasCloudAuthFor(email)) return false;
+
+  const { response } = await apiJson('/api/profile', {
+    action:'save',
+    email,
+    sessionToken:cloudAuth.sessionToken,
+    profile:profilePayload()
+  });
+
+  if(response.status === 401){
+    clearCloudAuth();
+    if(!silent){
+      const s = SYNC_UI[currentLang] || SYNC_UI.en;
+      syncMessage.textContent = s.sessionExpired;
+    }
+    renderProgressUI();
+    return false;
+  }
+
+  return response.ok;
+}
+
+function scheduleCloudProfileSync(){
+  if(cloudSyncPaused) return;
+  const email = String(learningProfile.linkedEmail || '').trim().toLowerCase();
+  if(!hasCloudAuthFor(email)) return;
+
+  clearTimeout(cloudSyncTimer);
+  cloudSyncTimer = setTimeout(() => {
+    saveCloudProfileNow({ silent:true }).catch(() => {});
+  }, 1200);
+}
+
+async function loadCloudProfile(email, sessionToken){
+  return apiJson('/api/profile', {
+    action:'load',
+    email,
+    sessionToken
+  });
+}
+
+async function sendVerificationCode(email, { resent = false } = {}){
+  const s = SYNC_UI[currentLang] || SYNC_UI.en;
+  syncProfileBtn.disabled = true;
+  syncProfileBtn.textContent = s.saving;
+  syncMessage.textContent = '';
+
+  try{
+    const { response } = await apiJson('/api/verify', {
+      action:'send',
+      email
+    });
+
+    if(!response.ok){
+      syncMessage.textContent = s.wrongCode;
+      return false;
+    }
+
+    pendingVerificationEmail = email;
+    syncCodeRow.classList.add('open');
+    syncResendBtn.classList.add('open');
+    syncCodeInput.value = '';
+    syncMessage.textContent = resent ? s.resent : s.codeSent;
+    setTimeout(() => syncCodeInput.focus(), 50);
+    return true;
+  }catch(e){
+    syncMessage.textContent = s.wrongCode;
+    return false;
+  }finally{
+    syncProfileBtn.disabled = false;
+    syncProfileBtn.textContent = s.save;
+  }
+}
+
 async function saveProfileWithEmail(){
   const s = SYNC_UI[currentLang] || SYNC_UI.en;
-  const email = (syncEmailInput.value || '').trim();
+  const email = (syncEmailInput.value || '').trim().toLowerCase();
 
   if(!isValidEmail(email)){
     syncMessage.textContent = s.invalid;
     return;
   }
 
-  syncProfileBtn.disabled = true;
-  syncProfileBtn.textContent = s.saving;
-  syncMessage.textContent = '';
-
-  learningProfile.linkedEmail = email;
-  learningProfile.linkedAt = new Date().toISOString();
-  saveLearningProfile();
-
-  // Use the existing lead notification endpoint. The learning profile itself
-  // remains local-first; this avoids blocking the assistant on login/account setup.
-  try{
-    await fetch('/api/notify', {
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({
-        type:'learning_profile_link',
-        email,
-        source:'apex_assistant',
-        level:session.level || learningProfile.level || 'unknown',
-        nextGoal:learningProfile.nextGoal || '',
-        commonMistakes:learningProfile.commonMistakes || [],
-        wordsPhrases:learningProfile.wordsPhrases || [],
-        strengths:learningProfile.strengths || []
-      })
-    });
-  }catch(e){
-    // Local save still succeeds even if the notification service is unavailable.
+  if(hasCloudAuthFor(email)){
+    learningProfile.linkedEmail = email;
+    learningProfile.linkedAt = learningProfile.linkedAt || new Date().toISOString();
+    saveLearningProfile();
+    syncProfileBtn.disabled = true;
+    const ok = await saveCloudProfileNow();
+    syncProfileBtn.disabled = false;
+    syncProfileBtn.textContent = s.save;
+    syncMessage.textContent = ok ? s.saved : s.sessionExpired;
+    renderProgressUI();
+    return;
   }
 
-  syncMessage.textContent = s.saved;
-  syncProfileBtn.disabled = false;
-  syncProfileBtn.textContent = s.save;
-  renderProgressUI();
+  await sendVerificationCode(email);
+}
+
+async function verifyCloudCode(){
+  const s = SYNC_UI[currentLang] || SYNC_UI.en;
+  const email = (pendingVerificationEmail || syncEmailInput.value || '').trim().toLowerCase();
+  const code = (syncCodeInput.value || '').replace(/\D/g, '').slice(0,6);
+
+  if(!isValidEmail(email) || !/^\d{6}$/.test(code)){
+    syncMessage.textContent = s.wrongCode;
+    return;
+  }
+
+  syncVerifyBtn.disabled = true;
+  syncVerifyBtn.textContent = s.verifying;
+  syncMessage.textContent = '';
+
+  try{
+    const { response, data } = await apiJson('/api/verify', {
+      action:'verify',
+      email,
+      code
+    });
+
+    if(!response.ok || !data.sessionToken){
+      syncMessage.textContent = s.wrongCode;
+      return;
+    }
+
+    cloudAuth = {
+      email,
+      sessionToken:data.sessionToken,
+      verifiedAt:new Date().toISOString()
+    };
+    saveCloudAuth();
+
+    learningProfile.linkedEmail = email;
+    learningProfile.linkedAt = learningProfile.linkedAt || new Date().toISOString();
+
+    const cloud = await loadCloudProfile(email, data.sessionToken);
+    let restored = false;
+
+    if(cloud.response.ok && cloud.data.profile){
+      cloudSyncPaused = true;
+      mergeCloudProfile(cloud.data.profile);
+      learningProfile.linkedEmail = email;
+      try{
+        localStorage.setItem(LEARNING_PROFILE_KEY, JSON.stringify(learningProfile));
+      }catch(e){}
+      cloudSyncPaused = false;
+      restored = true;
+    }
+
+    await saveCloudProfileNow({ silent:true });
+
+    // Owner notification stays optional and never blocks profile save.
+    try{
+      await fetch('/api/notify', {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({
+          type:'learning_profile_link',
+          email,
+          source:'apex_assistant',
+          level:session.level || learningProfile.level || 'unknown',
+          nextGoal:learningProfile.nextGoal || '',
+          commonMistakes:learningProfile.commonMistakes || [],
+          wordsPhrases:learningProfile.wordsPhrases || [],
+          strengths:learningProfile.strengths || []
+        })
+      });
+    }catch(e){}
+
+    syncCodeRow.classList.remove('open');
+    syncResendBtn.classList.remove('open');
+    syncCodeInput.value = '';
+    pendingVerificationEmail = '';
+    syncMessage.textContent = restored ? s.restored : s.saved;
+    renderProgressUI();
+  }catch(e){
+    syncMessage.textContent = s.wrongCode;
+  }finally{
+    syncVerifyBtn.disabled = false;
+    syncVerifyBtn.textContent = s.verify;
+  }
+}
+
+async function restoreCloudProfileOnStartup(){
+  if(!cloudAuth.email || !cloudAuth.sessionToken) return;
+
+  const s = SYNC_UI[currentLang] || SYNC_UI.en;
+  try{
+    const cloud = await loadCloudProfile(cloudAuth.email, cloudAuth.sessionToken);
+
+    if(cloud.response.status === 401){
+      clearCloudAuth();
+      renderProgressUI();
+      return;
+    }
+
+    if(cloud.response.ok && cloud.data.profile){
+      cloudSyncPaused = true;
+      mergeCloudProfile(cloud.data.profile);
+      learningProfile.linkedEmail = cloudAuth.email;
+      try{
+        localStorage.setItem(LEARNING_PROFILE_KEY, JSON.stringify(learningProfile));
+      }catch(e){}
+      cloudSyncPaused = false;
+      renderProgressUI();
+      if(progressPanel.classList.contains('open')) syncMessage.textContent = s.restored;
+    }
+  }catch(e){}
 }
 
 function buildContinueLessonPrompt(){
@@ -2561,8 +2980,15 @@ function resetLearningProgress(){
   const p = PROFILE_UI[currentLang] || PROFILE_UI.en;
   if(!confirm(p.confirmReset)) return;
 
+  const verifiedEmail = cloudAuth.email || '';
   learningProfile = defaultLearningProfile();
-  try{ localStorage.removeItem(LEARNING_PROFILE_KEY); }catch(e){}
+  if(verifiedEmail){
+    learningProfile.linkedEmail = verifiedEmail;
+    learningProfile.linkedAt = new Date().toISOString();
+    saveLearningProfile();
+  }else{
+    try{ localStorage.removeItem(LEARNING_PROFILE_KEY); }catch(e){}
+  }
   session.level = null;
   renderProgressUI();
   showLevelSelection();
@@ -3412,12 +3838,38 @@ openProgressBtn.addEventListener('click', openProgressPanel);
 closeProgressBtn.addEventListener('click', closeProgressPanel);
 resetProgressBtn.addEventListener('click', resetLearningProgress);
 syncProfileBtn.addEventListener('click', saveProfileWithEmail);
+syncVerifyBtn.addEventListener('click', verifyCloudCode);
+syncResendBtn.addEventListener('click', () => {
+  const email = (pendingVerificationEmail || syncEmailInput.value || '').trim().toLowerCase();
+  if(isValidEmail(email)) sendVerificationCode(email, { resent:true });
+});
 continueLessonBtn.addEventListener('click', continueMyLesson);
+
+syncEmailInput.addEventListener('input', () => {
+  const typed = (syncEmailInput.value || '').trim().toLowerCase();
+  if(pendingVerificationEmail && typed !== pendingVerificationEmail){
+    pendingVerificationEmail = '';
+    syncCodeRow.classList.remove('open');
+    syncResendBtn.classList.remove('open');
+    syncCodeInput.value = '';
+  }
+});
 
 syncEmailInput.addEventListener('keydown', (e) => {
   if(e.key === 'Enter' && !e.isComposing){
     e.preventDefault();
     saveProfileWithEmail();
+  }
+});
+
+syncCodeInput.addEventListener('input', () => {
+  syncCodeInput.value = syncCodeInput.value.replace(/\D/g, '').slice(0,6);
+});
+
+syncCodeInput.addEventListener('keydown', (e) => {
+  if(e.key === 'Enter' && !e.isComposing){
+    e.preventDefault();
+    verifyCloudCode();
   }
 });
 
@@ -3456,13 +3908,18 @@ function notifyOwner(visitorEmail, contextMessage){
 }
 
 restoreLevelMemory();
+loadCloudAuth();
 loadLearningProfile();
+if(cloudAuth.email && !learningProfile.linkedEmail){
+  learningProfile.linkedEmail = cloudAuth.email;
+}
 if(learningProfile.speakingCount && typeof speakingProgress !== 'undefined'){
   speakingProgress.count = learningProfile.speakingCount;
 }
 applyLanguage('tr');
 renderProgressUI();
 updateMicLanguageIndicator();
+restoreCloudProfileOnStartup();
 
 setTimeout(() => {
   if(!userHasToggled && !panel.classList.contains('open')){
