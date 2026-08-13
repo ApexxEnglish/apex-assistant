@@ -563,14 +563,47 @@ border: 1px solid var(--line);
   .starter{
     font-family:'IBM Plex Mono', monospace;
     font-size:0.68rem;
+    line-height:1.35;
     background:var(--white);
     border:1px solid var(--line);
     border-radius:100px;
-    padding:4px 9px;
+    padding:5px 10px;
     cursor:pointer;
     color:var(--ink-soft);
+    white-space:normal;
+    overflow-wrap:anywhere;
+    text-align:center;
+    unicode-bidi:plaintext;
   }
   .starter:hover{ border-color:var(--marigold-deep); color:var(--ink); }
+
+  /* Natural-script typography: Persian/Arabic-script and CJK should never
+     inherit the monospace display font used by the Latin UI. */
+  #starters[data-ui-lang='fa'] .starter,
+  #starters[data-ui-lang='fa'] .choice-label{
+    font-family:Tahoma, 'Segoe UI', Arial, sans-serif;
+    direction:rtl;
+    letter-spacing:0;
+  }
+
+  #starters[data-ui-lang='zh'] .starter,
+  #starters[data-ui-lang='zh'] .choice-label{
+    font-family:'PingFang SC','Microsoft YaHei','Noto Sans CJK SC','Segoe UI',Arial,sans-serif;
+    letter-spacing:0;
+  }
+
+  #starters[data-ui-lang='ja'] .starter,
+  #starters[data-ui-lang='ja'] .choice-label{
+    font-family:'Hiragino Sans','Yu Gothic','Meiryo','Noto Sans JP','Segoe UI',Arial,sans-serif;
+    letter-spacing:0;
+  }
+
+  #starters[data-ui-lang='ru'] .starter,
+  #starters[data-ui-lang='es'] .starter,
+  #starters[data-ui-lang='fr'] .starter{
+    font-family:'IBM Plex Sans','Segoe UI',Arial,sans-serif;
+    letter-spacing:0;
+  }
 
   @media (max-width:600px){
     #input-row{
@@ -596,6 +629,52 @@ border: 1px solid var(--line);
     #mic-lang-menu{
       right:-4px;
       width:156px;
+    }
+
+    .starter-row{
+      gap:7px;
+      padding:1px 12px 12px;
+      max-height:118px;
+      -webkit-overflow-scrolling:touch;
+    }
+
+    .starter{
+      min-height:34px;
+      padding:7px 11px;
+      font-size:0.74rem;
+      line-height:1.35;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      max-width:100%;
+    }
+
+    #starters[data-ui-lang='fa']{
+      direction:rtl;
+      justify-content:flex-start;
+    }
+
+    #starters[data-ui-lang='fa'] .starter{
+      font-size:0.82rem;
+      line-height:1.65;
+      padding:6px 12px 7px;
+      word-break:normal;
+      overflow-wrap:normal;
+    }
+
+    #starters[data-ui-lang='fa'] .choice-label{
+      width:100%;
+      text-align:right;
+      font-size:0.80rem !important;
+      line-height:1.7;
+    }
+
+    #starters[data-ui-lang='zh'] .starter,
+    #starters[data-ui-lang='ja'] .starter{
+      font-size:0.78rem;
+      line-height:1.5;
+      word-break:keep-all;
+      overflow-wrap:normal;
     }
   }
 
@@ -1922,6 +2001,8 @@ const launcher = document.getElementById('launcher');
 const panel = document.getElementById('panel');
 const closeBtn = document.getElementById('close-btn');
 const starters = document.getElementById('starters');
+starters.dataset.uiLang = 'tr';
+starters.setAttribute('dir', 'ltr');
 const headerTitle = document.getElementById('header-title');
 const headerSub = document.getElementById('header-sub');
 const modeToolbar = document.getElementById('mode-toolbar');
@@ -2497,6 +2578,8 @@ let voiceHadSpeech = false;
 let voiceNoticeTimer = null;
 
 function applyLanguage(lang){
+  starters.dataset.uiLang = lang;
+  starters.setAttribute('dir', lang === 'fa' ? 'rtl' : 'ltr');
   currentLang = lang;
 
   if(!session.speechLangManuallySelected){
@@ -2560,6 +2643,7 @@ function addChoice(label, data = {}){
 
 function addChoiceLabel(text){
   const label = document.createElement('div');
+  label.className = 'choice-label';
   label.style.width = '100%';
   label.style.fontSize = '0.72rem';
   label.style.fontWeight = '600';
