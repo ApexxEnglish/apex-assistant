@@ -1546,6 +1546,11 @@ function startVoiceRecognition(){
     return;
   }
 
+  // A fresh microphone session should not append to an older transcript.
+  input.value = '';
+  session.voiceMode = false;
+  voiceConversationActive = false;
+
   micShouldKeepListening = true;
 
   recognition = new Recognition();
@@ -1747,7 +1752,12 @@ async function sendMessage(options = {}){
   // Voice transcript has now been submitted manually.
   // Reset for the next message unless the microphone is used again.
   const submittedAsVoice = session.voiceMode === true;
+
+  // Reset microphone-related state once this message is submitted.
   session.voiceMode = false;
+  voiceConversationActive = false;
+  micShouldKeepListening = false;
+  setMicListeningState(false);
 
   try{
     const response = await fetch("/api/chat", {
@@ -1810,6 +1820,9 @@ changeModeBtn.addEventListener('click', () => {
 sendBtn.addEventListener('click', () => {
   const preserveVoiceMode = session.voiceMode === true;
 
+  // Sending the message should also finish the current microphone session.
+  stopVoiceRecognition();
+
   if(!preserveVoiceMode){
     voiceConversationActive = false;
   }
@@ -1819,6 +1832,9 @@ sendBtn.addEventListener('click', () => {
 input.addEventListener('keydown', (e) => {
   if(e.key === 'Enter'){
     const preserveVoiceMode = session.voiceMode === true;
+
+    // Enter should behave exactly like the Send button.
+    stopVoiceRecognition();
 
     if(!preserveVoiceMode){
       voiceConversationActive = false;
