@@ -599,6 +599,183 @@ border: 1px solid var(--line);
     }
   }
 
+
+  #progress-toolbar{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:8px;
+    padding:7px 12px;
+    background:var(--white);
+    border-bottom:1px solid var(--line);
+  }
+
+  #progress-summary{
+    display:flex;
+    gap:7px;
+    align-items:center;
+    flex-wrap:wrap;
+  }
+
+  .progress-chip{
+    display:inline-flex;
+    align-items:center;
+    gap:5px;
+    min-height:27px;
+    padding:4px 9px;
+    border:1px solid var(--line);
+    border-radius:999px;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'IBM Plex Mono', monospace;
+    font-size:0.62rem;
+    font-weight:600;
+    white-space:nowrap;
+  }
+
+  #open-progress-btn{
+    border:1px solid var(--ink);
+    background:var(--ink);
+    color:var(--marigold);
+    border-radius:999px;
+    padding:6px 10px;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:0.62rem;
+    font-weight:700;
+    cursor:pointer;
+    white-space:nowrap;
+  }
+
+  #progress-panel{
+    display:none;
+    position:absolute;
+    inset:0;
+    z-index:60;
+    background:rgba(32,42,68,0.20);
+    padding:14px;
+    align-items:flex-end;
+    justify-content:center;
+  }
+
+  #progress-panel.open{
+    display:flex;
+  }
+
+  #progress-card{
+    width:100%;
+    max-width:470px;
+    max-height:88%;
+    overflow-y:auto;
+    background:var(--white);
+    border:1px solid var(--line);
+    border-radius:16px;
+    box-shadow:0 24px 60px rgba(32,42,68,0.28);
+  }
+
+  #progress-card header{
+    position:sticky;
+    top:0;
+    z-index:2;
+    background:var(--ink);
+    color:var(--white);
+    padding:14px 16px;
+    display:flex;
+    align-items:flex-start;
+    justify-content:space-between;
+  }
+
+  #progress-card .progress-title{
+    font-family:'Lora', serif;
+    font-size:1rem;
+    font-weight:600;
+  }
+
+  #progress-card .progress-sub{
+    margin-top:2px;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:0.62rem;
+    color:var(--marigold);
+  }
+
+  #close-progress-btn{
+    border:0;
+    background:transparent;
+    color:var(--white);
+    font-size:1.1rem;
+    cursor:pointer;
+  }
+
+  #progress-content{
+    padding:14px;
+    display:grid;
+    gap:10px;
+    background:var(--paper);
+  }
+
+  .progress-section{
+    background:var(--white);
+    border:1px solid var(--line);
+    border-radius:12px;
+    padding:12px;
+  }
+
+  .progress-section h4{
+    margin:0 0 8px;
+    font-size:0.73rem;
+    color:var(--ink);
+    font-family:'IBM Plex Mono', monospace;
+    letter-spacing:0.02em;
+  }
+
+  .progress-value{
+    font-size:0.86rem;
+    line-height:1.5;
+    color:var(--ink);
+  }
+
+  .progress-list{
+    margin:0;
+    padding-left:18px;
+    display:grid;
+    gap:5px;
+    color:var(--ink-soft);
+    font-size:0.82rem;
+    line-height:1.4;
+  }
+
+  .progress-empty{
+    color:var(--ink-soft);
+    font-size:0.78rem;
+  }
+
+  #reset-progress-btn{
+    width:100%;
+    border:1px solid var(--line);
+    background:var(--white);
+    color:var(--ink-soft);
+    border-radius:9px;
+    padding:9px 10px;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:0.64rem;
+    font-weight:600;
+    cursor:pointer;
+  }
+
+  @media (max-width:600px){
+    #progress-toolbar{
+      padding:6px 10px;
+    }
+    #open-progress-btn{
+      padding:6px 8px;
+    }
+    #progress-panel{
+      padding:8px;
+    }
+    #progress-card{
+      max-height:92%;
+    }
+  }
+
 </style>
 </head>
 <body>
@@ -638,6 +815,13 @@ border: 1px solid var(--line);
     <div class="coach-pill" id="level-pill"><span id="level-label">Level</span> <strong id="level-value">—</strong></div>
     <div class="coach-pill" id="speaking-pill"><span id="speaking-dot"></span><span id="speaking-label">Speaking</span> <strong id="speaking-value">0/5</strong></div>
   </div>
+  <div id="progress-toolbar">
+    <div id="progress-summary">
+      <span class="progress-chip" id="level-chip">Level —</span>
+      <span class="progress-chip" id="speaking-chip">Speaking 0/5</span>
+    </div>
+    <button id="open-progress-btn" type="button">My Progress</button>
+  </div>
   <div id="messages"></div>
   <div class="starter-row" id="starters"></div>
   <div id="voice-notice" role="status" aria-live="polite"></div>
@@ -668,6 +852,54 @@ border: 1px solid var(--line);
       </div>
     </div>
     <button id="send-btn">Send</button>
+  </div>
+
+  <div id="progress-panel" aria-hidden="true">
+    <div id="progress-card" role="dialog" aria-modal="true" aria-labelledby="progress-title">
+      <header>
+        <div>
+          <div class="progress-title" id="progress-title">My Progress</div>
+          <div class="progress-sub" id="progress-subtitle">Your learning profile</div>
+        </div>
+        <button id="close-progress-btn" type="button" aria-label="Close">✕</button>
+      </header>
+      <div id="progress-content">
+        <section class="progress-section">
+          <h4 id="progress-level-label">CURRENT LEVEL</h4>
+          <div class="progress-value" id="progress-level-value">—</div>
+        </section>
+
+        <section class="progress-section">
+          <h4 id="progress-goal-label">NEXT GOAL</h4>
+          <div class="progress-value" id="progress-goal-value">—</div>
+        </section>
+
+        <section class="progress-section">
+          <h4 id="progress-mistakes-label">COMMON MISTAKES</h4>
+          <ul class="progress-list" id="progress-mistakes-list"></ul>
+          <div class="progress-empty" id="progress-mistakes-empty">No recurring mistakes saved yet.</div>
+        </section>
+
+        <section class="progress-section">
+          <h4 id="progress-words-label">WORDS & PHRASES</h4>
+          <ul class="progress-list" id="progress-words-list"></ul>
+          <div class="progress-empty" id="progress-words-empty">No saved words or phrases yet.</div>
+        </section>
+
+        <section class="progress-section">
+          <h4 id="progress-strengths-label">STRENGTHS</h4>
+          <ul class="progress-list" id="progress-strengths-list"></ul>
+          <div class="progress-empty" id="progress-strengths-empty">Your strengths will appear here as you practice.</div>
+        </section>
+
+        <section class="progress-section">
+          <h4 id="progress-session-label">SPEAKING SESSION</h4>
+          <div class="progress-value" id="progress-speaking-value">0/5</div>
+        </section>
+
+        <button id="reset-progress-btn" type="button">Reset learning progress</button>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -1511,6 +1743,27 @@ Ask one question at a time.
 Do not repeatedly advertise Apex courses.
 
 Your primary role is to help the user learn English.
+
+==================================================
+12. LEARNING PROFILE MEMORY
+==================================================
+
+When useful, silently help maintain a lightweight learning profile.
+
+If the student's response clearly reveals one recurring mistake, useful new phrase,
+strength, or next learning goal, you MAY append these hidden markers at the very end:
+
+[PROFILE_MISTAKE]short description[/PROFILE_MISTAKE]
+[PROFILE_WORD]useful word or phrase[/PROFILE_WORD]
+[PROFILE_STRENGTH]short strength[/PROFILE_STRENGTH]
+[PROFILE_GOAL]short next goal[/PROFILE_GOAL]
+
+Rules:
+- Add only genuinely useful information.
+- Maximum ONE marker of each type per answer.
+- Keep marker contents concise.
+- Do not invent weaknesses or strengths.
+- Do not mention these markers to the user.
 `;
 }
 
@@ -1534,6 +1787,31 @@ const micLangOptions = document.querySelectorAll('[data-speech-lang]');
 const micLangBadge = document.getElementById('mic-lang-badge');
 const voiceNotice = document.getElementById('voice-notice');
 const langButtons = document.querySelectorAll('.lang-btn');
+
+const openProgressBtn = document.getElementById('open-progress-btn');
+const closeProgressBtn = document.getElementById('close-progress-btn');
+const progressPanel = document.getElementById('progress-panel');
+const levelChip = document.getElementById('level-chip');
+const speakingChip = document.getElementById('speaking-chip');
+const progressTitle = document.getElementById('progress-title');
+const progressSubtitle = document.getElementById('progress-subtitle');
+const progressLevelLabel = document.getElementById('progress-level-label');
+const progressLevelValue = document.getElementById('progress-level-value');
+const progressGoalLabel = document.getElementById('progress-goal-label');
+const progressGoalValue = document.getElementById('progress-goal-value');
+const progressMistakesLabel = document.getElementById('progress-mistakes-label');
+const progressMistakesList = document.getElementById('progress-mistakes-list');
+const progressMistakesEmpty = document.getElementById('progress-mistakes-empty');
+const progressWordsLabel = document.getElementById('progress-words-label');
+const progressWordsList = document.getElementById('progress-words-list');
+const progressWordsEmpty = document.getElementById('progress-words-empty');
+const progressStrengthsLabel = document.getElementById('progress-strengths-label');
+const progressStrengthsList = document.getElementById('progress-strengths-list');
+const progressStrengthsEmpty = document.getElementById('progress-strengths-empty');
+const progressSessionLabel = document.getElementById('progress-session-label');
+const progressSpeakingValue = document.getElementById('progress-speaking-value');
+const resetProgressBtn = document.getElementById('reset-progress-btn');
+
 const levelPill = document.getElementById('level-pill');
 const levelLabel = document.getElementById('level-label');
 const levelValue = document.getElementById('level-value');
@@ -1717,6 +1995,199 @@ Each value must be concise. level_signal should describe whether the current lev
   }catch(err){
     console.error('Speaking report error:', err);
   }
+}
+
+
+const LEARNING_PROFILE_KEY = 'apexLearningProfileV1';
+
+const PROFILE_UI = {
+  en:{
+    button:'My Progress', title:'My Progress', subtitle:'Your learning profile',
+    level:'CURRENT LEVEL', goal:'NEXT GOAL', mistakes:'COMMON MISTAKES',
+    words:'WORDS & PHRASES', strengths:'STRENGTHS', session:'SPEAKING SESSION',
+    reset:'Reset learning progress',
+    emptyMistakes:'No recurring mistakes saved yet.',
+    emptyWords:'No saved words or phrases yet.',
+    emptyStrengths:'Your strengths will appear here as you practice.',
+    confirmReset:'Reset your saved learning progress?'
+  },
+  tr:{
+    button:'İlerlemem', title:'İlerlemem', subtitle:'Kişisel öğrenme profiliniz',
+    level:'MEVCUT SEVİYE', goal:'SONRAKİ HEDEF', mistakes:'SIK YAPILAN HATALAR',
+    words:'KELİMELER & KALIPLAR', strengths:'GÜÇLÜ YÖNLER', session:'SPEAKING OTURUMU',
+    reset:'Öğrenme ilerlemesini sıfırla',
+    emptyMistakes:'Henüz tekrar eden bir hata kaydedilmedi.',
+    emptyWords:'Henüz kayıtlı kelime veya kalıp yok.',
+    emptyStrengths:'Pratik yaptıkça güçlü yönleriniz burada görünecek.',
+    confirmReset:'Kaydedilmiş öğrenme ilerlemesi sıfırlansın mı?'
+  },
+  ru:{
+    button:'Прогресс', title:'Мой прогресс', subtitle:'Ваш учебный профиль',
+    level:'ТЕКУЩИЙ УРОВЕНЬ', goal:'СЛЕДУЮЩАЯ ЦЕЛЬ', mistakes:'ЧАСТЫЕ ОШИБКИ',
+    words:'СЛОВА И ФРАЗЫ', strengths:'СИЛЬНЫЕ СТОРОНЫ', session:'РАЗГОВОРНАЯ ПРАКТИКА',
+    reset:'Сбросить прогресс', emptyMistakes:'Повторяющихся ошибок пока нет.',
+    emptyWords:'Сохранённых слов и фраз пока нет.',
+    emptyStrengths:'Сильные стороны появятся по мере практики.',
+    confirmReset:'Сбросить сохранённый прогресс?'
+  },
+  fa:{
+    button:'پیشرفت من', title:'پیشرفت من', subtitle:'پروفایل یادگیری شما',
+    level:'سطح فعلی', goal:'هدف بعدی', mistakes:'اشتباهات پرتکرار',
+    words:'کلمات و عبارت‌ها', strengths:'نقاط قوت', session:'جلسه مکالمه',
+    reset:'پاک کردن پیشرفت', emptyMistakes:'هنوز اشتباه پرتکراری ثبت نشده است.',
+    emptyWords:'هنوز کلمه یا عبارتی ذخیره نشده است.',
+    emptyStrengths:'با تمرین، نقاط قوت شما اینجا نمایش داده می‌شود.',
+    confirmReset:'پیشرفت ذخیره‌شده پاک شود؟'
+  },
+  es:{
+    button:'Mi progreso', title:'Mi progreso', subtitle:'Tu perfil de aprendizaje',
+    level:'NIVEL ACTUAL', goal:'SIGUIENTE OBJETIVO', mistakes:'ERRORES FRECUENTES',
+    words:'PALABRAS Y FRASES', strengths:'PUNTOS FUERTES', session:'SESIÓN ORAL',
+    reset:'Restablecer progreso', emptyMistakes:'Aún no hay errores recurrentes guardados.',
+    emptyWords:'Aún no hay palabras o frases guardadas.',
+    emptyStrengths:'Tus puntos fuertes aparecerán mientras practicas.',
+    confirmReset:'¿Restablecer el progreso guardado?'
+  },
+  fr:{
+    button:'Mes progrès', title:'Mes progrès', subtitle:'Votre profil d’apprentissage',
+    level:'NIVEAU ACTUEL', goal:'PROCHAIN OBJECTIF', mistakes:'ERREURS FRÉQUENTES',
+    words:'MOTS & EXPRESSIONS', strengths:'POINTS FORTS', session:'SESSION ORALE',
+    reset:'Réinitialiser les progrès', emptyMistakes:'Aucune erreur récurrente enregistrée.',
+    emptyWords:'Aucun mot ou expression enregistré.',
+    emptyStrengths:'Vos points forts apparaîtront au fil de la pratique.',
+    confirmReset:'Réinitialiser les progrès enregistrés ?'
+  },
+  zh:{
+    button:'我的进度', title:'我的进度', subtitle:'你的学习档案',
+    level:'当前水平', goal:'下一目标', mistakes:'常见错误',
+    words:'词汇与短语', strengths:'优势', session:'口语训练',
+    reset:'重置学习进度', emptyMistakes:'尚未记录重复错误。',
+    emptyWords:'尚未保存词汇或短语。',
+    emptyStrengths:'随着练习，你的优势会显示在这里。',
+    confirmReset:'要重置已保存的学习进度吗？'
+  },
+  ja:{
+    button:'学習進捗', title:'学習進捗', subtitle:'あなたの学習プロフィール',
+    level:'現在のレベル', goal:'次の目標', mistakes:'よくあるミス',
+    words:'単語・表現', strengths:'得意な点', session:'スピーキング',
+    reset:'学習進捗をリセット', emptyMistakes:'繰り返しのミスはまだ保存されていません。',
+    emptyWords:'保存された単語や表現はまだありません。',
+    emptyStrengths:'練習を続けると得意な点が表示されます。',
+    confirmReset:'保存された学習進捗をリセットしますか？'
+  }
+};
+
+function defaultLearningProfile(){
+  return {
+    level: null,
+    nextGoal: '',
+    commonMistakes: [],
+    wordsPhrases: [],
+    strengths: [],
+    speakingCount: 0,
+    lastUpdated: null
+  };
+}
+
+let learningProfile = defaultLearningProfile();
+
+function loadLearningProfile(){
+  try{
+    const raw = localStorage.getItem(LEARNING_PROFILE_KEY);
+    if(!raw) return;
+    const parsed = JSON.parse(raw);
+    learningProfile = {
+      ...defaultLearningProfile(),
+      ...parsed,
+      commonMistakes:Array.isArray(parsed.commonMistakes) ? parsed.commonMistakes.slice(0,5) : [],
+      wordsPhrases:Array.isArray(parsed.wordsPhrases) ? parsed.wordsPhrases.slice(0,8) : [],
+      strengths:Array.isArray(parsed.strengths) ? parsed.strengths.slice(0,5) : []
+    };
+
+    if(learningProfile.level && !session.level){
+      session.level = learningProfile.level;
+    }
+  }catch(e){}
+}
+
+function saveLearningProfile(){
+  learningProfile.lastUpdated = new Date().toISOString();
+  try{
+    localStorage.setItem(LEARNING_PROFILE_KEY, JSON.stringify(learningProfile));
+  }catch(e){}
+  renderProgressUI();
+}
+
+function uniquePush(list, value, maxItems){
+  const clean = (value || '').trim();
+  if(!clean) return;
+  const exists = list.some(item => item.toLocaleLowerCase() === clean.toLocaleLowerCase());
+  if(!exists) list.unshift(clean);
+  if(list.length > maxItems) list.length = maxItems;
+}
+
+function renderList(target, emptyEl, items){
+  target.innerHTML = '';
+  items.forEach(item => {
+    const li = document.createElement('li');
+    li.textContent = item;
+    target.appendChild(li);
+  });
+  emptyEl.style.display = items.length ? 'none' : 'block';
+}
+
+function renderProgressUI(){
+  const p = PROFILE_UI[currentLang] || PROFILE_UI.en;
+  const level = session.level || learningProfile.level || '—';
+  const count = Math.min(learningProfile.speakingCount || 0, 5);
+
+  levelChip.textContent = `${currentLang === 'tr' ? 'Seviye' : currentLang === 'fa' ? 'سطح' : currentLang === 'ru' ? 'Уровень' : currentLang === 'es' ? 'Nivel' : currentLang === 'fr' ? 'Niveau' : currentLang === 'zh' ? '等级' : currentLang === 'ja' ? 'レベル' : 'Level'} ${level}`;
+  speakingChip.textContent = `Speaking ${count}/5`;
+
+  openProgressBtn.textContent = p.button;
+  progressTitle.textContent = p.title;
+  progressSubtitle.textContent = p.subtitle;
+  progressLevelLabel.textContent = p.level;
+  progressGoalLabel.textContent = p.goal;
+  progressMistakesLabel.textContent = p.mistakes;
+  progressWordsLabel.textContent = p.words;
+  progressStrengthsLabel.textContent = p.strengths;
+  progressSessionLabel.textContent = p.session;
+  resetProgressBtn.textContent = p.reset;
+
+  progressLevelValue.textContent = level;
+  progressGoalValue.textContent = learningProfile.nextGoal || '—';
+  progressSpeakingValue.textContent = `${count}/5`;
+
+  progressMistakesEmpty.textContent = p.emptyMistakes;
+  progressWordsEmpty.textContent = p.emptyWords;
+  progressStrengthsEmpty.textContent = p.emptyStrengths;
+
+  renderList(progressMistakesList, progressMistakesEmpty, learningProfile.commonMistakes);
+  renderList(progressWordsList, progressWordsEmpty, learningProfile.wordsPhrases);
+  renderList(progressStrengthsList, progressStrengthsEmpty, learningProfile.strengths);
+}
+
+function openProgressPanel(){
+  renderProgressUI();
+  progressPanel.classList.add('open');
+  progressPanel.setAttribute('aria-hidden','false');
+}
+
+function closeProgressPanel(){
+  progressPanel.classList.remove('open');
+  progressPanel.setAttribute('aria-hidden','true');
+}
+
+function resetLearningProgress(){
+  const p = PROFILE_UI[currentLang] || PROFILE_UI.en;
+  if(!confirm(p.confirmReset)) return;
+
+  learningProfile = defaultLearningProfile();
+  try{ localStorage.removeItem(LEARNING_PROFILE_KEY); }catch(e){}
+  session.level = null;
+  renderProgressUI();
+  showLevelSelection();
 }
 
 let voiceConversationActive = false;
@@ -2555,6 +3026,17 @@ document.addEventListener('click', (e) => {
   }
 });
 
+
+openProgressBtn.addEventListener('click', openProgressPanel);
+closeProgressBtn.addEventListener('click', closeProgressPanel);
+resetProgressBtn.addEventListener('click', resetLearningProgress);
+
+progressPanel.addEventListener('click', (e) => {
+  if(e.target === progressPanel){
+    closeProgressPanel();
+  }
+});
+
 micBtn.addEventListener('click', startVoiceRecognition);
 
 function extractCapturedEmail(text){
@@ -2584,7 +3066,12 @@ function notifyOwner(visitorEmail, contextMessage){
 }
 
 restoreLevelMemory();
+loadLearningProfile();
+if(learningProfile.speakingCount && typeof speakingProgress !== 'undefined'){
+  speakingProgress.count = learningProfile.speakingCount;
+}
 applyLanguage('tr');
+renderProgressUI();
 updateMicLanguageIndicator();
 
 setTimeout(() => {
@@ -2601,6 +3088,37 @@ setTimeout(() => {
     }
   }
 }, 30000);
+
+
+function extractProfileMarkers(text){
+  let clean = text || '';
+
+  const extractOne = (tag) => {
+    const regex = new RegExp(`\\[${tag}\\]([\\s\\S]*?)\\[\\/${tag}\\]`, 'i');
+    const match = clean.match(regex);
+    if(match){
+      clean = clean.replace(match[0], '').trim();
+      return (match[1] || '').trim();
+    }
+    return '';
+  };
+
+  const mistake = extractOne('PROFILE_MISTAKE');
+  const word = extractOne('PROFILE_WORD');
+  const strength = extractOne('PROFILE_STRENGTH');
+  const goal = extractOne('PROFILE_GOAL');
+
+  if(mistake) uniquePush(learningProfile.commonMistakes, mistake, 5);
+  if(word) uniquePush(learningProfile.wordsPhrases, word, 8);
+  if(strength) uniquePush(learningProfile.strengths, strength, 5);
+  if(goal) learningProfile.nextGoal = goal;
+
+  if(mistake || word || strength || goal){
+    saveLearningProfile();
+  }
+
+  return clean;
+}
 
 function renderBotContent(text){
   const escaped = text
@@ -2623,7 +3141,8 @@ function addUserMessage(text){
 function addBotMessage(text){
   const div = document.createElement('div');
   div.className = 'msg bot';
-  div.innerHTML = renderBotContent(text);
+  const cleanText = extractProfileMarkers(text);
+  div.innerHTML = renderBotContent(cleanText);
 
   messagesEl.appendChild(div);
 
@@ -2791,3 +3310,11 @@ input.addEventListener('keydown', (e) => {
 
 </body>
 </html>
+
+<script>
+document.addEventListener('keydown', (e) => {
+  if(e.key === 'Escape' && progressPanel && progressPanel.classList.contains('open')){
+    closeProgressPanel();
+  }
+});
+</script>
