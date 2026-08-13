@@ -282,6 +282,26 @@ border: 1px solid var(--line);
     cursor:default;
   }
 
+
+  #speech-lang-select{
+    height:44px;
+    min-width:62px;
+    padding:0 8px;
+    border:1px solid var(--line);
+    border-radius:8px;
+    background:var(--white);
+    color:var(--ink);
+    font-family:'IBM Plex Mono', monospace;
+    font-size:0.7rem;
+    font-weight:600;
+    outline:none;
+    cursor:pointer;
+  }
+
+  #speech-lang-select:focus{
+    border-color:var(--marigold-deep);
+  }
+
   #mic-btn{
     width:44px;
     min-width:44px;
@@ -431,6 +451,16 @@ border: 1px solid var(--line);
 </div>
   <div id="input-row">
     <input id="chat-input" type="text" placeholder="Type a question or a sentence..." autocomplete="off" />
+    <select id="speech-lang-select" aria-label="Microphone language" title="Microphone language">
+      <option value="tr-TR">TR</option>
+      <option value="en-US">EN</option>
+      <option value="ru-RU">RU</option>
+      <option value="fa-IR">FA</option>
+      <option value="es-ES">ES</option>
+      <option value="fr-FR">FR</option>
+      <option value="zh-CN">ZH</option>
+      <option value="ja-JP">JA</option>
+    </select>
     <button id="mic-btn" type="button" aria-label="Start speaking" title="Start speaking">
       <span class="mic-icon">🎙️</span>
       <span class="mic-stop">■</span>
@@ -958,6 +988,7 @@ USER SESSION:
 - Current learning mode: ${mode}
 - Current topic: ${topic}
 - Voice input active: ${session.voiceMode ? "yes" : "no"}
+- Microphone recognition language: ${session.speechLang || "not selected"}
 
 Your goal is not only to answer questions. You should actively help the
 student improve their English according to their level.
@@ -1142,16 +1173,18 @@ After every answer:
 8. VOICE / SPEAKING COACH
 ==================================================
 
-When Voice input active is "yes", treat the user's message as a transcript of spoken English.
+When Voice input active is "yes", treat the user's message as a speech-to-text transcript.
 
 IMPORTANT:
 - The interface/explanation language remains ${UI[lang].langName}.
-- The student's spoken practice language is English.
-- Never translate the student's English transcript into the interface language.
-- Preserve the English sentence exactly under WHAT YOU SAID.
+- The microphone recognition language is ${session.speechLang || "not selected"}.
+- Do NOT translate or rewrite the user's transcript into another language unless the user asks.
+- Preserve the user's original spoken language.
+- If the student is speaking English for learning/practice, coach the English.
+- If the student is speaking Turkish, Persian, Russian, Spanish, French, Chinese, or Japanese to ask a question, understand and answer in the interface language.
 - Do NOT claim to evaluate pronunciation, accent, stress, or individual sounds from transcript text alone.
 
-Use this concise speaking-coach format:
+For spoken ENGLISH practice, use this concise format when useful:
 
 WHAT YOU SAID:
 Repeat the English transcript.
@@ -1169,6 +1202,8 @@ Maximum 2 short sentences.
 
 NEXT:
 Ask ONE short follow-up question in English when continuing a practice, teaching, or interview conversation.
+
+For non-English voice input, respond naturally and do not force the speaking-coach format.
 
 Do not over-correct tiny style differences.
 Do not give long lectures.
@@ -1282,6 +1317,7 @@ const headerSub = document.getElementById('header-sub');
 const modeToolbar = document.getElementById('mode-toolbar');
 const changeModeBtn = document.getElementById('change-mode-btn');
 const micBtn = document.getElementById('mic-btn');
+const speechLangSelect = document.getElementById('speech-lang-select');
 const micLangBadge = document.getElementById('mic-lang-badge');
 const voiceNotice = document.getElementById('voice-notice');
 const langButtons = document.querySelectorAll('.lang-btn');
@@ -1308,7 +1344,7 @@ let session = {
   topic: null,
   phase: "level",
   voiceMode: false,
-  speechLang: null
+  speechLang: 'tr-TR'
 };
 
 let voiceConversationActive = false;
@@ -1332,6 +1368,10 @@ function applyLanguage(lang){
   input.placeholder = t.placeholder;
   sendBtn.textContent = t.send;
   changeModeBtn.textContent = f.changeMode;
+
+  if(speechLangSelect){
+    speechLangSelect.value = session.speechLang || 'tr-TR';
+  }
   micBtn.setAttribute('aria-label', isListening ? f.micStop : f.micStart);
   updateMicLanguageIndicator();
 
@@ -1512,7 +1552,6 @@ starters.addEventListener('click', (e) => {
     if(selectedLevel === 'unknown'){
       session.level = 'unknown';
       session.mode = 'level_check';
-      session.speechLang = 'en';
       session.topic = null;
       session.phase = 'diagnostic';
 
@@ -1540,7 +1579,6 @@ starters.addEventListener('click', (e) => {
   const selectedMode = target.dataset.mode;
   if(selectedMode){
     session.mode = selectedMode;
-    session.speechLang = ['correction','teach','practice'].includes(selectedMode) ? 'en' : null;
     session.topic = null;
     updateMicLanguageIndicator();
 
@@ -1718,43 +1756,6 @@ function getVoiceBrowserSupport(){
 }
 
 
-function detectEnglishLearningIntent(text){
-  const s = (text || '').toLocaleLowerCase();
-
-  const patterns = [
-    // English
-    'teach me english', 'learn english', 'practice english', 'practise english',
-    'speak english', 'english practice', 'correct my english',
-
-    // Turkish
-    'bana ingilizce öğret', 'ingilizce öğret', 'ingilizce öğren',
-    'ingilizce pratik', 'ingilizce konuş', 'ingilizcemi düzelt',
-
-    // Russian
-    'научи меня английскому', 'учи меня английскому',
-    'учить английский', 'практиковать английский', 'говорить по-английски',
-
-    // Persian
-    'به من انگلیسی', 'انگلیسی یاد', 'انگلیسی تمرین',
-    'انگلیسی صحبت', 'انگلیسی حرف',
-
-    // Spanish
-    'enséñame inglés', 'enseñame inglés', 'aprender inglés',
-    'practicar inglés', 'hablar inglés',
-
-    // French
-    "apprends-moi l'anglais", "apprendre l'anglais",
-    "pratiquer l'anglais", 'parler anglais',
-
-    // Chinese
-    '教我英语', '学英语', '学习英语', '练习英语', '说英语',
-
-    // Japanese
-    '英語を教えて', '英語を学', '英語を練習', '英語で話'
-  ];
-
-  return patterns.some(pattern => s.includes(pattern));
-}
 
 function getInterfaceSpeechLanguage(){
   const speechLanguages = {
@@ -1772,7 +1773,6 @@ function getInterfaceSpeechLanguage(){
 }
 
 function getMicLanguageCode(){
-  const lang = getRecognitionLanguage();
   const map = {
     'tr-TR':'TR',
     'en-US':'EN',
@@ -1784,7 +1784,23 @@ function getMicLanguageCode(){
     'ja-JP':'JA'
   };
 
-  return map[lang] || 'EN';
+  return map[session.speechLang] || 'TR';
+}
+
+
+function getSpeechLanguageSelectorLabel(){
+  const labels = {
+    tr: 'Mikrofon dili',
+    en: 'Microphone language',
+    ru: 'Язык микрофона',
+    fa: 'زبان میکروفون',
+    es: 'Idioma del micrófono',
+    fr: 'Langue du microphone',
+    zh: '麦克风语言',
+    ja: 'マイク言語'
+  };
+
+  return labels[currentLang] || labels.en;
 }
 
 function updateMicLanguageIndicator(){
@@ -1807,26 +1823,16 @@ function updateMicLanguageIndicator(){
   const f = FLOW_UI[currentLang] || FLOW_UI.en;
   const action = isListening ? f.micStop : f.micStart;
   micBtn.title = `${action} · Mic: ${names[code] || code}`;
+
+  if(speechLangSelect){
+    const selectorLabel = getSpeechLanguageSelectorLabel();
+    speechLangSelect.setAttribute('aria-label', selectorLabel);
+    speechLangSelect.title = selectorLabel;
+  }
 }
 
 function getRecognitionLanguage(){
-  // Once an English-learning flow starts, keep the microphone locked
-  // to English until the user explicitly returns to the main mode menu.
-  if(session.speechLang === 'en'){
-    return 'en-US';
-  }
-
-  const englishLearningMode =
-    session.mode === 'correction' ||
-    session.mode === 'practice' ||
-    session.mode === 'level_check' ||
-    session.mode === 'teach';
-
-  if(englishLearningMode){
-    return 'en-US';
-  }
-
-  return getInterfaceSpeechLanguage();
+  return session.speechLang || 'tr-TR';
 }
 
 
@@ -2112,6 +2118,12 @@ function startVoiceRecognition(){
   }
 }
 
+speechLangSelect.addEventListener('change', () => {
+  stopVoiceRecognition({ clearInput: false });
+  session.speechLang = speechLangSelect.value;
+  updateMicLanguageIndicator();
+});
+
 micBtn.addEventListener('click', startVoiceRecognition);
 
 function extractCapturedEmail(text){
@@ -2141,6 +2153,7 @@ function notifyOwner(visitorEmail, contextMessage){
 }
 
 applyLanguage('tr');
+if(speechLangSelect) speechLangSelect.value = session.speechLang;
 updateMicLanguageIndicator();
 
 setTimeout(() => {
@@ -2208,10 +2221,6 @@ async function sendMessage(options = {}){
   const text = input.value.trim();
   if(!text) return;
 
-  if(detectEnglishLearningIntent(text)){
-    session.speechLang = 'en';
-    updateMicLanguageIndicator();
-  }
 
   if(!options.preserveVoiceMode && !session.voiceMode){
     voiceConversationActive = false;
@@ -2288,7 +2297,6 @@ changeModeBtn.addEventListener('click', () => {
 
   session.mode = null;
   session.topic = null;
-  session.speechLang = null;
   session.phase = 'mode';
 
   updateMicLanguageIndicator();
