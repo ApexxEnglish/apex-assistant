@@ -404,23 +404,91 @@ border: 1px solid var(--line);
   }
 
 
-  #speech-lang-select{
+
+
+  #mic-control{
+    position:relative;
+    width:52px;
+    min-width:52px;
     height:44px;
-    min-width:62px;
-    padding:0 8px;
-    border:1px solid var(--line);
-    border-radius:8px;
-    background:var(--white);
-    color:var(--ink);
+    flex:0 0 52px;
+  }
+
+  #mic-control #mic-btn{
+    width:52px;
+    min-width:52px;
+    height:44px;
+    padding:0;
+  }
+
+  #mic-lang-btn{
+    position:absolute;
+    right:2px;
+    bottom:2px;
+    z-index:3;
+    min-width:22px;
+    height:16px;
+    padding:0 4px;
+    border-radius:6px;
+    border:1px solid rgba(255,255,255,0.8);
+    background:var(--ink);
+    color:var(--marigold);
     font-family:'IBM Plex Mono', monospace;
-    font-size:0.7rem;
-    font-weight:600;
-    outline:none;
+    font-size:0.50rem;
+    font-weight:700;
+    line-height:14px;
     cursor:pointer;
   }
 
-  #speech-lang-select:focus{
+  #mic-control.listening #mic-lang-btn{
+    background:var(--white);
+    color:var(--ink);
+    border-color:var(--ink);
+  }
+
+  #mic-lang-menu{
+    display:none;
+    position:absolute;
+    right:0;
+    bottom:52px;
+    z-index:40;
+    width:164px;
+    padding:7px;
+    grid-template-columns:repeat(4, 1fr);
+    gap:5px;
+    background:var(--white);
+    border:1px solid var(--line);
+    border-radius:10px;
+    box-shadow:0 10px 28px rgba(32,42,68,0.18);
+  }
+
+  #mic-lang-menu.open{
+    display:grid;
+  }
+
+  #mic-lang-menu button{
+    min-width:0;
+    height:30px;
+    padding:0;
+    border-radius:7px;
+    border:1px solid var(--line);
+    background:var(--white);
+    color:var(--ink-soft);
+    font-family:'IBM Plex Mono', monospace;
+    font-size:0.66rem;
+    font-weight:700;
+    cursor:pointer;
+  }
+
+  #mic-lang-menu button.active{
+    background:var(--ink);
+    border-color:var(--ink);
+    color:var(--marigold);
+  }
+
+  #mic-lang-menu button:hover{
     border-color:var(--marigold-deep);
+    color:var(--ink);
   }
 
   #mic-btn{
@@ -458,30 +526,6 @@ border: 1px solid var(--line);
     font-size:0.8rem;
   }
 
-  #mic-lang-badge{
-    position:absolute;
-    right:3px;
-    bottom:2px;
-    min-width:18px;
-    height:13px;
-    padding:0 3px;
-    border-radius:5px;
-    background:var(--ink);
-    color:var(--marigold);
-    border:1px solid rgba(255,255,255,0.75);
-    font-family:'IBM Plex Mono', monospace;
-    font-size:0.48rem;
-    font-weight:700;
-    line-height:11px;
-    text-align:center;
-    pointer-events:none;
-  }
-
-  #mic-btn.listening #mic-lang-badge{
-    background:var(--white);
-    color:var(--ink);
-    border-color:var(--ink);
-  }
 
   #voice-notice{
     display:none;
@@ -527,6 +571,34 @@ border: 1px solid var(--line);
     color:var(--ink-soft);
   }
   .starter:hover{ border-color:var(--marigold-deep); color:var(--ink); }
+
+  @media (max-width:600px){
+    #input-row{
+      gap:6px;
+      padding:10px;
+    }
+
+    #mic-control{
+      width:48px;
+      min-width:48px;
+      flex-basis:48px;
+    }
+
+    #mic-control #mic-btn{
+      width:48px;
+      min-width:48px;
+    }
+
+    #input-row button#send-btn{
+      padding:0 13px;
+    }
+
+    #mic-lang-menu{
+      right:-4px;
+      width:156px;
+    }
+  }
+
 </style>
 </head>
 <body>
@@ -576,21 +648,25 @@ border: 1px solid var(--line);
 </div>
   <div id="input-row">
     <input id="chat-input" type="text" placeholder="Type a question or a sentence..." autocomplete="off" />
-    <select id="speech-lang-select" aria-label="Microphone language" title="Microphone language">
-      <option value="tr-TR">TR</option>
-      <option value="en-US">EN</option>
-      <option value="ru-RU">RU</option>
-      <option value="fa-IR">FA</option>
-      <option value="es-ES">ES</option>
-      <option value="fr-FR">FR</option>
-      <option value="zh-CN">ZH</option>
-      <option value="ja-JP">JA</option>
-    </select>
-    <button id="mic-btn" type="button" aria-label="Start speaking" title="Start speaking">
-      <span class="mic-icon">🎙️</span>
-      <span class="mic-stop">■</span>
-      <span id="mic-lang-badge">TR</span>
-    </button>
+    <div id="mic-control">
+      <button id="mic-btn" type="button" aria-label="Start speaking" title="Start speaking">
+        <span class="mic-icon">🎙️</span>
+        <span class="mic-stop">■</span>
+      </button>
+      <button id="mic-lang-btn" type="button" aria-label="Microphone language" title="Microphone language">
+        <span id="mic-lang-badge">TR</span>
+      </button>
+      <div id="mic-lang-menu" aria-label="Microphone language options">
+        <button type="button" data-speech-lang="tr-TR">TR</button>
+        <button type="button" data-speech-lang="en-US">EN</button>
+        <button type="button" data-speech-lang="ru-RU">RU</button>
+        <button type="button" data-speech-lang="fa-IR">FA</button>
+        <button type="button" data-speech-lang="es-ES">ES</button>
+        <button type="button" data-speech-lang="fr-FR">FR</button>
+        <button type="button" data-speech-lang="zh-CN">ZH</button>
+        <button type="button" data-speech-lang="ja-JP">JA</button>
+      </div>
+    </div>
     <button id="send-btn">Send</button>
   </div>
 </div>
@@ -1098,7 +1174,7 @@ const FLOW_UI = {
   }
 };
 
-function buildSystemPrompt(lang){
+function buildSystemPrompt(lang, responseLang = lang){
   const level = session.level || "unknown";
   const mode = session.mode || "general";
   const topic = session.topic || "not selected";
@@ -1115,6 +1191,14 @@ USER SESSION:
 - Current topic: ${topic}
 - Voice input active: ${session.voiceMode ? "yes" : "no"}
 - Microphone recognition language: ${session.speechLang || "not selected"}
+- RESPONSE LANGUAGE FOR THIS TURN: ${UI[responseLang]?.langName || UI[lang].langName}
+
+CRITICAL LANGUAGE RULE:
+- Answer THIS turn in ${UI[responseLang]?.langName || UI[lang].langName}.
+- Apply this immediately from the first reply. Do not wait for 2-3 messages.
+- The current turn's response-language instruction overrides the language used in earlier conversation history.
+- If the user spoke via microphone, the selected microphone language is authoritative for the reply language.
+- English examples, exercises and interview questions may still remain in English when pedagogically appropriate.
 
 Your goal is not only to answer questions. You should actively help the
 student improve their English according to their level.
@@ -1302,12 +1386,12 @@ After every answer:
 When Voice input active is "yes", treat the user's message as a speech-to-text transcript.
 
 IMPORTANT:
-- The interface/explanation language remains ${UI[lang].langName}.
+- For this turn, explanations follow ${UI[responseLang]?.langName || UI[lang].langName}.
 - The microphone recognition language is ${session.speechLang || "not selected"}.
 - Do NOT translate or rewrite the user's transcript into another language unless the user asks.
 - Preserve the user's original spoken language.
 - If the student is speaking English for learning/practice, coach the English.
-- If the student is speaking Turkish, Persian, Russian, Spanish, French, Chinese, or Japanese to ask a question, understand and answer in the interface language.
+- If the student is speaking Turkish, Persian, Russian, Spanish, French, Chinese, or Japanese, understand it and answer immediately in that selected microphone language for this turn.
 - Do NOT claim to evaluate pronunciation, accent, stress, or individual sounds from transcript text alone.
 
 For spoken ENGLISH practice, use this concise format when useful:
@@ -1323,7 +1407,7 @@ MORE NATURAL:
 Give one natural spoken-English alternative when useful.
 
 COACH NOTE:
-Give one short grammar, vocabulary, or fluency note in ${UI[lang].langName}.
+Give one short grammar, vocabulary, or fluency note in ${UI[responseLang]?.langName || UI[lang].langName}.
 Maximum 2 short sentences.
 
 NEXT:
@@ -1414,7 +1498,7 @@ Do not show this marker as normal conversational text.
 11. GENERAL BEHAVIOR
 ==================================================
 
-Write explanations and instructions in ${UI[lang].langName}.
+Write explanations and instructions in ${UI[responseLang]?.langName || UI[lang].langName}.
 
 English examples and practice questions should remain in English.
 
@@ -1443,7 +1527,10 @@ const headerSub = document.getElementById('header-sub');
 const modeToolbar = document.getElementById('mode-toolbar');
 const changeModeBtn = document.getElementById('change-mode-btn');
 const micBtn = document.getElementById('mic-btn');
-const speechLangSelect = document.getElementById('speech-lang-select');
+const micControl = document.getElementById('mic-control');
+const micLangBtn = document.getElementById('mic-lang-btn');
+const micLangMenu = document.getElementById('mic-lang-menu');
+const micLangOptions = document.querySelectorAll('[data-speech-lang]');
 const micLangBadge = document.getElementById('mic-lang-badge');
 const voiceNotice = document.getElementById('voice-notice');
 const langButtons = document.querySelectorAll('.lang-btn');
@@ -1478,6 +1565,7 @@ let session = {
   phase: "level",
   voiceMode: false,
   speechLang: 'tr-TR',
+  speechLangManuallySelected: false,
   speakingCount: 0,
   speakingSamples: [],
   speakingReports: 0
@@ -1642,6 +1730,14 @@ let voiceNoticeTimer = null;
 
 function applyLanguage(lang){
   currentLang = lang;
+
+  if(!session.speechLangManuallySelected){
+    const uiToSpeech = {
+      tr:'tr-TR', en:'en-US', ru:'ru-RU', fa:'fa-IR',
+      es:'es-ES', fr:'fr-FR', zh:'zh-CN', ja:'ja-JP'
+    };
+    session.speechLang = uiToSpeech[lang] || 'en-US';
+  }
   const t = UI[lang];
   const f = FLOW_UI[lang] || FLOW_UI.en;
   resetComposer();
@@ -1653,9 +1749,6 @@ function applyLanguage(lang){
   sendBtn.textContent = t.send;
   changeModeBtn.textContent = f.changeMode;
 
-  if(speechLangSelect){
-    speechLangSelect.value = session.speechLang || 'tr-TR';
-  }
   micBtn.setAttribute('aria-label', isListening ? f.micStop : f.micStart);
   updateMicLanguageIndicator();
 
@@ -2066,6 +2159,28 @@ function getInterfaceSpeechLanguage(){
   return speechLanguages[currentLang] || 'en-US';
 }
 
+
+function getLanguageKeyFromSpeechLang(speechLang){
+  const map = {
+    'tr-TR':'tr',
+    'en-US':'en',
+    'ru-RU':'ru',
+    'fa-IR':'fa',
+    'es-ES':'es',
+    'fr-FR':'fr',
+    'zh-CN':'zh',
+    'ja-JP':'ja'
+  };
+  return map[speechLang] || currentLang;
+}
+
+function getTurnResponseLanguageKey(submittedAsVoice, submittedSpeechLang){
+  if(submittedAsVoice && submittedSpeechLang){
+    return getLanguageKeyFromSpeechLang(submittedSpeechLang);
+  }
+  return currentLang;
+}
+
 function getMicLanguageCode(){
   const map = {
     'tr-TR':'TR',
@@ -2118,11 +2233,18 @@ function updateMicLanguageIndicator(){
   const action = isListening ? f.micStop : f.micStart;
   micBtn.title = `${action} · Mic: ${names[code] || code}`;
 
-  if(speechLangSelect){
-    const selectorLabel = getSpeechLanguageSelectorLabel();
-    speechLangSelect.setAttribute('aria-label', selectorLabel);
-    speechLangSelect.title = selectorLabel;
+  const selectorLabel = getSpeechLanguageSelectorLabel();
+  if(micLangBtn){
+    micLangBtn.setAttribute('aria-label', selectorLabel);
+    micLangBtn.title = selectorLabel;
   }
+  if(micControl){
+    micControl.classList.toggle('listening', Boolean(isListening));
+  }
+
+  micLangOptions.forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.speechLang === session.speechLang);
+  });
 }
 
 function getRecognitionLanguage(){
@@ -2411,10 +2533,26 @@ function startVoiceRecognition(){
   }
 }
 
-speechLangSelect.addEventListener('change', () => {
-  stopVoiceRecognition({ clearInput: false });
-  session.speechLang = speechLangSelect.value;
-  updateMicLanguageIndicator();
+micLangBtn.addEventListener('click', (e) => {
+  e.stopPropagation();
+  micLangMenu.classList.toggle('open');
+});
+
+micLangOptions.forEach(btn => {
+  btn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    stopVoiceRecognition({ clearInput: false });
+    session.speechLang = btn.dataset.speechLang;
+    session.speechLangManuallySelected = true;
+    micLangMenu.classList.remove('open');
+    updateMicLanguageIndicator();
+  });
+});
+
+document.addEventListener('click', (e) => {
+  if(!micControl.contains(e.target)){
+    micLangMenu.classList.remove('open');
+  }
 });
 
 micBtn.addEventListener('click', startVoiceRecognition);
@@ -2447,7 +2585,6 @@ function notifyOwner(visitorEmail, contextMessage){
 
 restoreLevelMemory();
 applyLanguage('tr');
-if(speechLangSelect) speechLangSelect.value = session.speechLang;
 updateMicLanguageIndicator();
 
 setTimeout(() => {
@@ -2536,6 +2673,7 @@ async function sendMessage(options = {}){
   // Reset for the next message unless the microphone is used again.
   const submittedAsVoice = session.voiceMode === true;
   const submittedSpeechLang = session.speechLang;
+  const responseLangForTurn = getTurnResponseLanguageKey(submittedAsVoice, submittedSpeechLang);
   const isEnglishVoiceTurn = submittedAsVoice && submittedSpeechLang === 'en-US';
 
   if(isEnglishVoiceTurn){
@@ -2560,8 +2698,8 @@ async function sendMessage(options = {}){
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         systemPrompt: submittedAsVoice
-          ? buildSystemPrompt(currentLang).replace('Voice input active: no', 'Voice input active: yes')
-          : buildSystemPrompt(currentLang),
+          ? buildSystemPrompt(currentLang, responseLangForTurn).replace('Voice input active: no', 'Voice input active: yes')
+          : buildSystemPrompt(currentLang, responseLangForTurn),
         messages: history
       })
     });
