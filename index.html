@@ -3994,8 +3994,6 @@ langButtons.forEach(btn => {
 let userHasToggled = false;
 
 launcher.addEventListener('click', () => {
-  
-    if(!window.__apexAssistantOpened){ window.__apexAssistantOpened = true; apexTrack('assistant_open'); }
 userHasToggled = true;
   panel.classList.add('open');
   launcherWrap.classList.add('opened');
@@ -4805,10 +4803,51 @@ function apexTrack(eventName, params = {}){
   }catch(e){}
 }
 
+
+function apexTrackAssistantOpenWhenVisible(){
+  try{
+    const panel = document.querySelector('.panel, #panel, .chat-panel, #chat-panel, [data-assistant-panel]');
+    if(!panel) return;
+
+    const isVisible = () => {
+      const cs = window.getComputedStyle(panel);
+      const rect = panel.getBoundingClientRect();
+      return (
+        cs.display !== 'none' &&
+        cs.visibility !== 'hidden' &&
+        Number(cs.opacity || 1) > 0 &&
+        rect.width > 0 &&
+        rect.height > 0
+      );
+    };
+
+    const fire = () => {
+      if(isVisible() && !window.__apexAssistantOpenSessionTracked){
+        window.__apexAssistantOpenSessionTracked = true;
+        apexTrack('assistant_open', {
+          source: 'panel_visible',
+          language: currentLang || 'unknown',
+          level: session.level || learningProfile.level || 'unknown'
+        });
+      }
+    };
+
+    const observer = new MutationObserver(fire);
+    observer.observe(panel, {
+      attributes:true,
+      attributeFilter:['class','style','hidden','aria-hidden']
+    });
+
+    window.addEventListener('resize', fire, {passive:true});
+    fire();
+  }catch(e){}
+}
+
 function addUserMessage(text){
   if(!window.__apexFirstMessageTracked){
     window.__apexFirstMessageTracked = true;
     apexTrack('first_message_sent', {
+      source: 'composer',
       language: currentLang || 'unknown',
       level: session.level || learningProfile.level || 'unknown'
     });
@@ -5393,6 +5432,7 @@ pronunciationRecord.addEventListener('click', () => {
     if(!window.__apexPronunciationTracked){
       window.__apexPronunciationTracked = true;
       apexTrack('pronunciation_started', {
+        source: 'record_button',
         language: currentLang || 'unknown',
         level: session.level || learningProfile.level || 'unknown'
       });
@@ -5462,15 +5502,51 @@ document.addEventListener('click', (e)=>{
 
 
 document.addEventListener('click', (e)=>{
-  const a = e.target && e.target.closest ? e.target.closest('a') : null;
-  if(!a) return;
-  const href = a.getAttribute('href') || '';
-  if(/apexenglish\.net\/(iletisim|ucretsiz-seviye-analizi|kurumsal-egitimler|genel-ingilizce-program|speaking-club|kabin-memuru-mulakat-hazirlik)/i.test(href)){
-    apexTrack('lead_cta_clicked', {
-      destination: href,
-      language: currentLang || 'unknown'
-    });
-  }
+  try{
+    const a = e.target && e.target.closest ? e.target.closest('a') : null;
+    if(!a) return;
+    const href = a.getAttribute('href') || '';
+    if(/(?:https?:\/\/(?:www\.)?apexenglish\.net)?\/(iletisim|ucretsiz-seviye-analizi|kurumsal-egitimler|genel-ingilizce-program|speaking-club|kabin-memuru-mulakat-hazirlik)/i.test(href)){
+      apexTrack('lead_cta_clicked', {
+        destination: href,
+        label: (a.textContent || '').trim().slice(0,80),
+        language: currentLang || 'unknown'
+      });
+    }
+  }catch(err){}
+});
+
+
+window.addEventListener('load', () => {
+  apexTrackAssistantOpenWhenVisible();
+});
+
+
+document.addEventListener('click', (e)=>{
+  try{
+    const el = e.target && e.target.closest
+      ? e.target.closest('button,a,[data-action],[data-value],[data-mode],[data-topic]')
+      : null;
+    if(!el) return;
+
+    const label = [
+      el.textContent || '',
+      el.dataset?.action || '',
+      el.dataset?.value || '',
+      el.dataset?.mode || '',
+      el.dataset?.topic || ''
+    ].join(' ').toLowerCase();
+
+    if(!window.__apexInterviewSessionTracked &&
+       /(job interview|interview|mülakat|mulakat|интервью|مصاحبه|entrevista|entretien|面试|面接)/i.test(label)){
+      window.__apexInterviewSessionTracked = true;
+      apexTrack('interview_started', {
+        source: 'mode_selection',
+        language: currentLang || 'unknown',
+        level: session.level || learningProfile.level || 'unknown'
+      });
+    }
+  }catch(err){}
 });
 
 </script>
