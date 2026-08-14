@@ -1612,6 +1612,57 @@ border: 1px solid var(--line);
     }
   }
 
+
+/* ===== v31 CLEAN ONBOARDING ===== */
+.apex-onboarding-note{
+  margin:10px 0 2px;
+  font-size:12px;
+  line-height:1.5;
+  color:var(--muted, #697386);
+  text-align:left;
+}
+.apex-onboarding-note strong{
+  color:var(--text, #172033);
+  font-weight:700;
+}
+.apex-onboarding-trust{
+  margin-top:8px;
+  display:flex;
+  flex-wrap:wrap;
+  gap:6px 10px;
+  font-size:11px;
+  line-height:1.4;
+  color:var(--muted, #697386);
+}
+.apex-onboarding-trust span{
+  display:inline-flex;
+  align-items:center;
+  gap:5px;
+}
+.apex-onboarding-trust span::before{
+  content:"";
+  width:5px;
+  height:5px;
+  border-radius:50%;
+  background:#c99a3b;
+  flex:0 0 5px;
+}
+.apex-teacher-cta{
+  margin-top:12px;
+  padding-top:10px;
+  border-top:1px solid rgba(15,42,79,.10);
+  font-size:11px;
+  line-height:1.5;
+  color:var(--muted, #697386);
+}
+.apex-teacher-cta strong{
+  color:var(--text, #172033);
+}
+@media (max-width:640px){
+  .apex-onboarding-note{font-size:11.5px}
+  .apex-onboarding-trust{font-size:10.5px}
+}
+
 </style>
 
 <!-- Google tag (gtag.js) -->
@@ -1642,7 +1693,7 @@ border: 1px solid var(--line);
 <div id="panel">
   <header>
     <div>
-      <div class="title" id="header-title">İngilizce pratiğine hazır mısın?</div>
+      <div class="title" id="header-title">İngilizceni nasıl geliştirmek istersin?</div>
       <div class="sub" id="header-sub">ya da kurs hakkında soru sor</div>
     </div>
     <button id="close-btn" aria-label="Close">✕</button>
@@ -1884,7 +1935,7 @@ const UI = {
   },
   tr: {
     langName: "Türkçe",
-    title: "İngilizce pratiğine hazır mısın?",
+    title: "İngilizceni nasıl geliştirmek istersin?",
     sub: "ya da kurs hakkında soru sor",
     placeholder: "Cümle, mülakat yanıtı veya soru yazın...",
     send: "Gönder",
@@ -5591,5 +5642,102 @@ document.addEventListener('click', (e)=>{
     }
   }catch(err){}
 }, true);
+
+
+
+const ONBOARDING_UI = {
+  tr:{
+    intro:"Cümleni düzelt, kelime veya gramer sor, speaking yap, telaffuzunu çalış ya da mülakat provası yap.",
+    trust:["Ücretsiz kullan","İlerlemeni kaydet","Kaldığın yerden devam et"],
+    teacher:"AI ile pratik yap. Gerçek eğitmenle ilerle."
+  },
+  en:{
+    intro:"Correct a sentence, ask vocabulary or grammar questions, practise speaking, work on pronunciation or prepare for an interview.",
+    trust:["Use it free","Save your progress","Continue where you left off"],
+    teacher:"Practise with AI. Progress with a real teacher."
+  },
+  ru:{
+    intro:"Исправляйте предложения, спрашивайте слова и грамматику, практикуйте разговорную речь, произношение и интервью.",
+    trust:["Бесплатно","Сохраняйте прогресс","Продолжайте с места остановки"],
+    teacher:"Практикуйтесь с AI. Развивайтесь с преподавателем."
+  },
+  fa:{
+    intro:"جمله‌تان را اصلاح کنید، واژگان و گرامر بپرسید، مکالمه و تلفظ تمرین کنید یا برای مصاحبه آماده شوید.",
+    trust:["رایگان استفاده کنید","پیشرفت را ذخیره کنید","از همان‌جا ادامه دهید"],
+    teacher:"با هوش مصنوعی تمرین کنید. با مدرس واقعی پیشرفت کنید."
+  },
+  es:{
+    intro:"Corrige frases, pregunta vocabulario o gramática, practica speaking, pronunciación o prepara una entrevista.",
+    trust:["Úsalo gratis","Guarda tu progreso","Continúa donde lo dejaste"],
+    teacher:"Practica con IA. Avanza con un profesor real."
+  },
+  fr:{
+    intro:"Corrigez vos phrases, posez des questions de vocabulaire ou grammaire, pratiquez l’oral, la prononciation ou un entretien.",
+    trust:["Utilisation gratuite","Sauvegardez vos progrès","Reprenez où vous en étiez"],
+    teacher:"Pratiquez avec l’IA. Progressez avec un vrai formateur."
+  },
+  zh:{
+    intro:"修改句子、提问词汇或语法、练习口语和发音，或进行面试准备。",
+    trust:["免费使用","保存进度","从上次位置继续"],
+    teacher:"用 AI 练习，与真人教师继续提升。"
+  },
+  ja:{
+    intro:"英文添削、語彙や文法の質問、スピーキング、発音、面接練習までできます。",
+    trust:["無料で使える","進捗を保存","続きから再開"],
+    teacher:"AIで練習し、実際の講師とさらに伸ばす。"
+  }
+};
+
+function renderCleanOnboarding(){
+  try{
+    const langKey = currentLang || 'tr';
+    const copy = ONBOARDING_UI[langKey] || ONBOARDING_UI.en;
+
+    // Find the opening choice area without changing existing mode buttons.
+    const candidates = [
+      document.querySelector('.welcome-copy'),
+      document.querySelector('.intro-copy'),
+      document.querySelector('.start-copy'),
+      document.querySelector('.mode-copy'),
+      document.querySelector('.hero-copy'),
+      document.querySelector('.panel-body'),
+      document.querySelector('.messages')
+    ].filter(Boolean);
+
+    const host = candidates[0];
+    if(!host) return;
+
+    let note = document.getElementById('apex-onboarding-note');
+    if(!note){
+      note = document.createElement('div');
+      note.id = 'apex-onboarding-note';
+      note.className = 'apex-onboarding-note';
+      note.innerHTML = `<strong>${copy.intro}</strong>`;
+      host.prepend(note);
+    }else{
+      note.innerHTML = `<strong>${copy.intro}</strong>`;
+    }
+
+    let trust = document.getElementById('apex-onboarding-trust');
+    if(!trust){
+      trust = document.createElement('div');
+      trust.id = 'apex-onboarding-trust';
+      trust.className = 'apex-onboarding-trust';
+      note.insertAdjacentElement('afterend', trust);
+    }
+    trust.innerHTML = copy.trust.map(x=>`<span>${x}</span>`).join('');
+
+    let teacher = document.getElementById('apex-teacher-cta');
+    if(!teacher){
+      teacher = document.createElement('div');
+      teacher.id = 'apex-teacher-cta';
+      teacher.className = 'apex-teacher-cta';
+      trust.insertAdjacentElement('afterend', teacher);
+    }
+    teacher.innerHTML = `<strong>${copy.teacher}</strong>`;
+  }catch(e){}
+}
+
+window.addEventListener('load', renderCleanOnboarding);
 
 </script>
