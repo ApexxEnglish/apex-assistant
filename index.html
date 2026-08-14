@@ -3984,7 +3984,9 @@ langButtons.forEach(btn => {
 let userHasToggled = false;
 
 launcher.addEventListener('click', () => {
-  userHasToggled = true;
+  
+    if(!window.__apexAssistantOpened){ window.__apexAssistantOpened = true; apexTrack('assistant_open'); }
+userHasToggled = true;
   panel.classList.add('open');
   launcherWrap.classList.add('opened');
   if(history.length === 0){
@@ -4780,7 +4782,27 @@ function renderBotContent(text){
     .replace(/(https?:\/\/[^\s<]+)/g, '<a href="$1" target="_blank" rel="noopener" style="color:var(--marigold-deep);text-decoration:underline;">$1</a>');
 }
 
+
+// Sends GA4 custom events only if the Google tag (gtag.js) already exists on the page.
+function apexTrack(eventName, params = {}){
+  try{
+    if(typeof window.gtag === 'function'){
+      window.gtag('event', eventName, {
+        app_name: 'apex_assistant',
+        ...params
+      });
+    }
+  }catch(e){}
+}
+
 function addUserMessage(text){
+  if(!window.__apexFirstMessageTracked){
+    window.__apexFirstMessageTracked = true;
+    apexTrack('first_message_sent', {
+      language: currentLang || 'unknown',
+      level: session.level || learningProfile.level || 'unknown'
+    });
+  }
   const div = document.createElement('div');
   div.className = 'msg user';
   div.textContent = text;
@@ -5127,6 +5149,7 @@ async function startPronunciationRecording(){
     pronProcessorNode.connect(pronSilentGain);
     pronSilentGain.connect(pronAudioContext.destination);
 
+    apexTrack('pronunciation_started', { language: currentLang || 'unknown', level: session.level || learningProfile.level || 'unknown' });
     pronRecording = true;
     pronStartedAt = Date.now();
     pronunciationRecord.classList.add('recording');
@@ -5405,4 +5428,30 @@ document.addEventListener('keydown', (e) => {
     closeProgressPanel();
   }
 });
+
+
+document.addEventListener('click', (e)=>{
+  const el = e.target && e.target.closest ? e.target.closest('button,[data-action],[data-value]') : null;
+  if(!el) return;
+  const label = `${el.textContent || ''} ${el.dataset?.action || ''} ${el.dataset?.value || ''}`.toLowerCase();
+  if(!window.__apexInterviewTracked && /(job interview|mülakat|интервью|مصاحبه|entrevista|entretien|面试|面接)/i.test(label)){
+    window.__apexInterviewTracked = true;
+    apexTrack('interview_started', { language: currentLang || 'unknown', level: session.level || learningProfile.level || 'unknown' });
+  }
+});
+
+
+
+document.addEventListener('click', (e)=>{
+  const a = e.target && e.target.closest ? e.target.closest('a') : null;
+  if(!a) return;
+  const href = a.getAttribute('href') || '';
+  if(/apexenglish\.net\/(iletisim|ucretsiz-seviye-analizi|kurumsal-egitimler|genel-ingilizce-program|speaking-club|kabin-memuru-mulakat-hazirlik)/i.test(href)){
+    apexTrack('lead_cta_clicked', {
+      destination: href,
+      language: currentLang || 'unknown'
+    });
+  }
+});
+
 </script>
