@@ -5549,4 +5549,47 @@ document.addEventListener('click', (e)=>{
   }catch(err){}
 });
 
+
+
+document.addEventListener('click', (e)=>{
+  try{
+    const a = e.target && e.target.closest ? e.target.closest('a') : null;
+    if(!a) return;
+
+    const href = (a.getAttribute('href') || '').trim();
+    const text = (a.textContent || '').trim().replace(/\s+/g,' ').slice(0,100);
+
+    const isLeadDestination =
+      /(?:https?:\/\/(?:www\.)?apexenglish\.net)?\/(?:iletisim|ucretsiz-seviye-analizi|kurumsal-egitimler|genel-ingilizce-program|speaking-club|kabin-memuru-mulakat-hazirlik)(?:[/?#]|$)/i.test(href);
+
+    const isLeadLabel =
+      /(eğitime başla|egitime basla|eğitim|egitim|iletişim|iletisim|seviye analizi|speaking club|mülakat hazırlık|mulakat hazirlik)/i.test(text);
+
+    if(!isLeadDestination && !isLeadLabel) return;
+
+    const payload = {
+      app_name: 'apex_assistant',
+      destination: href || 'unknown',
+      label: text || 'lead_cta',
+      language: currentLang || 'unknown',
+      transport_type: 'beacon'
+    };
+
+    if(typeof window.gtag === 'function'){
+      window.gtag('event', 'lead_cta_clicked', payload);
+    }
+
+    // For normal same-tab navigation, give GA a brief moment to queue the beacon.
+    const target = (a.getAttribute('target') || '').toLowerCase();
+    const isSameTab = !target || target === '_self';
+
+    if(isSameTab && href && !href.startsWith('#') && !href.startsWith('javascript:')){
+      e.preventDefault();
+      setTimeout(() => {
+        window.location.href = a.href;
+      }, 180);
+    }
+  }catch(err){}
+}, true);
+
 </script>
