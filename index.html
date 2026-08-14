@@ -5159,7 +5159,6 @@ async function startPronunciationRecording(){
     pronProcessorNode.connect(pronSilentGain);
     pronSilentGain.connect(pronAudioContext.destination);
 
-    apexTrack('pronunciation_started', { language: currentLang || 'unknown', level: session.level || learningProfile.level || 'unknown' });
     pronRecording = true;
     pronStartedAt = Date.now();
     pronunciationRecord.classList.add('recording');
@@ -5388,8 +5387,18 @@ async function analyzePronunciation(){
 pronunciationLaunch.addEventListener('click', openPronunciationCoach);
 pronunciationClose.addEventListener('click', closePronunciationCoach);
 pronunciationRecord.addEventListener('click', () => {
-  if(pronRecording) stopPronunciationRecording();
-  else startPronunciationRecording();
+  if(pronRecording){
+    stopPronunciationRecording();
+  }else{
+    if(!window.__apexPronunciationTracked){
+      window.__apexPronunciationTracked = true;
+      apexTrack('pronunciation_started', {
+        language: currentLang || 'unknown',
+        level: session.level || learningProfile.level || 'unknown'
+      });
+    }
+    startPronunciationRecording();
+  }
 });
 pronunciationAnalyze.addEventListener('click', analyzePronunciation);
 function resetPronunciationTakeForNewTarget(){
