@@ -46,10 +46,215 @@ function createSessionToken(email, secret) {
   return `${encodedPayload}.${signature}`;
 }
 
+function verificationEmailHtml(code) {
+  return `
+  <!doctype html>
+  <html lang="tr">
+    <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <title>Apex English Doğrulama Kodu</title>
+    </head>
+
+    <body style="
+      margin:0;
+      padding:0;
+      background:#f4f6f8;
+      font-family:Arial,Helvetica,sans-serif;
+      color:#102b55;
+    ">
+
+      <table
+        role="presentation"
+        width="100%"
+        cellspacing="0"
+        cellpadding="0"
+        border="0"
+        style="background:#f4f6f8;padding:28px 12px;"
+      >
+        <tr>
+          <td align="center">
+
+            <table
+              role="presentation"
+              width="100%"
+              cellspacing="0"
+              cellpadding="0"
+              border="0"
+              style="
+                max-width:560px;
+                background:#ffffff;
+                border:1px solid #e2e7ed;
+                border-radius:16px;
+                overflow:hidden;
+              "
+            >
+
+              <tr>
+                <td style="
+                  background:#102b55;
+                  padding:22px 26px;
+                ">
+                  <div style="
+                    font-size:20px;
+                    line-height:1.2;
+                    font-weight:700;
+                    color:#ffffff;
+                  ">
+                    Apex English
+                  </div>
+
+                  <div style="
+                    margin-top:5px;
+                    font-size:12px;
+                    line-height:1.4;
+                    color:#d7b25a;
+                    letter-spacing:.04em;
+                  ">
+                    ÖĞRENME PROFİLİ DOĞRULAMA
+                  </div>
+                </td>
+              </tr>
+
+              <tr>
+                <td style="padding:28px 26px 10px;">
+
+                  <h1 style="
+                    margin:0;
+                    font-size:22px;
+                    line-height:1.35;
+                    color:#102b55;
+                    font-weight:700;
+                  ">
+                    Doğrulama Kodunuz
+                  </h1>
+
+                  <p style="
+                    margin:12px 0 0;
+                    font-size:15px;
+                    line-height:1.65;
+                    color:#526075;
+                  ">
+                    Apex English öğrenme profilinizi doğrulamak
+                    ve ilerlemenizi güvenli şekilde kaydetmek için
+                    aşağıdaki 6 haneli kodu kullanın.
+                  </p>
+
+                </td>
+              </tr>
+
+              <tr>
+                <td align="center" style="padding:18px 26px;">
+
+                  <div style="
+                    display:inline-block;
+                    min-width:220px;
+                    padding:18px 24px;
+                    background:#f8f3e6;
+                    border:1px solid #e4cf93;
+                    border-radius:14px;
+                    color:#102b55;
+                    font-size:32px;
+                    line-height:1;
+                    font-weight:800;
+                    letter-spacing:8px;
+                    text-align:center;
+                  ">
+                    ${code}
+                  </div>
+
+                </td>
+              </tr>
+
+              <tr>
+                <td style="padding:8px 26px 26px;">
+
+                  <p style="
+                    margin:0;
+                    font-size:13px;
+                    line-height:1.6;
+                    color:#526075;
+                  ">
+                    Bu kod
+                    <strong style="color:#102b55;">
+                      10 dakika
+                    </strong>
+                    geçerlidir.
+                  </p>
+
+                  <p style="
+                    margin:10px 0 0;
+                    font-size:13px;
+                    line-height:1.6;
+                    color:#526075;
+                  ">
+                    Bu işlemi siz başlatmadıysanız
+                    bu e-postayı güvenle yok sayabilirsiniz.
+                  </p>
+
+                </td>
+              </tr>
+
+              <tr>
+                <td style="
+                  border-top:1px solid #e7ebef;
+                  padding:18px 26px 22px;
+                  background:#fbfcfd;
+                ">
+
+                  <div style="
+                    font-size:12px;
+                    line-height:1.55;
+                    color:#7a8594;
+                  ">
+                    Bu e-posta Apex English doğrulama sistemi
+                    tarafından otomatik olarak gönderilmiştir.
+                  </div>
+
+                </td>
+              </tr>
+
+            </table>
+
+          </td>
+        </tr>
+      </table>
+
+    </body>
+  </html>
+  `;
+}
+
+function verificationEmailText(code) {
+  return [
+    'Apex English',
+    '',
+    'Doğrulama Kodunuz',
+    '',
+    `Kod: ${code}`,
+    '',
+    'Bu kod 10 dakika geçerlidir.',
+    '',
+    'Bu işlemi siz başlatmadıysanız bu e-postayı yok sayabilirsiniz.'
+  ].join('\n');
+}
+
 export default async function handler(req, res) {
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+
+  res.setHeader(
+    'Access-Control-Allow-Origin',
+    '*'
+  );
+
+  res.setHeader(
+    'Access-Control-Allow-Methods',
+    'POST, OPTIONS'
+  );
+
+  res.setHeader(
+    'Access-Control-Allow-Headers',
+    'Content-Type'
+  );
 
   if (req.method === 'OPTIONS') {
     return res.status(204).end();
@@ -77,7 +282,8 @@ export default async function handler(req, res) {
     !PROFILE_SESSION_SECRET
   ) {
     return res.status(500).json({
-      error: 'Required environment variables are missing.'
+      error:
+        'Required environment variables are missing.'
     });
   }
 
@@ -85,7 +291,10 @@ export default async function handler(req, res) {
   const action = body.action;
   const email = normalizeEmail(body.email);
 
-  if (!email || !email.includes('@')) {
+  if (
+    !email ||
+    !email.includes('@')
+  ) {
     return res.status(400).json({
       error: 'Valid email is required.'
     });
@@ -104,42 +313,60 @@ export default async function handler(req, res) {
     // ==========================================
     // SEND CODE
     // ==========================================
-    if (action === 'send') {
-      const code = generateCode();
-      const codeHash = hashCode(email, code);
 
-      const expiresAt = new Date(
-        Date.now() + 10 * 60 * 1000
-      ).toISOString();
+    if (action === 'send') {
+
+      const code = generateCode();
+
+      const codeHash =
+        hashCode(
+          email,
+          code
+        );
+
+      const expiresAt =
+        new Date(
+          Date.now() +
+          10 * 60 * 1000
+        ).toISOString();
 
       // Delete older unused codes
+
       await fetch(
-        `${verificationEndpoint}?email=eq.${encodeURIComponent(email)}&verified_at=is.null`,
+        `${verificationEndpoint}` +
+        `?email=eq.${encodeURIComponent(email)}` +
+        `&verified_at=is.null`,
         {
           method: 'DELETE',
           headers: supabaseHeaders
         }
       );
 
-      const saveResponse = await fetch(
-        verificationEndpoint,
-        {
-          method: 'POST',
-          headers: {
-            ...supabaseHeaders,
-            Prefer: 'return=minimal'
-          },
-          body: JSON.stringify({
-            email,
-            code_hash: codeHash,
-            expires_at: expiresAt
-          })
-        }
-      );
+      const saveResponse =
+        await fetch(
+          verificationEndpoint,
+          {
+            method: 'POST',
+
+            headers: {
+              ...supabaseHeaders,
+              Prefer: 'return=minimal'
+            },
+
+            body: JSON.stringify({
+              email,
+              code_hash: codeHash,
+              expires_at: expiresAt
+            })
+          }
+        );
 
       if (!saveResponse.ok) {
+
         const errorData =
-          await saveResponse.json().catch(() => ({}));
+          await saveResponse
+            .json()
+            .catch(() => ({}));
 
         console.error(
           'Supabase verification save error:',
@@ -147,76 +374,91 @@ export default async function handler(req, res) {
         );
 
         return res.status(500).json({
-          error: 'Verification code could not be saved.'
+          error:
+            'Verification code could not be saved.'
         });
       }
 
-      const transporter = nodemailer.createTransport({
-        service: 'gmail',
-        auth: {
-          user: GMAIL_USER,
-          pass: GMAIL_APP_PASSWORD
-        }
-      });
+      const transporter =
+        nodemailer.createTransport({
+          service: 'gmail',
+
+          auth: {
+            user: GMAIL_USER,
+            pass: GMAIL_APP_PASSWORD
+          }
+        });
 
       await transporter.sendMail({
-        from: GMAIL_USER,
+
+        from:
+          `"Apex English" <${GMAIL_USER}>`,
+
         to: email,
 
         subject:
-          'Apex Assistant — Doğrulama Kodunuz',
+          'Apex English | Doğrulama Kodunuz',
 
         text:
-          `Apex Assistant doğrulama kodunuz:\n\n` +
-          `${code}\n\n` +
-          `Bu kod 10 dakika geçerlidir.\n\n` +
-          `Bu işlemi siz başlatmadıysanız bu e-postayı yok sayabilirsiniz.`
+          verificationEmailText(code),
+
+        html:
+          verificationEmailHtml(code)
       });
 
       return res.status(200).json({
         ok: true,
-        message: 'Verification code sent.'
+        message:
+          'Verification code sent.'
       });
     }
 
     // ==========================================
     // VERIFY CODE
     // ==========================================
+
     if (action === 'verify') {
-      const code = String(
-        body.code || ''
-      ).trim();
+
+      const code =
+        String(
+          body.code || ''
+        ).trim();
 
       if (!/^\d{6}$/.test(code)) {
+
         return res.status(400).json({
           error:
             'A valid 6-digit code is required.'
         });
       }
 
-      const response = await fetch(
-        `${verificationEndpoint}` +
-        `?email=eq.${encodeURIComponent(email)}` +
-        `&verified_at=is.null` +
-        `&order=created_at.desc` +
-        `&limit=1` +
-        `&select=id,code_hash,expires_at`,
-        {
-          method: 'GET',
-          headers: supabaseHeaders
-        }
-      );
+      const response =
+        await fetch(
+          `${verificationEndpoint}` +
+          `?email=eq.${encodeURIComponent(email)}` +
+          `&verified_at=is.null` +
+          `&order=created_at.desc` +
+          `&limit=1` +
+          `&select=id,code_hash,expires_at`,
+          {
+            method: 'GET',
+            headers: supabaseHeaders
+          }
+        );
 
-      const rows = await response.json();
+      const rows =
+        await response.json();
 
       if (!response.ok) {
+
         console.error(
           'Supabase verification lookup error:',
           rows
         );
 
         return res.status(500).json({
-          error: 'Verification lookup failed.'
+          error:
+            'Verification lookup failed.'
         });
       }
 
@@ -224,13 +466,15 @@ export default async function handler(req, res) {
         !Array.isArray(rows) ||
         rows.length === 0
       ) {
+
         return res.status(400).json({
           error:
             'No active verification code found.'
         });
       }
 
-      const verification = rows[0];
+      const verification =
+        rows[0];
 
       if (
         !verification.expires_at ||
@@ -238,23 +482,30 @@ export default async function handler(req, res) {
           verification.expires_at
         ).getTime() < Date.now()
       ) {
+
         return res.status(400).json({
-          error: 'Verification code expired.'
+          error:
+            'Verification code expired.'
         });
       }
 
       const submittedHash =
-        hashCode(email, code);
+        hashCode(
+          email,
+          code
+        );
 
-      const storedBuffer = Buffer.from(
-        verification.code_hash,
-        'utf8'
-      );
+      const storedBuffer =
+        Buffer.from(
+          verification.code_hash,
+          'utf8'
+        );
 
-      const submittedBuffer = Buffer.from(
-        submittedHash,
-        'utf8'
-      );
+      const submittedBuffer =
+        Buffer.from(
+          submittedHash,
+          'utf8'
+        );
 
       const isValid =
         storedBuffer.length ===
@@ -265,30 +516,36 @@ export default async function handler(req, res) {
         );
 
       if (!isValid) {
+
         return res.status(400).json({
           error:
             'Verification code is incorrect.'
         });
       }
 
-      const markResponse = await fetch(
-        `${verificationEndpoint}?id=eq.${encodeURIComponent(
-          verification.id
-        )}`,
-        {
-          method: 'PATCH',
-          headers: {
-            ...supabaseHeaders,
-            Prefer: 'return=minimal'
-          },
-          body: JSON.stringify({
-            verified_at:
-              new Date().toISOString()
-          })
-        }
-      );
+      const markResponse =
+        await fetch(
+          `${verificationEndpoint}` +
+          `?id=eq.${encodeURIComponent(
+            verification.id
+          )}`,
+          {
+            method: 'PATCH',
+
+            headers: {
+              ...supabaseHeaders,
+              Prefer: 'return=minimal'
+            },
+
+            body: JSON.stringify({
+              verified_at:
+                new Date().toISOString()
+            })
+          }
+        );
 
       if (!markResponse.ok) {
+
         return res.status(500).json({
           error:
             'Verification could not be completed.'
@@ -314,6 +571,7 @@ export default async function handler(req, res) {
     });
 
   } catch (err) {
+
     console.error(
       'Verify API error:',
       err
