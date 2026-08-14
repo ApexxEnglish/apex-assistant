@@ -866,6 +866,27 @@ border: 1px solid var(--line);
 
   #profile-sync-card.connected{
     border-color:var(--correct);
+    background:#f7fbf8;
+  }
+
+  /* Once cloud profile is active, remove the setup form and keep only
+     a compact confirmation. If the session expires, JS removes the class
+     and the form automatically returns. */
+  #profile-sync-card.connected .sync-copy,
+  #profile-sync-card.connected #sync-email-row,
+  #profile-sync-card.connected #sync-code-row,
+  #profile-sync-card.connected #sync-resend-btn,
+  #profile-sync-card.connected #sync-message,
+  #profile-sync-card.connected #sync-privacy{
+    display:none !important;
+  }
+
+  #profile-sync-card.connected .sync-head{
+    margin-bottom:6px;
+  }
+
+  #profile-sync-card.connected #sync-cloud-note{
+    margin-top:0;
   }
 
   .sync-head{
@@ -2665,20 +2686,65 @@ Do not make English unnecessarily formal.
 7. INTERVIEW PREPARATION
 ==================================================
 
-When the student wants interview preparation:
+When the student wants interview preparation, act like a professional but supportive interview coach.
 
-Step 1:
-Ask in ${UI[lang].langName} which company and position they are interviewing for.
+Keep the experience SIMPLE:
+- Ask only ONE interview question at a time.
+- Do not show long rubrics, tables, or many headings.
+- Keep feedback concise enough to read comfortably on mobile.
+- Do not overwhelm the learner with every small mistake.
+- Prioritize communication, confidence, relevance, grammar, vocabulary, and professional tone.
 
-Step 2:
-Ask ONE realistic interview question at a time in English.
+START:
+If the company or position is not known yet, ask in ${UI[lang].langName}:
+- which position they are preparing for
+- and, only if useful, which company/industry
 
-Step 3:
-After every answer:
-- Correct important grammar/vocabulary errors.
-- Give a brief evaluation.
-- Provide an improved sample answer appropriate to ${level}.
-- Ask ONE next interview question.
+If the learner says cabin crew / flight attendant / airline interview, adapt questions to realistic cabin-crew interview situations.
+
+QUESTION FLOW:
+Ask ONE realistic interview question in English.
+
+After the learner answers, reply in this compact structure:
+
+FEEDBACK:
+Give 1-2 short sentences in ${UI[lang].langName}.
+Mention what was good first, then only the most important improvement.
+
+BETTER ANSWER:
+Write a stronger, natural English version based on the learner's OWN ideas.
+Keep it appropriate to ${level}.
+Do not invent impressive experience or qualifications the learner did not mention.
+
+NEXT QUESTION:
+Ask ONE realistic follow-up question in English.
+
+IMPORTANT:
+- Do not give a model answer before the learner attempts the question.
+- Do not ask multiple questions in the same turn.
+- Do not turn every answer into a grammar lesson.
+- If the answer is already strong, say so briefly and move on.
+- Avoid repeating the same type of question.
+- Gradually vary the interview:
+  introduction -> experience -> strengths -> challenge/problem -> motivation -> scenario -> customer/teamwork -> closing
+- For lower levels, use shorter and clearer questions.
+- For higher levels, use more natural follow-up and scenario questions.
+
+PROGRESSION:
+After about 5 answered interview questions, do not stop automatically.
+Briefly offer ONE choice in ${UI[lang].langName}:
+"İstersen devam edebiliriz veya kısa mülakat özetini çıkarabilirim."
+Translate naturally for the selected UI language.
+
+If the learner asks for the summary, keep it compact:
+
+MÜLAKAT ÖZETİ / INTERVIEW SUMMARY:
+- Strongest point: one short item
+- Main improvement: one short item
+- Useful phrase: one English phrase
+- Next focus: one short recommendation
+
+Do not use numerical scores unless the learner explicitly asks for a score.
 
 ==================================================
 8. VOICE / SPEAKING COACH
@@ -3208,46 +3274,46 @@ const PROFILE_UI = {
 
 const SYNC_UI = {
   en:{
-    title:'SAVE MY PROGRESS', guest:'Guest', connected:'Cloud saved',
+    title:'SAVE MY PROGRESS', activeTitle:'PROGRESS SAVED', guest:'Guest', connected:'Cloud saved',
     copy:'Save your progress and continue where you left off next time. Add your email to keep your level and learning profile with you.',
     email:'Email', save:'Save My Progress', saved:'Great — your progress is securely saved to your profile.',
     invalid:'Enter a valid email address.', saving:'Sending code…', code:'6-digit code', verify:'Verify & Save', verifying:'Verifying…',
     codeSent:'We sent a 6-digit code to your email. Enter it here to securely save or restore your profile.',
     resend:'Resend code', resent:'A new verification code has been sent.', wrongCode:'The code is incorrect or expired. Please try again.',
-    restored:'Welcome back — your saved learning profile has been restored.', cloud:'Cloud profile active • Your progress will sync automatically on this device.',
+    restored:'Welcome back — your saved learning profile has been restored.', cloud:'✓ Cloud profile active. Your progress is saved automatically.',
     sessionExpired:'For security, please verify your email again to reconnect cloud progress.',
     continue:'Continue My Lesson', noProfile:'Practice a little first so I can build a useful lesson for you.',
     privacy:'Your email is used only to verify and link your learning progress.'
   },
   tr:{
-    title:'İLERLEMEMİ KAYDET', guest:'Misafir', connected:'Buluta kaydedildi',
+    title:'İLERLEMEMİ KAYDET', activeTitle:'İLERLEMENİZ KAYDEDİLİYOR', guest:'Misafir', connected:'Buluta kaydedildi',
     copy:'İlerlemenizi kaydedin, bir sonraki derste kaldığınız yerden devam edelim. E-posta adresinizi ekleyin; seviyeniz ve öğrenme profiliniz sizinle kalsın.',
     email:'E-posta', save:'İlerlememi Kaydet', saved:'Harika — ilerlemeniz güvenli şekilde profilinize kaydedildi.',
     invalid:'Geçerli bir e-posta adresi girin.', saving:'Kod gönderiliyor…', code:'6 haneli kod', verify:'Doğrula ve Kaydet', verifying:'Doğrulanıyor…',
     codeSent:'E-postanıza 6 haneli bir kod gönderdik. Profilinizi güvenle kaydetmek veya geri getirmek için kodu girin.',
     resend:'Kodu tekrar gönder', resent:'Yeni doğrulama kodu gönderildi.', wrongCode:'Kod hatalı veya süresi dolmuş. Lütfen tekrar deneyin.',
-    restored:'Tekrar hoş geldiniz — kayıtlı öğrenme profiliniz geri yüklendi.', cloud:'Bulut profili aktif • İlerlemeniz bu cihazda otomatik olarak eşitlenecek.',
+    restored:'Tekrar hoş geldiniz — kayıtlı öğrenme profiliniz geri yüklendi.', cloud:'✓ Bulut profili aktif. İlerlemeniz otomatik kaydediliyor.',
     sessionExpired:'Güvenlik için bulut profilinizi yeniden bağlamak üzere e-postanızı tekrar doğrulayın.',
     continue:'Dersime Devam Et', noProfile:'Önce biraz pratik yapın; size uygun bir devam dersi hazırlayayım.',
     privacy:'E-posta adresiniz yalnızca öğrenme ilerlemenizi doğrulamak ve profilinizle eşleştirmek için kullanılır.'
   },
   ru:{
-    title:'СОХРАНИТЬ ПРОГРЕСС',guest:'Гость',connected:'Сохранено в облаке',copy:'Сохраните прогресс и в следующий раз продолжите с того же места. Добавьте email, чтобы сохранить уровень и учебный профиль.',email:'Email',save:'Сохранить прогресс',saved:'Готово — ваш прогресс безопасно сохранён.',invalid:'Введите корректный email.',saving:'Отправляем код…',code:'6-значный код',verify:'Проверить и сохранить',verifying:'Проверяем…',codeSent:'Мы отправили 6-значный код на ваш email. Введите его, чтобы безопасно сохранить или восстановить профиль.',resend:'Отправить код снова',resent:'Новый код отправлен.',wrongCode:'Код неверен или истёк. Попробуйте ещё раз.',restored:'С возвращением — ваш учебный профиль восстановлен.',cloud:'Облачный профиль активен • Прогресс будет синхронизироваться автоматически.',sessionExpired:'Для безопасности подтвердите email ещё раз.',continue:'Продолжить урок',noProfile:'Сначала немного попрактикуйтесь, чтобы я подготовил полезный урок.',privacy:'Email используется только для проверки и привязки учебного прогресса.'
+    title:'СОХРАНИТЬ ПРОГРЕСС',activeTitle:'ПРОГРЕСС СОХРАНЁН',guest:'Гость',connected:'Сохранено в облаке',copy:'Сохраните прогресс и в следующий раз продолжите с того же места. Добавьте email, чтобы сохранить уровень и учебный профиль.',email:'Email',save:'Сохранить прогресс',saved:'Готово — ваш прогресс безопасно сохранён.',invalid:'Введите корректный email.',saving:'Отправляем код…',code:'6-значный код',verify:'Проверить и сохранить',verifying:'Проверяем…',codeSent:'Мы отправили 6-значный код на ваш email. Введите его, чтобы безопасно сохранить или восстановить профиль.',resend:'Отправить код снова',resent:'Новый код отправлен.',wrongCode:'Код неверен или истёк. Попробуйте ещё раз.',restored:'С возвращением — ваш учебный профиль восстановлен.',cloud:'Облачный профиль активен • Прогресс будет синхронизироваться автоматически.',sessionExpired:'Для безопасности подтвердите email ещё раз.',continue:'Продолжить урок',noProfile:'Сначала немного попрактикуйтесь, чтобы я подготовил полезный урок.',privacy:'Email используется только для проверки и привязки учебного прогресса.'
   },
   fa:{
-    title:'ذخیره پیشرفت',guest:'مهمان',connected:'ذخیره در فضای ابری',copy:'پیشرفت خود را ذخیره کنید تا جلسه بعد از همان‌جایی که متوقف شدید ادامه دهیم. ایمیل خود را وارد کنید تا سطح و پروفایل یادگیری شما همراهتان بماند.',email:'ایمیل',save:'ذخیره پیشرفت',saved:'عالی — پیشرفت شما با امنیت در پروفایلتان ذخیره شد.',invalid:'یک ایمیل معتبر وارد کنید.',saving:'در حال ارسال کد…',code:'کد ۶ رقمی',verify:'تأیید و ذخیره',verifying:'در حال تأیید…',codeSent:'یک کد ۶ رقمی به ایمیل شما فرستادیم. برای ذخیره یا بازیابی امن پروفایل، کد را وارد کنید.',resend:'ارسال دوباره کد',resent:'کد تأیید جدید ارسال شد.',wrongCode:'کد نادرست است یا منقضی شده. دوباره تلاش کنید.',restored:'خوش آمدید — پروفایل یادگیری ذخیره‌شده شما بازیابی شد.',cloud:'پروفایل ابری فعال است • پیشرفت شما در این دستگاه خودکار همگام می‌شود.',sessionExpired:'برای امنیت، ایمیل خود را دوباره تأیید کنید.',continue:'ادامه درس من',noProfile:'ابتدا کمی تمرین کنید تا درس بعدی مناسبی برایتان آماده کنم.',privacy:'ایمیل شما فقط برای تأیید هویت و اتصال پیشرفت یادگیری به پروفایل استفاده می‌شود.'
+    title:'ذخیره پیشرفت',activeTitle:'پیشرفت شما ذخیره می‌شود',guest:'مهمان',connected:'ذخیره در فضای ابری',copy:'پیشرفت خود را ذخیره کنید تا جلسه بعد از همان‌جایی که متوقف شدید ادامه دهیم. ایمیل خود را وارد کنید تا سطح و پروفایل یادگیری شما همراهتان بماند.',email:'ایمیل',save:'ذخیره پیشرفت',saved:'عالی — پیشرفت شما با امنیت در پروفایلتان ذخیره شد.',invalid:'یک ایمیل معتبر وارد کنید.',saving:'در حال ارسال کد…',code:'کد ۶ رقمی',verify:'تأیید و ذخیره',verifying:'در حال تأیید…',codeSent:'یک کد ۶ رقمی به ایمیل شما فرستادیم. برای ذخیره یا بازیابی امن پروفایل، کد را وارد کنید.',resend:'ارسال دوباره کد',resent:'کد تأیید جدید ارسال شد.',wrongCode:'کد نادرست است یا منقضی شده. دوباره تلاش کنید.',restored:'خوش آمدید — پروفایل یادگیری ذخیره‌شده شما بازیابی شد.',cloud:'پروفایل ابری فعال است • پیشرفت شما در این دستگاه خودکار همگام می‌شود.',sessionExpired:'برای امنیت، ایمیل خود را دوباره تأیید کنید.',continue:'ادامه درس من',noProfile:'ابتدا کمی تمرین کنید تا درس بعدی مناسبی برایتان آماده کنم.',privacy:'ایمیل شما فقط برای تأیید هویت و اتصال پیشرفت یادگیری به پروفایل استفاده می‌شود.'
   },
   es:{
-    title:'GUARDAR MI PROGRESO',guest:'Invitado',connected:'Guardado en la nube',copy:'Guarda tu progreso y continúa donde lo dejaste la próxima vez. Añade tu email para conservar tu nivel y perfil de aprendizaje.',email:'Email',save:'Guardar mi progreso',saved:'Perfecto — tu progreso se ha guardado de forma segura.',invalid:'Introduce un email válido.',saving:'Enviando código…',code:'Código de 6 dígitos',verify:'Verificar y guardar',verifying:'Verificando…',codeSent:'Te enviamos un código de 6 dígitos por email. Introdúcelo para guardar o recuperar tu perfil de forma segura.',resend:'Reenviar código',resent:'Se ha enviado un nuevo código.',wrongCode:'El código es incorrecto o ha caducado.',restored:'Bienvenido de nuevo — tu perfil de aprendizaje se ha restaurado.',cloud:'Perfil en la nube activo • Tu progreso se sincronizará automáticamente.',sessionExpired:'Por seguridad, verifica de nuevo tu email.',continue:'Continuar mi lección',noProfile:'Practica un poco primero para poder preparar una lección útil.',privacy:'Tu email se usa solo para verificar y vincular tu progreso de aprendizaje.'
+    title:'GUARDAR MI PROGRESO',activeTitle:'PROGRESO GUARDADO',guest:'Invitado',connected:'Guardado en la nube',copy:'Guarda tu progreso y continúa donde lo dejaste la próxima vez. Añade tu email para conservar tu nivel y perfil de aprendizaje.',email:'Email',save:'Guardar mi progreso',saved:'Perfecto — tu progreso se ha guardado de forma segura.',invalid:'Introduce un email válido.',saving:'Enviando código…',code:'Código de 6 dígitos',verify:'Verificar y guardar',verifying:'Verificando…',codeSent:'Te enviamos un código de 6 dígitos por email. Introdúcelo para guardar o recuperar tu perfil de forma segura.',resend:'Reenviar código',resent:'Se ha enviado un nuevo código.',wrongCode:'El código es incorrecto o ha caducado.',restored:'Bienvenido de nuevo — tu perfil de aprendizaje se ha restaurado.',cloud:'Perfil en la nube activo • Tu progreso se sincronizará automáticamente.',sessionExpired:'Por seguridad, verifica de nuevo tu email.',continue:'Continuar mi lección',noProfile:'Practica un poco primero para poder preparar una lección útil.',privacy:'Tu email se usa solo para verificar y vincular tu progreso de aprendizaje.'
   },
   fr:{
     title:'ENREGISTRER MES PROGRÈS',guest:'Invité',connected:'Enregistré dans le cloud',copy:'Enregistrez vos progrès et reprenez là où vous vous êtes arrêté la prochaine fois. Ajoutez votre e-mail pour conserver votre niveau et votre profil.',email:'E-mail',save:'Enregistrer mes progrès',saved:'Parfait — vos progrès sont enregistrés en toute sécurité.',invalid:'Saisissez une adresse e-mail valide.',saving:'Envoi du code…',code:'Code à 6 chiffres',verify:'Vérifier et enregistrer',verifying:'Vérification…',codeSent:'Un code à 6 chiffres a été envoyé à votre e-mail. Saisissez-le pour enregistrer ou restaurer votre profil en toute sécurité.',resend:'Renvoyer le code',resent:'Un nouveau code a été envoyé.',wrongCode:'Le code est incorrect ou a expiré.',restored:'Bon retour — votre profil d’apprentissage a été restauré.',cloud:'Profil cloud actif • Vos progrès seront synchronisés automatiquement.',sessionExpired:'Pour votre sécurité, vérifiez à nouveau votre e-mail.',continue:'Continuer ma leçon',noProfile:'Pratiquez un peu d’abord afin que je prépare une leçon adaptée.',privacy:'Votre e-mail sert uniquement à vérifier et relier vos progrès d’apprentissage.'
   },
   zh:{
-    title:'保存学习进度',guest:'访客',connected:'已保存到云端',copy:'保存学习进度，下次从上次的位置继续。添加邮箱即可保留你的等级和学习档案。',email:'邮箱',save:'保存学习进度',saved:'很好——你的学习进度已安全保存。',invalid:'请输入有效的邮箱地址。',saving:'正在发送验证码…',code:'6位验证码',verify:'验证并保存',verifying:'正在验证…',codeSent:'我们已向你的邮箱发送6位验证码。输入验证码即可安全保存或恢复学习档案。',resend:'重新发送验证码',resent:'新的验证码已发送。',wrongCode:'验证码错误或已过期，请重试。',restored:'欢迎回来——你的学习档案已恢复。',cloud:'云端档案已启用 • 学习进度将自动同步。',sessionExpired:'为确保安全，请重新验证邮箱。',continue:'继续我的课程',noProfile:'先练习一点，我才能为你准备有用的后续课程。',privacy:'邮箱仅用于验证身份并关联你的学习进度。'
+    title:'保存学习进度',activeTitle:'学习进度已保存',guest:'访客',connected:'已保存到云端',copy:'保存学习进度，下次从上次的位置继续。添加邮箱即可保留你的等级和学习档案。',email:'邮箱',save:'保存学习进度',saved:'很好——你的学习进度已安全保存。',invalid:'请输入有效的邮箱地址。',saving:'正在发送验证码…',code:'6位验证码',verify:'验证并保存',verifying:'正在验证…',codeSent:'我们已向你的邮箱发送6位验证码。输入验证码即可安全保存或恢复学习档案。',resend:'重新发送验证码',resent:'新的验证码已发送。',wrongCode:'验证码错误或已过期，请重试。',restored:'欢迎回来——你的学习档案已恢复。',cloud:'云端档案已启用 • 学习进度将自动同步。',sessionExpired:'为确保安全，请重新验证邮箱。',continue:'继续我的课程',noProfile:'先练习一点，我才能为你准备有用的后续课程。',privacy:'邮箱仅用于验证身份并关联你的学习进度。'
   },
   ja:{
-    title:'学習進捗を保存',guest:'ゲスト',connected:'クラウド保存済み',copy:'進捗を保存して、次回は続きから学習できます。メールを追加するとレベルと学習プロフィールを保持できます。',email:'メール',save:'進捗を保存',saved:'学習進捗を安全に保存しました。',invalid:'有効なメールアドレスを入力してください。',saving:'コードを送信中…',code:'6桁のコード',verify:'確認して保存',verifying:'確認中…',codeSent:'メールに6桁の確認コードを送りました。プロフィールを安全に保存・復元するにはコードを入力してください。',resend:'コードを再送',resent:'新しい確認コードを送信しました。',wrongCode:'コードが正しくないか、有効期限が切れています。',restored:'おかえりなさい。保存済みの学習プロフィールを復元しました。',cloud:'クラウドプロフィール有効 • 進捗は自動同期されます。',sessionExpired:'安全のため、メールをもう一度確認してください。',continue:'レッスンを続ける',noProfile:'まず少し練習すると、適切な続きのレッスンを作れます。',privacy:'メールは本人確認と学習進捗の紐づけにのみ使用されます。'
+    title:'学習進捗を保存',activeTitle:'学習進捗を保存中',guest:'ゲスト',connected:'クラウド保存済み',copy:'進捗を保存して、次回は続きから学習できます。メールを追加するとレベルと学習プロフィールを保持できます。',email:'メール',save:'進捗を保存',saved:'学習進捗を安全に保存しました。',invalid:'有効なメールアドレスを入力してください。',saving:'コードを送信中…',code:'6桁のコード',verify:'確認して保存',verifying:'確認中…',codeSent:'メールに6桁の確認コードを送りました。プロフィールを安全に保存・復元するにはコードを入力してください。',resend:'コードを再送',resent:'新しい確認コードを送信しました。',wrongCode:'コードが正しくないか、有効期限が切れています。',restored:'おかえりなさい。保存済みの学習プロフィールを復元しました。',cloud:'クラウドプロフィール有効 • 進捗は自動同期されます。',sessionExpired:'安全のため、メールをもう一度確認してください。',continue:'レッスンを続ける',noProfile:'まず少し練習すると、適切な続きのレッスンを作れます。',privacy:'メールは本人確認と学習進捗の紐づけにのみ使用されます。'
   }
 };
 
@@ -3350,7 +3416,7 @@ function renderProgressUI(){
   const linkedEmail = learningProfile.linkedEmail || cloudAuth.email || '';
   const cloudLinked = hasCloudAuthFor(linkedEmail);
 
-  syncTitle.textContent = s.title;
+  syncTitle.textContent = cloudLinked ? (s.activeTitle || s.connected || s.title) : s.title;
   syncStatus.textContent = cloudLinked ? s.connected : s.guest;
   syncStatus.classList.toggle('connected', cloudLinked);
   profileSyncCard.classList.toggle('connected', cloudLinked);
