@@ -680,12 +680,18 @@ border: 1px solid var(--line);
   }
 
 
+  /* v32 — one compact progress row. The older coach-status remains in the DOM
+     for existing JS updates, but is not shown to avoid duplicate level/speaking rows. */
+  #coach-status{
+    display:none !important;
+  }
+
   #progress-toolbar{
     display:flex;
     align-items:center;
     justify-content:space-between;
     gap:8px;
-    padding:7px 12px;
+    padding:8px 12px;
     background:var(--white);
     border-bottom:1px solid var(--line);
   }
@@ -701,16 +707,30 @@ border: 1px solid var(--line);
     display:inline-flex;
     align-items:center;
     gap:5px;
-    min-height:27px;
-    padding:4px 9px;
+    min-height:29px;
+    padding:5px 10px;
     border:1px solid var(--line);
     border-radius:999px;
-    background:var(--paper);
+    background:#f8f6ef;
     color:var(--ink);
     font-family:'IBM Plex Mono', monospace;
     font-size:0.62rem;
-    font-weight:600;
+    font-weight:700;
     white-space:nowrap;
+  }
+
+  #level-chip{
+    border-color:#d5a52b;
+    background:#fff9e9;
+  }
+
+  #speaking-chip::before{
+    content:"";
+    width:6px;
+    height:6px;
+    border-radius:50%;
+    background:var(--marigold-deep);
+    flex:0 0 6px;
   }
 
   #open-progress-btn{
@@ -1663,6 +1683,261 @@ border: 1px solid var(--line);
   .apex-onboarding-trust{font-size:10.5px}
 }
 
+
+  /* ==================================================
+     v32 — Save Progress and Continue Lesson are separate actions
+     ================================================== */
+  #continue-login-card{
+    background:#fff;
+    border:1px solid var(--line);
+    border-radius:12px;
+    padding:12px;
+  }
+
+  #continue-login-card.connected{
+    border-color:var(--correct);
+    background:#f7fbf8;
+  }
+
+  .continue-head{
+    display:flex;
+    align-items:flex-start;
+    justify-content:space-between;
+    gap:10px;
+    margin-bottom:8px;
+  }
+
+  .continue-title{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:.72rem;
+    line-height:1.35;
+    font-weight:800;
+    color:var(--ink);
+  }
+
+  .continue-status{
+    flex:0 0 auto;
+    padding:3px 7px;
+    border:1px solid var(--line);
+    border-radius:999px;
+    background:var(--paper);
+    color:var(--ink-soft);
+    font-family:'IBM Plex Mono', monospace;
+    font-size:.56rem;
+    font-weight:700;
+  }
+
+  #continue-login-card.connected .continue-status{
+    border-color:#a9cbb8;
+    background:#edf6f0;
+    color:var(--correct);
+  }
+
+  #continue-login-copy{
+    margin:0 0 9px;
+    color:var(--ink-soft);
+    font-size:.78rem;
+    line-height:1.45;
+  }
+
+  #continue-email-row{
+    display:flex;
+    gap:7px;
+  }
+
+  #continue-email-input{
+    flex:1;
+    min-width:0;
+    height:38px;
+    border:1px solid var(--line);
+    border-radius:8px;
+    padding:0 10px;
+    font-size:.82rem;
+    color:var(--ink);
+    outline:none;
+  }
+
+  #continue-email-input:focus{
+    border-color:var(--marigold-deep);
+  }
+
+  #continue-send-code-btn{
+    height:38px;
+    border:0;
+    border-radius:8px;
+    padding:0 12px;
+    background:var(--ink);
+    color:#fff;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:.62rem;
+    font-weight:700;
+    cursor:pointer;
+    white-space:nowrap;
+  }
+
+  #continue-code-row{
+    display:none;
+    grid-template-columns:minmax(0,1fr) auto;
+    gap:7px;
+    margin-top:7px;
+  }
+
+  #continue-code-row.open{
+    display:grid;
+  }
+
+  #continue-code-input{
+    min-width:0;
+    height:38px;
+    border:1px solid var(--line);
+    border-radius:8px;
+    padding:0 10px;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:.9rem;
+    font-weight:700;
+    letter-spacing:.16em;
+    color:var(--ink);
+    outline:none;
+  }
+
+  #continue-verify-btn{
+    height:38px;
+    border:0;
+    border-radius:8px;
+    padding:0 12px;
+    background:var(--marigold);
+    color:var(--ink);
+    font-family:'IBM Plex Mono', monospace;
+    font-size:.62rem;
+    font-weight:800;
+    cursor:pointer;
+    white-space:nowrap;
+  }
+
+  #continue-send-code-btn:disabled,
+  #continue-verify-btn:disabled{
+    opacity:.55;
+    cursor:default;
+  }
+
+  #continue-resend-btn{
+    display:none;
+    margin-top:6px;
+    padding:0;
+    border:0;
+    background:transparent;
+    color:var(--ink-soft);
+    font-family:'IBM Plex Mono', monospace;
+    font-size:.61rem;
+    font-weight:700;
+    text-decoration:underline;
+    cursor:pointer;
+  }
+
+  #continue-resend-btn.open{
+    display:inline-block;
+  }
+
+  #continue-login-message{
+    min-height:16px;
+    margin-top:7px;
+    color:var(--ink-soft);
+    font-size:.7rem;
+    line-height:1.4;
+  }
+
+  #continue-found-note{
+    display:none;
+    margin:0 0 9px;
+    padding:8px 9px;
+    border:1px solid #c7dfd1;
+    border-radius:8px;
+    background:#edf6f0;
+    color:var(--correct);
+    font-size:.7rem;
+    line-height:1.4;
+    font-weight:700;
+  }
+
+  #continue-login-card.connected #continue-found-note{
+    display:block;
+  }
+
+  #continue-login-card.connected #continue-login-copy,
+  #continue-login-card.connected #continue-email-row,
+  #continue-login-card.connected #continue-code-row,
+  #continue-login-card.connected #continue-resend-btn,
+  #continue-login-card.connected #continue-login-message{
+    display:none !important;
+  }
+
+  #continue-lesson-btn{
+    display:none;
+    margin-top:0;
+  }
+
+  #continue-login-card.connected #continue-lesson-btn{
+    display:block;
+  }
+
+  #profile-sync-card{
+    position:relative;
+  }
+
+  .progress-action-kicker{
+    display:block;
+    margin-bottom:3px;
+    color:var(--marigold-deep);
+    font-family:'IBM Plex Mono', monospace;
+    font-size:.54rem;
+    font-weight:800;
+    letter-spacing:.05em;
+    text-transform:uppercase;
+  }
+
+  @media (max-width:600px){
+    #progress-content{
+      padding:10px;
+      gap:8px;
+    }
+
+    .progress-section,
+    #profile-sync-card,
+    #continue-login-card{
+      padding:11px;
+    }
+
+    #continue-email-row,
+    #continue-code-row{
+      display:grid;
+      grid-template-columns:minmax(0,1fr);
+    }
+
+    #continue-code-row:not(.open){
+      display:none;
+    }
+
+    #continue-send-code-btn,
+    #continue-verify-btn{
+      width:100%;
+    }
+
+    #continue-code-input{
+      text-align:center;
+      font-size:1rem;
+    }
+
+    #open-progress-btn{
+      padding:7px 10px;
+    }
+
+    .progress-chip{
+      min-height:28px;
+      padding:4px 8px;
+      font-size:.59rem;
+    }
+  }
+
 </style>
 
 <!-- Google tag (gtag.js) -->
@@ -1887,26 +2162,54 @@ border: 1px solid var(--line);
         </section>
 
         <section class="progress-section" id="profile-sync-card">
+          <span class="progress-action-kicker" id="sync-kicker">İLK KEZ / BU CİHAZI KAYDET</span>
           <div class="sync-head">
-            <div class="sync-title" id="sync-title">SAVE THIS PROFILE</div>
-            <div class="sync-status" id="sync-status">Guest</div>
+            <div class="sync-title" id="sync-title">İLERLEMEMİ KAYDET</div>
+            <div class="sync-status" id="sync-status">Misafir</div>
           </div>
-          <p class="sync-copy" id="sync-copy">Keep using the assistant without an account. Add your email only if you want this learning profile linked to you.</p>
+          <p class="sync-copy" id="sync-copy">Seviyenizi ve öğrenme ilerlemenizi e-posta adresinizle güvenli şekilde kaydedin.</p>
           <div id="sync-email-row">
-            <input id="sync-email-input" type="email" autocomplete="email" placeholder="Email">
-            <button id="sync-profile-btn" type="button">Save</button>
+            <input id="sync-email-input" type="email" autocomplete="email" placeholder="E-posta">
+            <button id="sync-profile-btn" type="button">İlerlememi Kaydet</button>
           </div>
           <div id="sync-code-row">
-            <input id="sync-code-input" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="6-digit code" aria-label="Verification code">
-            <button id="sync-verify-btn" type="button">Verify</button>
+            <input id="sync-code-input" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="6 haneli kod" aria-label="Doğrulama kodu">
+            <button id="sync-verify-btn" type="button">Doğrula ve Kaydet</button>
           </div>
-          <button id="sync-resend-btn" type="button">Resend code</button>
+          <button id="sync-resend-btn" type="button">Kodu tekrar gönder</button>
           <div id="sync-message" role="status" aria-live="polite"></div>
           <div id="sync-cloud-note"></div>
-          <div id="sync-privacy">İlerlemenizi kaydetmek için e-posta adresiniz kullanılır.</div>
+          <div id="sync-privacy">E-posta adresiniz yalnızca öğrenme profilinizi doğrulamak ve ilerlemenizle eşleştirmek için kullanılır.</div>
         </section>
 
-        <button id="continue-lesson-btn" type="button">Continue My Lesson</button>
+        <section id="continue-login-card">
+          <span class="progress-action-kicker" id="continue-kicker">GERİ DÖNEN ÖĞRENCİ</span>
+          <div class="continue-head">
+            <div class="continue-title" id="continue-login-title">DERSİME DEVAM ET</div>
+            <div class="continue-status" id="continue-login-status">Giriş</div>
+          </div>
+
+          <p id="continue-login-copy">
+            Daha önce ilerlemenizi kaydettiyseniz aynı e-posta adresini girin. Kodla doğruladıktan sonra kayıtlı profiliniz yüklensin.
+          </p>
+
+          <div id="continue-email-row">
+            <input id="continue-email-input" type="email" autocomplete="email" placeholder="Kayıtlı e-posta">
+            <button id="continue-send-code-btn" type="button">Kod Gönder</button>
+          </div>
+
+          <div id="continue-code-row">
+            <input id="continue-code-input" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="6 haneli kod" aria-label="Devam doğrulama kodu">
+            <button id="continue-verify-btn" type="button">Profilimi Aç</button>
+          </div>
+
+          <button id="continue-resend-btn" type="button">Kodu tekrar gönder</button>
+          <div id="continue-login-message" role="status" aria-live="polite"></div>
+          <div id="continue-found-note">✓ Kayıtlı öğrenme profiliniz hazır. Kaldığınız yerden devam edebilirsiniz.</div>
+
+          <button id="continue-lesson-btn" type="button">Dersime Devam Et</button>
+        </section>
+
         <button id="reset-progress-btn" type="button">Reset learning progress</button>
       </div>
     </div>
@@ -3029,6 +3332,21 @@ const syncResendBtn = document.getElementById('sync-resend-btn');
 const syncMessage = document.getElementById('sync-message');
 const syncCloudNote = document.getElementById('sync-cloud-note');
 const syncPrivacy = document.getElementById('sync-privacy');
+const syncKicker = document.getElementById('sync-kicker');
+
+const continueLoginCard = document.getElementById('continue-login-card');
+const continueKicker = document.getElementById('continue-kicker');
+const continueLoginTitle = document.getElementById('continue-login-title');
+const continueLoginStatus = document.getElementById('continue-login-status');
+const continueLoginCopy = document.getElementById('continue-login-copy');
+const continueEmailInput = document.getElementById('continue-email-input');
+const continueSendCodeBtn = document.getElementById('continue-send-code-btn');
+const continueCodeRow = document.getElementById('continue-code-row');
+const continueCodeInput = document.getElementById('continue-code-input');
+const continueVerifyBtn = document.getElementById('continue-verify-btn');
+const continueResendBtn = document.getElementById('continue-resend-btn');
+const continueLoginMessage = document.getElementById('continue-login-message');
+const continueFoundNote = document.getElementById('continue-found-note');
 const continueLessonBtn = document.getElementById('continue-lesson-btn');
 
 
@@ -3223,6 +3541,7 @@ const LEARNING_PROFILE_KEY = 'apexLearningProfileV1';
 const CLOUD_AUTH_KEY = 'apexCloudProfileAuthV1';
 let cloudAuth = { email:'', sessionToken:'', verifiedAt:null };
 let pendingVerificationEmail = '';
+let pendingContinueEmail = '';
 let cloudSyncTimer = null;
 let cloudSyncPaused = false;
 
@@ -3379,6 +3698,79 @@ const SYNC_UI = {
 };
 
 
+
+const CONTINUE_UI = {
+  en:{
+    kicker:'RETURNING LEARNER', title:'CONTINUE MY LESSON', status:'Sign in', connected:'Profile ready',
+    copy:'Already saved your progress? Enter the same email. Verify the code to load your saved learning profile.',
+    email:'Saved email', send:'Send Code', sending:'Sending…', code:'6-digit code', verify:'Open My Profile', verifying:'Opening…',
+    sent:'We sent a 6-digit code to your email.', resend:'Resend code', resent:'A new code has been sent.',
+    invalid:'Enter a valid email address.', wrong:'The code is incorrect or expired. Please try again.',
+    noProfile:'This email is verified, but no saved learning profile was found yet.',
+    found:'✓ Your saved learning profile is ready. You can continue where you left off.',
+    continue:'Continue My Lesson'
+  },
+  tr:{
+    kicker:'GERİ DÖNEN ÖĞRENCİ', title:'DERSİME DEVAM ET', status:'Giriş', connected:'Profil hazır',
+    copy:'Daha önce ilerlemenizi kaydettiyseniz aynı e-posta adresini girin. Kodu doğrulayınca kayıtlı öğrenme profiliniz yüklensin.',
+    email:'Kayıtlı e-posta', send:'Kod Gönder', sending:'Gönderiliyor…', code:'6 haneli kod', verify:'Profilimi Aç', verifying:'Açılıyor…',
+    sent:'E-postanıza 6 haneli bir kod gönderdik.', resend:'Kodu tekrar gönder', resent:'Yeni doğrulama kodu gönderildi.',
+    invalid:'Geçerli bir e-posta adresi girin.', wrong:'Kod hatalı veya süresi dolmuş. Lütfen tekrar deneyin.',
+    noProfile:'E-posta doğrulandı ancak bu adrese ait kayıtlı bir öğrenme profili bulunamadı.',
+    found:'✓ Kayıtlı öğrenme profiliniz hazır. Kaldığınız yerden devam edebilirsiniz.',
+    continue:'Dersime Devam Et'
+  },
+  ru:{
+    kicker:'ВОЗВРАЩЕНИЕ', title:'ПРОДОЛЖИТЬ УРОК', status:'Войти', connected:'Профиль готов',
+    copy:'Если вы уже сохраняли прогресс, введите тот же email. После подтверждения загрузится сохранённый профиль.',
+    email:'Сохранённый email', send:'Отправить код', sending:'Отправка…', code:'6-значный код', verify:'Открыть профиль', verifying:'Открываем…',
+    sent:'Мы отправили 6-значный код на ваш email.', resend:'Отправить код снова', resent:'Новый код отправлен.',
+    invalid:'Введите корректный email.', wrong:'Код неверен или истёк.', noProfile:'Для этого email сохранённый профиль не найден.',
+    found:'✓ Сохранённый профиль загружен. Можно продолжить с места остановки.', continue:'Продолжить урок'
+  },
+  fa:{
+    kicker:'بازگشت به یادگیری', title:'ادامه درس من', status:'ورود', connected:'پروفایل آماده است',
+    copy:'اگر قبلاً پیشرفت خود را ذخیره کرده‌اید، همان ایمیل را وارد کنید. پس از تأیید کد، پروفایل ذخیره‌شده بارگذاری می‌شود.',
+    email:'ایمیل ذخیره‌شده', send:'ارسال کد', sending:'در حال ارسال…', code:'کد ۶ رقمی', verify:'باز کردن پروفایل', verifying:'در حال باز کردن…',
+    sent:'کد ۶ رقمی به ایمیل شما ارسال شد.', resend:'ارسال دوباره کد', resent:'کد جدید ارسال شد.',
+    invalid:'یک ایمیل معتبر وارد کنید.', wrong:'کد نادرست یا منقضی شده است.', noProfile:'برای این ایمیل پروفایل ذخیره‌شده‌ای پیدا نشد.',
+    found:'✓ پروفایل یادگیری شما آماده است. می‌توانید از همان‌جا ادامه دهید.', continue:'ادامه درس من'
+  },
+  es:{
+    kicker:'ALUMNO QUE REGRESA', title:'CONTINUAR MI LECCIÓN', status:'Entrar', connected:'Perfil listo',
+    copy:'Si ya guardaste tu progreso, introduce el mismo email. Verifica el código para cargar tu perfil guardado.',
+    email:'Email guardado', send:'Enviar código', sending:'Enviando…', code:'Código de 6 dígitos', verify:'Abrir mi perfil', verifying:'Abriendo…',
+    sent:'Te enviamos un código de 6 dígitos.', resend:'Reenviar código', resent:'Se ha enviado un nuevo código.',
+    invalid:'Introduce un email válido.', wrong:'El código es incorrecto o ha caducado.', noProfile:'No encontramos un perfil guardado para este email.',
+    found:'✓ Tu perfil guardado está listo. Puedes continuar donde lo dejaste.', continue:'Continuar mi lección'
+  },
+  fr:{
+    kicker:'APPRENANT DE RETOUR', title:'CONTINUER MA LEÇON', status:'Connexion', connected:'Profil prêt',
+    copy:'Si vous avez déjà enregistré vos progrès, saisissez le même e-mail. Vérifiez le code pour charger votre profil.',
+    email:'E-mail enregistré', send:'Envoyer le code', sending:'Envoi…', code:'Code à 6 chiffres', verify:'Ouvrir mon profil', verifying:'Ouverture…',
+    sent:'Un code à 6 chiffres a été envoyé.', resend:'Renvoyer le code', resent:'Un nouveau code a été envoyé.',
+    invalid:'Saisissez une adresse e-mail valide.', wrong:'Le code est incorrect ou a expiré.', noProfile:'Aucun profil enregistré trouvé pour cet e-mail.',
+    found:'✓ Votre profil enregistré est prêt. Vous pouvez reprendre là où vous en étiez.', continue:'Continuer ma leçon'
+  },
+  zh:{
+    kicker:'继续学习', title:'继续我的课程', status:'登录', connected:'档案已准备',
+    copy:'如果你之前保存过进度，请输入同一邮箱。验证验证码后即可加载已保存的学习档案。',
+    email:'已保存的邮箱', send:'发送验证码', sending:'发送中…', code:'6位验证码', verify:'打开我的档案', verifying:'正在打开…',
+    sent:'6位验证码已发送到你的邮箱。', resend:'重新发送验证码', resent:'新的验证码已发送。',
+    invalid:'请输入有效的邮箱地址。', wrong:'验证码错误或已过期。', noProfile:'未找到此邮箱对应的学习档案。',
+    found:'✓ 已保存的学习档案已准备好，可以从上次的位置继续。', continue:'继续我的课程'
+  },
+  ja:{
+    kicker:'学習を再開', title:'レッスンを続ける', status:'ログイン', connected:'プロフィール準備完了',
+    copy:'以前進捗を保存した場合は、同じメールアドレスを入力してください。コード確認後、保存プロフィールを読み込みます。',
+    email:'保存済みメール', send:'コード送信', sending:'送信中…', code:'6桁コード', verify:'プロフィールを開く', verifying:'読み込み中…',
+    sent:'6桁のコードをメールに送信しました。', resend:'コードを再送', resent:'新しいコードを送信しました。',
+    invalid:'有効なメールアドレスを入力してください。', wrong:'コードが正しくないか期限切れです。', noProfile:'このメールには保存済みプロフィールがありません。',
+    found:'✓ 保存済みプロフィールを読み込みました。続きから再開できます。', continue:'レッスンを続ける'
+  }
+};
+
+
 function defaultLearningProfile(){
   return {
     level: null,
@@ -3492,8 +3884,38 @@ function renderProgressUI(){
   syncResendBtn.textContent = s.resend;
   syncCloudNote.textContent = s.cloud;
   syncCloudNote.classList.toggle('open', cloudLinked);
-  continueLessonBtn.textContent = s.continue;
   if(syncPrivacy) syncPrivacy.textContent = s.privacy || '';
+  if(syncKicker){
+    syncKicker.textContent =
+      currentLang === 'tr' ? 'İLK KEZ / BU CİHAZI KAYDET' :
+      currentLang === 'fa' ? 'ذخیره این دستگاه / بار اول' :
+      currentLang === 'ru' ? 'ПЕРВОЕ СОХРАНЕНИЕ' :
+      currentLang === 'es' ? 'PRIMER GUARDADO' :
+      currentLang === 'fr' ? 'PREMIER ENREGISTREMENT' :
+      currentLang === 'zh' ? '首次保存 / 保存此设备' :
+      currentLang === 'ja' ? '初回保存 / この端末を保存' :
+      'FIRST SAVE / THIS DEVICE';
+  }
+
+  const c = CONTINUE_UI[currentLang] || CONTINUE_UI.en;
+  const continueConnected = Boolean(cloudAuth.email && cloudAuth.sessionToken);
+
+  continueLoginCard.classList.toggle('connected', continueConnected);
+  continueKicker.textContent = c.kicker;
+  continueLoginTitle.textContent = c.title;
+  continueLoginStatus.textContent = continueConnected ? c.connected : c.status;
+  continueLoginCopy.textContent = c.copy;
+  continueEmailInput.placeholder = c.email;
+  continueSendCodeBtn.textContent = c.send;
+  continueCodeInput.placeholder = c.code;
+  continueVerifyBtn.textContent = c.verify;
+  continueResendBtn.textContent = c.resend;
+  continueFoundNote.textContent = c.found;
+  continueLessonBtn.textContent = c.continue;
+
+  if(document.activeElement !== continueEmailInput && !pendingContinueEmail){
+    continueEmailInput.value = cloudAuth.email || '';
+  }
 }
 
 
@@ -3644,6 +4066,129 @@ async function sendVerificationCode(email, { resent = false } = {}){
     syncProfileBtn.textContent = s.save;
   }
 }
+
+
+async function sendContinueVerificationCode(email, { resent = false } = {}){
+  const c = CONTINUE_UI[currentLang] || CONTINUE_UI.en;
+
+  continueSendCodeBtn.disabled = true;
+  continueSendCodeBtn.textContent = c.sending;
+  continueLoginMessage.textContent = '';
+
+  try{
+    const { response } = await apiJson('/api/verify', {
+      action:'send',
+      email
+    });
+
+    if(!response.ok){
+      continueLoginMessage.textContent = c.wrong;
+      return false;
+    }
+
+    pendingContinueEmail = email;
+    continueCodeRow.classList.add('open');
+    continueResendBtn.classList.add('open');
+    continueCodeInput.value = '';
+    continueLoginMessage.textContent = resent ? c.resent : c.sent;
+    setTimeout(() => continueCodeInput.focus(), 50);
+    return true;
+  }catch(e){
+    continueLoginMessage.textContent = c.wrong;
+    return false;
+  }finally{
+    continueSendCodeBtn.disabled = false;
+    continueSendCodeBtn.textContent = c.send;
+  }
+}
+
+async function requestContinueProfile(){
+  const c = CONTINUE_UI[currentLang] || CONTINUE_UI.en;
+  const email = (continueEmailInput.value || '').trim().toLowerCase();
+
+  if(!isValidEmail(email)){
+    continueLoginMessage.textContent = c.invalid;
+    return;
+  }
+
+  if(hasCloudAuthFor(email)){
+    const cloud = await loadCloudProfile(email, cloudAuth.sessionToken);
+    if(cloud.response.ok && cloud.data.profile){
+      cloudSyncPaused = true;
+      mergeCloudProfile(cloud.data.profile);
+      learningProfile.linkedEmail = email;
+      try{ localStorage.setItem(LEARNING_PROFILE_KEY, JSON.stringify(learningProfile)); }catch(e){}
+      cloudSyncPaused = false;
+      continueLoginMessage.textContent = '';
+      renderProgressUI();
+      return;
+    }
+  }
+
+  await sendContinueVerificationCode(email);
+}
+
+async function verifyContinueProfile(){
+  const c = CONTINUE_UI[currentLang] || CONTINUE_UI.en;
+  const email = (pendingContinueEmail || continueEmailInput.value || '').trim().toLowerCase();
+  const code = (continueCodeInput.value || '').replace(/\D/g,'').slice(0,6);
+
+  if(!isValidEmail(email) || !/^\d{6}$/.test(code)){
+    continueLoginMessage.textContent = c.wrong;
+    return;
+  }
+
+  continueVerifyBtn.disabled = true;
+  continueVerifyBtn.textContent = c.verifying;
+  continueLoginMessage.textContent = '';
+
+  try{
+    const { response, data } = await apiJson('/api/verify', {
+      action:'verify',
+      email,
+      code
+    });
+
+    if(!response.ok || !data.sessionToken){
+      continueLoginMessage.textContent = c.wrong;
+      return;
+    }
+
+    const cloud = await loadCloudProfile(email, data.sessionToken);
+
+    if(!cloud.response.ok || !cloud.data.profile){
+      continueLoginMessage.textContent = c.noProfile;
+      return;
+    }
+
+    cloudAuth = {
+      email,
+      sessionToken:data.sessionToken,
+      verifiedAt:new Date().toISOString()
+    };
+    saveCloudAuth();
+
+    cloudSyncPaused = true;
+    mergeCloudProfile(cloud.data.profile);
+    learningProfile.linkedEmail = email;
+    learningProfile.linkedAt = learningProfile.linkedAt || new Date().toISOString();
+    try{ localStorage.setItem(LEARNING_PROFILE_KEY, JSON.stringify(learningProfile)); }catch(e){}
+    cloudSyncPaused = false;
+
+    pendingContinueEmail = '';
+    continueCodeRow.classList.remove('open');
+    continueResendBtn.classList.remove('open');
+    continueCodeInput.value = '';
+    continueLoginMessage.textContent = '';
+    renderProgressUI();
+  }catch(e){
+    continueLoginMessage.textContent = c.wrong;
+  }finally{
+    continueVerifyBtn.disabled = false;
+    continueVerifyBtn.textContent = c.verify;
+  }
+}
+
 
 async function saveProfileWithEmail(){
   const s = SYNC_UI[currentLang] || SYNC_UI.en;
@@ -3825,6 +4370,8 @@ function continueMyLesson(){
   learningProfile.lastLessonAt = new Date().toISOString();
   saveLearningProfile();
 
+  // Send the saved-profile prompt without leaving the internal profile text
+  // visible in the composer.
   input.value = prompt;
   sendMessage({ preserveVoiceMode:false });
 }
@@ -4707,6 +5254,41 @@ syncResendBtn.addEventListener('click', () => {
   const email = (pendingVerificationEmail || syncEmailInput.value || '').trim().toLowerCase();
   if(isValidEmail(email)) sendVerificationCode(email, { resent:true });
 });
+continueSendCodeBtn.addEventListener('click', requestContinueProfile);
+continueVerifyBtn.addEventListener('click', verifyContinueProfile);
+continueResendBtn.addEventListener('click', () => {
+  const email = (pendingContinueEmail || continueEmailInput.value || '').trim().toLowerCase();
+  if(isValidEmail(email)) sendContinueVerificationCode(email, { resent:true });
+});
+
+continueEmailInput.addEventListener('input', () => {
+  const typed = (continueEmailInput.value || '').trim().toLowerCase();
+  if(pendingContinueEmail && typed !== pendingContinueEmail){
+    pendingContinueEmail = '';
+    continueCodeRow.classList.remove('open');
+    continueResendBtn.classList.remove('open');
+    continueCodeInput.value = '';
+  }
+});
+
+continueEmailInput.addEventListener('keydown', (e) => {
+  if(e.key === 'Enter' && !e.isComposing){
+    e.preventDefault();
+    requestContinueProfile();
+  }
+});
+
+continueCodeInput.addEventListener('input', () => {
+  continueCodeInput.value = continueCodeInput.value.replace(/\D/g, '').slice(0,6);
+});
+
+continueCodeInput.addEventListener('keydown', (e) => {
+  if(e.key === 'Enter' && !e.isComposing){
+    e.preventDefault();
+    verifyContinueProfile();
+  }
+});
+
 continueLessonBtn.addEventListener('click', continueMyLesson);
 
 syncEmailInput.addEventListener('input', () => {
