@@ -64,45 +64,92 @@
   }
   #launcher-wrap.opened #pulse-ring,
   #launcher-wrap.opened #pulse-ring-2{ display:none; }
+
   #launcher-wrap.opened #launcher{ animation:none; }
+
+  /* PREMIUM MINIMAL LAUNCHER */
   #pulse-ring, #pulse-ring-2{
     position:absolute;
     inset:0;
     border-radius:50%;
-    background:var(--marigold);
-    opacity:0.6;
-    animation:pulse-ring 1.8s cubic-bezier(0.3,0,0.5,1) infinite;
+    background:#e6b536;
+    opacity:.10;
+    animation:premium-pulse 2.8s ease-out infinite;
     pointer-events:none;
   }
+
   #pulse-ring-2{
-    animation-delay:0.9s;
+    animation-delay:1.4s;
   }
-  @keyframes pulse-ring{
-    0%{ transform:scale(1); opacity:0.6; }
-    75%{ transform:scale(1.9); opacity:0; }
-    100%{ transform:scale(1.9); opacity:0; }
+
+  @keyframes premium-pulse{
+    0%{ transform:scale(1); opacity:.12; }
+    70%{ transform:scale(1.28); opacity:0; }
+    100%{ transform:scale(1.28); opacity:0; }
   }
+
   #launcher{
     position:relative;
     width:60px;
     height:60px;
     border-radius:50%;
-    background:var(--ink);
-    border:none;
+
+    background:
+      linear-gradient(145deg,#213451 0%,#182944 48%,#111f37 100%);
+
+    border:1px solid rgba(226,177,54,.70);
     cursor:pointer;
-    box-shadow:0 6px 20px rgba(32,42,68,0.35);
+
+    box-shadow:
+      0 9px 24px rgba(18,35,60,.24),
+      0 2px 6px rgba(18,35,60,.12),
+      inset 0 1px 0 rgba(255,255,255,.10);
+
     display:flex;
     align-items:center;
     justify-content:center;
+
     z-index:1;
-    transition:transform 0.2s ease;
-    animation:launcher-bounce 2.4s ease-in-out infinite;
+    overflow:hidden;
+
+    transition:
+      transform .2s ease,
+      box-shadow .2s ease;
+
+    animation:premium-launcher-float 3.2s ease-in-out infinite;
   }
-  @keyframes launcher-bounce{
-    0%, 55%, 100%{ transform:translateY(0); }
-    70%{ transform:translateY(-4px); }
-    82%{ transform:translateY(0); }
+
+  #launcher::before{
+    content:"";
+    position:absolute;
+    top:8px;
+    left:12px;
+    width:19px;
+    height:8px;
+    border-radius:50%;
+    background:rgba(255,255,255,.10);
+    transform:rotate(-26deg);
+    pointer-events:none;
   }
+
+  #launcher:hover{
+    transform:translateY(-2px) scale(1.035);
+
+    box-shadow:
+      0 13px 30px rgba(18,35,60,.28),
+      0 3px 8px rgba(18,35,60,.13),
+      inset 0 1px 0 rgba(255,255,255,.12);
+  }
+
+  #launcher:active{
+    transform:scale(.97);
+  }
+
+  @keyframes premium-launcher-float{
+    0%, 60%, 100%{ transform:translateY(0); }
+    78%{ transform:translateY(-2px); }
+  }
+
   #launcher:hover{ transform:scale(1.06); }
   #launcher svg{ width:27px; height:27px; }
   #launcher .bubble{
@@ -2308,7 +2355,7 @@ const UI = {
 Pricing varies depending on the program and learning plan. General English, Business English, Speaking, IELTS and TOEFL programs may differ based on your current level, goal, lesson frequency and program duration.
 
 You can take the free level test here:
-[LINK:https://apex-english-placement-test.involve.me/apex-english-test]Seviye Testini Aç →[/LINK]
+https://apex-english-placement-test.involve.me/apex-english-test
 
 If you prefer, leave your email address and the Apex team can contact you with the most suitable option.`,
     starters: [
@@ -5726,26 +5773,7 @@ function renderBotContent(text){
     .replace(/\[WRONG\](.*?)\[\/WRONG\]/g, '<span class="wrong">$1</span>')
     .replace(/\[RIGHT\](.*?)\[\/RIGHT\]/g, '<span class="right">$1</span>')
     .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-    .replace(/(https?:\/\/[^\s<]+)/g, (rawUrl) => {
-      // Do not let markdown / sentence punctuation become part of the real href.
-      // Example fixed: https://.../apex-english-test)---
-      let cleanUrl = rawUrl;
-      let trailing = '';
-
-      const divider = cleanUrl.match(/-{3,}$/);
-      if(divider){
-        trailing = divider[0] + trailing;
-        cleanUrl = cleanUrl.slice(0, -divider[0].length);
-      }
-
-      while(/[)\]}>.,!?;:'"]$/.test(cleanUrl)){
-        trailing = cleanUrl.slice(-1) + trailing;
-        cleanUrl = cleanUrl.slice(0, -1);
-      }
-
-      const safeHref = cleanUrl.replace(/"/g, '&quot;');
-      return `<a href="${safeHref}" target="_blank" rel="noopener" style="color:var(--marigold-deep);text-decoration:underline;">${cleanUrl}</a>${trailing}`;
-    });
+    .replace(/(https?:\/\/[^\s<]+)/g, '<a href="$1" target="_blank" rel="noopener" style="color:var(--marigold-deep);text-decoration:underline;">$1</a>');
 
   safeLinks.forEach((link, i) => {
     const token = `__APEX_SAFE_LINK_${i}__`;
