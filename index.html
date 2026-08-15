@@ -2582,34 +2582,34 @@ const PRON_UI = {
 const APEX_SONG_PAGE_URL = 'https://www.apexenglish.net/sarkilarla-ingilizce';
 
 const APEX_SONG_CHALLENGES = [
-  { title: 'Adele — Hello', url: 'https://apex-song-challenge.vercel.app/' },
-  { title: 'Passenger — Let Her Go', url: 'https://apex-song-challenge.vercel.app/let-her-go/' },
-  { title: 'Alex Warren — Ordinary', url: 'https://apex-song-challenge.vercel.app/ordinary/' },
-  { title: 'Olivia Dean — So Easy', url: 'https://apex-song-challenge.vercel.app/so-easy-to-fall-in-love/' },
-  { title: 'Taylor Swift — The Fate of Ophelia', url: 'https://apex-song-challenge.vercel.app/the-fate-of-ophelia/' }
+  { title: 'Adele — Hello', url: APEX_SONG_PAGE_URL },
+  { title: 'Passenger — Let Her Go', url: APEX_SONG_PAGE_URL },
+  { title: 'Alex Warren — Ordinary', url: APEX_SONG_PAGE_URL },
+  { title: 'Olivia Dean — So Easy', url: APEX_SONG_PAGE_URL },
+  { title: 'Taylor Swift — The Fate of Ophelia', url: APEX_SONG_PAGE_URL }
 ];
 
 const SONG_PRACTICE_UI = {
   en: {
     mode: 'Song Practice',
     user: 'I want to practise English with a song.',
-    bot: 'Great choice. Choose a song and I’ll give you its listening challenge link.',
+    bot: 'Great choice. Choose a song and I’ll take you to the Apex English Song Challenge page.',
     choose: 'Choose a song:',
     allSongs: 'All Song Challenges',
-    selected: (title, url) => `**${title}** is ready.\n[LINK:${url}]Open this Song Challenge →[/LINK]`
+    selected: (title, url) => `**${title}** selected.\n[LINK:${url}]Open on Apex English →[/LINK]`
   },
   tr: {
     mode: 'Şarkı Pratiği',
     user: 'Şarkıyla İngilizce pratiği yapmak istiyorum.',
-    bot: 'Harika. Bir şarkı seçin; size o şarkının listening challenge bağlantısını vereyim.',
+    bot: 'Harika. Bir şarkı seçin; sizi Apex English şarkı sayfasına götüreyim.',
     choose: 'Bir şarkı seçin:',
     allSongs: 'Tüm Şarkılar',
-    selected: (title, url) => `**${title}** hazır.\n[LINK:${url}]Bu Song Challenge’ı Aç →[/LINK]`
+    selected: (title, url) => `**${title}** seçildi.\n[LINK:${url}]Apex English’te Aç →[/LINK]`
   },
   ru: {
     mode: 'Практика с песней',
     user: 'Я хочу практиковать английский с песней.',
-    bot: 'Отлично. Выберите песню, и я дам ссылку на её listening challenge.',
+    bot: 'Отлично. Выберите песню, и я открою страницу Song Challenge на Apex English.',
     choose: 'Выберите песню:',
     allSongs: 'Все песни',
     selected: (title, url) => `**${title}** готова.\n[LINK:${url}]Открыть Song Challenge →[/LINK]`
@@ -2617,7 +2617,7 @@ const SONG_PRACTICE_UI = {
   fa: {
     mode: 'تمرین با آهنگ',
     user: 'می‌خواهم با آهنگ انگلیسی تمرین کنم.',
-    bot: 'عالی است. یک آهنگ انتخاب کنید تا لینک Listening Challenge همان آهنگ را برایتان بفرستم.',
+    bot: 'عالی است. یک آهنگ انتخاب کنید تا صفحه Song Challenge در Apex English را باز کنید.',
     choose: 'یک آهنگ انتخاب کنید:',
     allSongs: 'همه آهنگ‌ها',
     selected: (title, url) => `**${title}** آماده است.\n[LINK:${url}]باز کردن Song Challenge →[/LINK]`
@@ -2625,7 +2625,7 @@ const SONG_PRACTICE_UI = {
   es: {
     mode: 'Práctica con canciones',
     user: 'Quiero practicar inglés con una canción.',
-    bot: 'Perfecto. Elige una canción y te daré el enlace de su listening challenge.',
+    bot: 'Perfecto. Elige una canción y te llevaré a la página Song Challenge de Apex English.',
     choose: 'Elige una canción:',
     allSongs: 'Todas las canciones',
     selected: (title, url) => `**${title}** está lista.\n[LINK:${url}]Abrir Song Challenge →[/LINK]`
@@ -2633,7 +2633,7 @@ const SONG_PRACTICE_UI = {
   fr: {
     mode: 'Pratique avec une chanson',
     user: 'Je veux pratiquer l’anglais avec une chanson.',
-    bot: 'Parfait. Choisissez une chanson et je vous donnerai le lien de son listening challenge.',
+    bot: 'Parfait. Choisissez une chanson et je vous mènerai à la page Song Challenge d’Apex English.',
     choose: 'Choisissez une chanson :',
     allSongs: 'Toutes les chansons',
     selected: (title, url) => `**${title}** est prête.\n[LINK:${url}]Ouvrir Song Challenge →[/LINK]`
@@ -2641,7 +2641,7 @@ const SONG_PRACTICE_UI = {
   zh: {
     mode: '歌曲练习',
     user: '我想用歌曲练习英语。',
-    bot: '很好。请选择一首歌曲，我会给你对应的听力挑战链接。',
+    bot: '很好。请选择一首歌曲，我会带你前往 Apex English 的歌曲挑战页面。',
     choose: '选择一首歌曲：',
     allSongs: '所有歌曲',
     selected: (title, url) => `**${title}** 已准备好。\n[LINK:${url}]打开 Song Challenge →[/LINK]`
@@ -2649,7 +2649,7 @@ const SONG_PRACTICE_UI = {
   ja: {
     mode: '曲で練習',
     user: '曲を使って英語を練習したいです。',
-    bot: 'いいですね。曲を選ぶと、その Listening Challenge のリンクを表示します。',
+    bot: 'いいですね。曲を選ぶと、Apex English の Song Challenge ページを開けます。',
     choose: '曲を選んでください：',
     allSongs: 'すべての曲',
     selected: (title, url) => `**${title}** の準備ができました。\n[LINK:${url}]Song Challenge を開く →[/LINK]`
