@@ -1938,6 +1938,53 @@ border: 1px solid var(--line);
     }
   }
 
+
+/* ==================================================
+   MOBILE ONLY — compact choice buttons
+   ================================================== */
+@media (max-width:600px){
+
+  #starters.starter-row{
+    display:grid;
+    grid-template-columns:repeat(2, minmax(0, 1fr));
+    align-items:stretch;
+    gap:7px;
+    padding:2px 10px 10px;
+    max-height:142px;
+    overflow-y:auto;
+    overflow-x:hidden;
+    -webkit-overflow-scrolling:touch;
+  }
+
+  #starters .choice-label{
+    grid-column:1 / -1;
+    width:100%;
+    margin:0 0 1px !important;
+  }
+
+  #starters .starter{
+    width:100%;
+    max-width:none;
+    min-width:0;
+    min-height:32px;
+    padding:6px 7px;
+    font-size:0.68rem;
+    line-height:1.2;
+    white-space:normal;
+    overflow-wrap:normal;
+    word-break:normal;
+    text-align:center;
+  }
+
+  #starters[data-ui-lang='fa']{
+    grid-template-columns:repeat(2, minmax(0, 1fr));
+  }
+
+  #starters[data-ui-lang='fa'] .choice-label{
+    grid-column:1 / -1;
+  }
+}
+
 </style>
 
 <!-- Google tag (gtag.js) -->
