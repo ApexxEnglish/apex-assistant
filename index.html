@@ -2578,6 +2578,88 @@ const PRON_UI = {
 };
 
 
+
+const APEX_SONG_PAGE_URL = 'https://www.apexenglish.net/sarkilarla-ingilizce';
+
+const APEX_SONG_CHALLENGES = [
+  { title: 'Adele — Hello', url: 'https://apex-song-challenge.vercel.app/' },
+  { title: 'Passenger — Let Her Go', url: 'https://apex-song-challenge.vercel.app/let-her-go/' },
+  { title: 'Alex Warren — Ordinary', url: 'https://apex-song-challenge.vercel.app/ordinary/' },
+  { title: 'Olivia Dean — So Easy', url: 'https://apex-song-challenge.vercel.app/so-easy-to-fall-in-love/' },
+  { title: 'Taylor Swift — The Fate of Ophelia', url: 'https://apex-song-challenge.vercel.app/the-fate-of-ophelia/' }
+];
+
+const SONG_PRACTICE_UI = {
+  en: {
+    mode: 'Song Practice',
+    user: 'I want to practise English with a song.',
+    bot: 'Great choice. Choose a song and I’ll give you its listening challenge link.',
+    choose: 'Choose a song:',
+    allSongs: 'All Song Challenges',
+    selected: (title, url) => `**${title}** is ready.\n[LINK:${url}]Open this Song Challenge →[/LINK]`
+  },
+  tr: {
+    mode: 'Şarkı Pratiği',
+    user: 'Şarkıyla İngilizce pratiği yapmak istiyorum.',
+    bot: 'Harika. Bir şarkı seçin; size o şarkının listening challenge bağlantısını vereyim.',
+    choose: 'Bir şarkı seçin:',
+    allSongs: 'Tüm Şarkılar',
+    selected: (title, url) => `**${title}** hazır.\n[LINK:${url}]Bu Song Challenge’ı Aç →[/LINK]`
+  },
+  ru: {
+    mode: 'Практика с песней',
+    user: 'Я хочу практиковать английский с песней.',
+    bot: 'Отлично. Выберите песню, и я дам ссылку на её listening challenge.',
+    choose: 'Выберите песню:',
+    allSongs: 'Все песни',
+    selected: (title, url) => `**${title}** готова.\n[LINK:${url}]Открыть Song Challenge →[/LINK]`
+  },
+  fa: {
+    mode: 'تمرین با آهنگ',
+    user: 'می‌خواهم با آهنگ انگلیسی تمرین کنم.',
+    bot: 'عالی است. یک آهنگ انتخاب کنید تا لینک Listening Challenge همان آهنگ را برایتان بفرستم.',
+    choose: 'یک آهنگ انتخاب کنید:',
+    allSongs: 'همه آهنگ‌ها',
+    selected: (title, url) => `**${title}** آماده است.\n[LINK:${url}]باز کردن Song Challenge →[/LINK]`
+  },
+  es: {
+    mode: 'Práctica con canciones',
+    user: 'Quiero practicar inglés con una canción.',
+    bot: 'Perfecto. Elige una canción y te daré el enlace de su listening challenge.',
+    choose: 'Elige una canción:',
+    allSongs: 'Todas las canciones',
+    selected: (title, url) => `**${title}** está lista.\n[LINK:${url}]Abrir Song Challenge →[/LINK]`
+  },
+  fr: {
+    mode: 'Pratique avec une chanson',
+    user: 'Je veux pratiquer l’anglais avec une chanson.',
+    bot: 'Parfait. Choisissez une chanson et je vous donnerai le lien de son listening challenge.',
+    choose: 'Choisissez une chanson :',
+    allSongs: 'Toutes les chansons',
+    selected: (title, url) => `**${title}** est prête.\n[LINK:${url}]Ouvrir Song Challenge →[/LINK]`
+  },
+  zh: {
+    mode: '歌曲练习',
+    user: '我想用歌曲练习英语。',
+    bot: '很好。请选择一首歌曲，我会给你对应的听力挑战链接。',
+    choose: '选择一首歌曲：',
+    allSongs: '所有歌曲',
+    selected: (title, url) => `**${title}** 已准备好。\n[LINK:${url}]打开 Song Challenge →[/LINK]`
+  },
+  ja: {
+    mode: '曲で練習',
+    user: '曲を使って英語を練習したいです。',
+    bot: 'いいですね。曲を選ぶと、その Listening Challenge のリンクを表示します。',
+    choose: '曲を選んでください：',
+    allSongs: 'すべての曲',
+    selected: (title, url) => `**${title}** の準備ができました。\n[LINK:${url}]Song Challenge を開く →[/LINK]`
+  }
+};
+
+function getSongPracticeUI(){
+  return SONG_PRACTICE_UI[currentLang] || SONG_PRACTICE_UI.en;
+}
+
 const FLOW_UI = {
   en: {
     chooseLevel: "Choose your English level:",
@@ -4607,6 +4689,7 @@ function showModeSelection(){
   addChoice(f.correction, { mode: 'correction' });
   addChoice(f.teach, { mode: 'teach' });
   addChoice(f.practice, { mode: 'practice' });
+  addChoice(getSongPracticeUI().mode, { mode: 'songs' });
 
   const priceStarter = UI[currentLang].starters.find(s => s.instant);
   addChoice(f.pricing, {
@@ -4616,6 +4699,26 @@ function showModeSelection(){
 
   addChoice(f.levelTest, {
     msg: f.levelTestMsg
+  });
+}
+
+
+function showSongSelection(){
+  session.phase = 'song';
+  clearStarters();
+
+  const s = getSongPracticeUI();
+  addChoiceLabel(s.choose);
+
+  APEX_SONG_CHALLENGES.forEach(song => {
+    addChoice(song.title, {
+      songUrl: song.url,
+      songTitle: song.title
+    });
+  });
+
+  addChoice(s.allSongs, {
+    url: APEX_SONG_PAGE_URL
   });
 }
 
@@ -4669,6 +4772,11 @@ function renderCurrentChoices(){
 
   if(session.mode === 'practice' && session.phase === 'topic'){
     showPracticeTopics();
+    return;
+  }
+
+  if(session.mode === 'songs' && session.phase === 'song'){
+    showSongSelection();
     return;
   }
 
@@ -4773,6 +4881,15 @@ starters.addEventListener('click', (e) => {
       showPracticeTopics();
       return;
     }
+
+    if(selectedMode === 'songs'){
+      const s = getSongPracticeUI();
+      session.phase = 'song';
+      addUserMessage(s.user);
+      addBotMessage(s.bot);
+      showSongSelection();
+      return;
+    }
   }
 
   const selectedTopic = target.dataset.topic;
@@ -4788,6 +4905,21 @@ starters.addEventListener('click', (e) => {
       : f.practicePrompt(selectedTopic);
 
     sendMessage();
+    return;
+  }
+
+  const songUrl = target.dataset.songUrl;
+  if(songUrl){
+    const songTitle = target.dataset.songTitle || target.textContent.trim();
+    const s = getSongPracticeUI();
+
+    addUserMessage(songTitle);
+    addBotMessage(s.selected(songTitle, songUrl));
+
+    history.push({ role: 'user', content: songTitle });
+    history.push({ role: 'assistant', content: `${songTitle}: ${songUrl}` });
+
+    showSongSelection();
     return;
   }
 
