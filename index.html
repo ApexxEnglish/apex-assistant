@@ -137,19 +137,6 @@ border: 1px solid var(--line);
   }
   #panel.open{ display:flex; }
 
-  /* Web only — slightly roomier assistant panel.
-     Mobile/tablet sizing below 761px stays exactly as before. */
-  @media (min-width:761px){
-  #panel{
-    top:60px;
-    right:16px;
-    width:630px;
-    height:680px;;
-    max-width:calc(100vw - 32px);
-    max-height:calc(100vh - 75px);
-  }
-}
-
   #panel header{
     background:var(--ink);
     color:var(--white);
@@ -2321,7 +2308,7 @@ const UI = {
 Pricing varies depending on the program and learning plan. General English, Business English, Speaking, IELTS and TOEFL programs may differ based on your current level, goal, lesson frequency and program duration.
 
 You can take the free level test here:
-https://apex-english-placement-test.involve.me/apex-english-test
+[LINK:https://apex-english-placement-test.involve.me/apex-english-test]Seviye Testini Aç →[/LINK]
 
 If you prefer, leave your email address and the Apex team can contact you with the most suitable option.`,
     starters: [
@@ -5739,7 +5726,26 @@ function renderBotContent(text){
     .replace(/\[WRONG\](.*?)\[\/WRONG\]/g, '<span class="wrong">$1</span>')
     .replace(/\[RIGHT\](.*?)\[\/RIGHT\]/g, '<span class="right">$1</span>')
     .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-    .replace(/(https?:\/\/[^\s<]+)/g, '<a href="$1" target="_blank" rel="noopener" style="color:var(--marigold-deep);text-decoration:underline;">$1</a>');
+    .replace(/(https?:\/\/[^\s<]+)/g, (rawUrl) => {
+      // Do not let markdown / sentence punctuation become part of the real href.
+      // Example fixed: https://.../apex-english-test)---
+      let cleanUrl = rawUrl;
+      let trailing = '';
+
+      const divider = cleanUrl.match(/-{3,}$/);
+      if(divider){
+        trailing = divider[0] + trailing;
+        cleanUrl = cleanUrl.slice(0, -divider[0].length);
+      }
+
+      while(/[)\]}>.,!?;:'"]$/.test(cleanUrl)){
+        trailing = cleanUrl.slice(-1) + trailing;
+        cleanUrl = cleanUrl.slice(0, -1);
+      }
+
+      const safeHref = cleanUrl.replace(/"/g, '&quot;');
+      return `<a href="${safeHref}" target="_blank" rel="noopener" style="color:var(--marigold-deep);text-decoration:underline;">${cleanUrl}</a>${trailing}`;
+    });
 
   safeLinks.forEach((link, i) => {
     const token = `__APEX_SAFE_LINK_${i}__`;
