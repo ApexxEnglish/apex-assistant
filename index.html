@@ -734,16 +734,41 @@ border: 1px solid var(--line);
   }
 
   #open-progress-btn{
+    display:inline-flex;
+    align-items:center;
+    gap:5px;
     border:1px solid var(--ink);
     background:var(--ink);
     color:var(--marigold);
     border-radius:999px;
-    padding:6px 10px;
+    padding:8px 15px;
     font-family:'IBM Plex Mono', monospace;
-    font-size:0.62rem;
+    font-size:0.66rem;
     font-weight:700;
+    letter-spacing:.02em;
     cursor:pointer;
     white-space:nowrap;
+    box-shadow:0 4px 12px rgba(32,42,68,.25), inset 0 1px 0 rgba(255,255,255,.08);
+    transition:transform .15s ease, box-shadow .15s ease, filter .15s ease;
+  }
+
+  #open-progress-btn::after{
+    content:"›";
+    font-size:0.95rem;
+    line-height:1;
+    font-weight:800;
+    transform:translateY(-1px);
+  }
+
+  #open-progress-btn:hover{
+    transform:translateY(-1px);
+    box-shadow:0 6px 16px rgba(32,42,68,.32), inset 0 1px 0 rgba(255,255,255,.1);
+    filter:brightness(1.05);
+  }
+
+  #open-progress-btn:active{
+    transform:translateY(0);
+    box-shadow:0 2px 6px rgba(32,42,68,.25);
   }
 
   #progress-panel{
@@ -866,7 +891,13 @@ border: 1px solid var(--line);
       padding:6px 10px;
     }
     #open-progress-btn{
-      padding:6px 8px;
+      padding:6px 10px;
+      font-size:0.59rem;
+      gap:3px;
+      box-shadow:0 2px 6px rgba(32,42,68,.2);
+    }
+    #open-progress-btn::after{
+      font-size:0.8rem;
     }
     #progress-panel{
       padding:8px;
@@ -1925,10 +1956,6 @@ border: 1px solid var(--line);
     #continue-code-input{
       text-align:center;
       font-size:1rem;
-    }
-
-    #open-progress-btn{
-      padding:7px 10px;
     }
 
     .progress-chip{
