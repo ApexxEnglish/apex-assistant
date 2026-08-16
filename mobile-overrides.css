@@ -183,9 +183,132 @@
     font-size:.62rem;
     line-height:1.25;
   }
+
+  /* Top controls: keep all language buttons + Pronunciation Coach on ONE row.
+     This removes the tall cream block that was hiding the first chat message. */
+  #lang-switch{
+    flex-wrap:nowrap !important;
+    align-items:center !important;
+    gap:3px !important;
+    min-height:34px;
+    padding:4px 7px !important;
+    overflow:hidden !important;
+  }
+
+  #lang-switch .lang-btn{
+    display:grid;
+    place-items:center;
+    flex:0 0 25px;
+    width:25px;
+    height:25px;
+    min-width:25px;
+    padding:0 !important;
+    font-size:.50rem;
+    line-height:1;
+  }
+
+  #pronunciation-launch{
+    margin-left:auto !important;
+    flex:0 0 auto;
+    min-height:28px !important;
+    height:28px;
+    padding:3px 6px !important;
+    gap:4px !important;
+    border-radius:9px !important;
+  }
+
+  #pronunciation-launch .pron-live-dot,
+  #pronunciation-launch .pron-launch-copy small{
+    display:none !important;
+  }
+
+  #pronunciation-launch .pron-modern-icon{
+    width:18px !important;
+    height:18px !important;
+    flex-basis:18px !important;
+    border-radius:6px;
+  }
+
+  #pronunciation-launch .pron-modern-icon svg{
+    width:12px;
+    height:12px;
+  }
+
+  #pronunciation-launch .pron-launch-copy{
+    gap:0;
+  }
+
+  #pronunciation-launch .pron-launch-copy strong{
+    max-width:72px;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    font-size:.54rem !important;
+    line-height:1;
+  }
+
+  /* Progress row directly below the language row: shorter and closer. */
+  #progress-toolbar{
+    min-height:31px;
+    padding:3px 8px !important;
+    gap:5px !important;
+  }
+
+  #progress-summary{
+    flex-wrap:nowrap !important;
+    gap:4px !important;
+    min-width:0;
+  }
+
+  .progress-chip{
+    min-height:24px !important;
+    padding:3px 7px !important;
+    font-size:.53rem !important;
+  }
+
+  #open-progress-btn{
+    min-height:26px;
+    padding:4px 8px !important;
+    gap:2px !important;
+    font-size:.54rem !important;
+    box-shadow:0 2px 5px rgba(32,42,68,.18) !important;
+  }
+
+  #open-progress-btn::after{
+    font-size:.72rem !important;
+  }
 }
 
-@media (max-width: 360px){
+@media (max-width: 380px){
+  #lang-switch{
+    gap:2px !important;
+    padding:4px 5px !important;
+  }
+
+  #lang-switch .lang-btn{
+    flex-basis:23px;
+    width:23px;
+    min-width:23px;
+    height:23px;
+    font-size:.46rem;
+  }
+
+  #pronunciation-launch{
+    height:26px;
+    min-height:26px !important;
+    padding:3px 5px !important;
+  }
+
+  #pronunciation-launch .pron-modern-icon{
+    width:17px !important;
+    height:17px !important;
+    flex-basis:17px !important;
+  }
+
+  #pronunciation-launch .pron-launch-copy strong{
+    max-width:58px;
+    font-size:.49rem !important;
+  }
+
   #sync-profile-btn,
   #continue-send-code-btn{
     padding:0 7px;
