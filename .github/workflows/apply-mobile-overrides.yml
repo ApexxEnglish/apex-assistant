@@ -1,0 +1,64 @@
+name: Apply mobile UI overrides
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'mobile-overrides.css'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  patch-index:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Inject mobile overrides into index.html
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+
+          index_path = Path('index.html')
+          css_path = Path('mobile-overrides.css')
+
+          html = index_path.read_text(encoding='utf-8')
+          css = css_path.read_text(encoding='utf-8').strip()
+
+          start = '/* APEX_MOBILE_OVERRIDES_START */'
+          end = '/* APEX_MOBILE_OVERRIDES_END */'
+          block = f"\n{start}\n{css}\n{end}\n"
+
+          pattern = re.compile(
+              re.escape(start) + r'.*?' + re.escape(end),
+              flags=re.S,
+          )
+
+          if pattern.search(html):
+              html = pattern.sub(block.strip(), html, count=1)
+          else:
+              marker = '</style>'
+              if marker not in html:
+                  raise SystemExit('Could not find </style> in index.html')
+              html = html.replace(marker, block + marker, 1)
+
+          index_path.write_text(html, encoding='utf-8')
+          PY
+
+      - name: Commit generated index
+        shell: bash
+        run: |
+          if git diff --quiet -- index.html; then
+            echo "No index.html changes needed."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git commit -m "Apply compact mobile assistant layout"
+          git push
