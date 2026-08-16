@@ -1,0 +1,199 @@
+@media (max-width: 600px){
+  /* Compact the learning-profile / save-progress area on phones. */
+  #progress-panel{
+    padding:5px;
+  }
+
+  #progress-card{
+    max-height:96%;
+    border-radius:14px;
+  }
+
+  #progress-card header{
+    padding:10px 12px;
+  }
+
+  #progress-card .progress-title{
+    font-size:.9rem;
+  }
+
+  #progress-card .progress-sub{
+    font-size:.55rem;
+  }
+
+  #progress-content{
+    padding:7px;
+    gap:6px;
+  }
+
+  .progress-section,
+  #profile-sync-card,
+  #continue-login-card{
+    padding:8px;
+    border-radius:10px;
+  }
+
+  .progress-section h4{
+    margin-bottom:4px;
+    font-size:.62rem;
+  }
+
+  .progress-value,
+  .progress-empty{
+    font-size:.72rem;
+    line-height:1.3;
+  }
+
+  .progress-list{
+    gap:3px;
+    font-size:.72rem;
+    line-height:1.3;
+  }
+
+  /* Intro / trust copy: tighter, cleaner, less vertical space. */
+  .apex-onboarding-note{
+    margin:4px 0 0;
+    font-size:10px;
+    line-height:1.3;
+  }
+
+  .apex-onboarding-trust{
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:3px 8px;
+    margin-top:5px;
+    font-size:9.5px;
+    line-height:1.25;
+  }
+
+  .apex-onboarding-trust span{
+    gap:4px;
+    min-width:0;
+  }
+
+  .apex-onboarding-trust span:last-child{
+    grid-column:1 / -1;
+  }
+
+  .apex-onboarding-trust span::before{
+    width:4px;
+    height:4px;
+    flex-basis:4px;
+  }
+
+  .apex-teacher-cta{
+    margin-top:6px;
+    padding-top:6px;
+    font-size:9.5px;
+    line-height:1.25;
+  }
+
+  /* Save / continue cards: keep the email + action on one row. */
+  .sync-head,
+  .continue-head{
+    margin-bottom:5px;
+    gap:6px;
+  }
+
+  .progress-action-kicker{
+    margin-bottom:2px;
+    font-size:.48rem;
+  }
+
+  .sync-title,
+  .continue-title{
+    font-size:.64rem;
+    line-height:1.25;
+  }
+
+  .sync-status,
+  .continue-status{
+    padding:2px 6px;
+    font-size:.5rem;
+  }
+
+  .sync-copy,
+  #continue-login-copy{
+    margin-bottom:6px;
+    font-size:.68rem;
+    line-height:1.3;
+  }
+
+  #sync-email-row,
+  #continue-email-row{
+    display:grid !important;
+    grid-template-columns:minmax(0,1fr) auto !important;
+    gap:5px;
+    align-items:center;
+  }
+
+  #sync-email-input,
+  #continue-email-input{
+    height:34px;
+    padding:0 8px;
+    font-size:.74rem;
+  }
+
+  #sync-profile-btn,
+  #continue-send-code-btn{
+    width:auto !important;
+    height:34px;
+    padding:0 9px;
+    font-size:.56rem;
+  }
+
+  #sync-code-row.open,
+  #continue-code-row.open{
+    display:grid !important;
+    grid-template-columns:minmax(0,1fr) auto !important;
+    gap:5px;
+  }
+
+  #sync-code-input,
+  #continue-code-input{
+    height:34px;
+    font-size:.82rem;
+  }
+
+  #sync-verify-btn,
+  #continue-verify-btn{
+    width:auto !important;
+    height:34px;
+    padding:0 9px;
+    font-size:.55rem;
+  }
+
+  #sync-message,
+  #continue-login-message{
+    min-height:0;
+    margin-top:4px;
+    font-size:.62rem;
+    line-height:1.25;
+  }
+
+  #sync-privacy{
+    margin-top:4px;
+    font-size:.55rem;
+    line-height:1.2;
+  }
+
+  #sync-cloud-note,
+  #continue-found-note{
+    padding:6px 7px;
+    font-size:.62rem;
+    line-height:1.25;
+  }
+}
+
+@media (max-width: 360px){
+  #sync-profile-btn,
+  #continue-send-code-btn{
+    padding:0 7px;
+    font-size:.52rem;
+  }
+
+  .apex-onboarding-trust{
+    font-size:9px;
+    gap:3px 5px;
+  }
+}
