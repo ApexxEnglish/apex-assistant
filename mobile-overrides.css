@@ -184,8 +184,7 @@
     line-height:1.25;
   }
 
-  /* Top controls: keep all language buttons + Pronunciation Coach on ONE row.
-     This removes the tall cream block that was hiding the first chat message. */
+  /* Top controls: keep all language buttons + Pronunciation Coach on ONE row. */
   #lang-switch{
     flex-wrap:nowrap !important;
     align-items:center !important;
@@ -215,6 +214,17 @@
     padding:3px 6px !important;
     gap:4px !important;
     border-radius:9px !important;
+    border-color:rgba(232,185,48,.72) !important;
+    box-shadow:0 3px 8px rgba(32,42,68,.28), inset 0 1px 0 rgba(255,255,255,.10) !important;
+  }
+
+  #pronunciation-launch::after{
+    content:"›";
+    color:var(--marigold);
+    font-size:.76rem;
+    line-height:1;
+    font-weight:800;
+    transform:translateY(-1px);
   }
 
   #pronunciation-launch .pron-live-dot,
@@ -239,11 +249,70 @@
   }
 
   #pronunciation-launch .pron-launch-copy strong{
-    max-width:72px;
+    max-width:68px;
     overflow:hidden;
     text-overflow:ellipsis;
     font-size:.54rem !important;
     line-height:1;
+  }
+
+  /* Pronunciation Coach opens as an in-widget bottom sheet, like My Progress. */
+  #pronunciation-panel{
+    display:none;
+    position:absolute !important;
+    inset:0 !important;
+    z-index:65 !important;
+    padding:5px !important;
+    align-items:flex-end !important;
+    justify-content:center !important;
+    overflow:hidden !important;
+    background:rgba(32,42,68,.20) !important;
+    backdrop-filter:blur(4px);
+  }
+
+  #pronunciation-panel.open{
+    display:flex !important;
+  }
+
+  #pronunciation-card{
+    width:100% !important;
+    max-width:470px !important;
+    max-height:96% !important;
+    overflow-y:auto !important;
+    overscroll-behavior:contain;
+    border-radius:14px !important;
+    box-shadow:0 24px 60px rgba(32,42,68,.28) !important;
+  }
+
+  #pronunciation-card > header{
+    padding:10px 12px !important;
+    background:var(--ink) !important;
+    color:var(--white) !important;
+  }
+
+  #pronunciation-card .pron-title{
+    font-size:.9rem !important;
+    color:var(--white) !important;
+  }
+
+  #pronunciation-card .pron-sub{
+    margin-top:2px !important;
+    font-size:.55rem !important;
+    line-height:1.3 !important;
+    color:var(--marigold) !important;
+  }
+
+  #pronunciation-close{
+    color:var(--white) !important;
+  }
+
+  #pronunciation-body{
+    padding:10px !important;
+  }
+
+  #pronunciation-target{
+    min-height:56px !important;
+    resize:none !important;
   }
 
   /* Progress row directly below the language row: shorter and closer. */
@@ -298,6 +367,10 @@
     padding:3px 5px !important;
   }
 
+  #pronunciation-launch::after{
+    font-size:.68rem;
+  }
+
   #pronunciation-launch .pron-modern-icon{
     width:17px !important;
     height:17px !important;
@@ -305,7 +378,7 @@
   }
 
   #pronunciation-launch .pron-launch-copy strong{
-    max-width:58px;
+    max-width:54px;
     font-size:.49rem !important;
   }
 
