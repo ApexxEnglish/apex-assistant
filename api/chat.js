@@ -242,13 +242,28 @@ Genel İngilizce: https://www.apexenglish.net/genel-ingilizce-program
 Yönetici İngilizcesi: https://www.apexenglish.net/yonetici-ingilizcesi
 Konuşma Kulübü: https://www.apexenglish.net/speaking-club
 Sektöre Özel İngilizce: https://www.apexenglish.net/sektore-ozel-ingilizce
+Automotive English: https://www.apexenglish.net/automotive-english
+Logistics English: https://www.apexenglish.net/logistics-english
 Online Eğitimler: https://www.apexenglish.net/online-egitimler
 Kurumsal Eğitimler: https://www.apexenglish.net/kurumsal-egitimler
 Ücretsiz Seviye Analizi: https://www.apexenglish.net/ucretsiz-seviye-analizi
+Ücretsiz Seviye Testini Başlat: https://apex-english-placement-test.involve.me/apex-english-test
 İngilizce Mülakat Hazırlığı: https://www.apexenglish.net/kabin-memuru-mulakat-hazirlik
+Şarkılarla İngilizce / Song Challenge: https://www.apexenglish.net/sarkilarla-ingilizce
 AI İngilizce Asistanı: https://www.apexenglish.net/ingilizce-asistan
 Anasayfa: https://www.apexenglish.net/
 Do not invent URLs.
+
+LINK OUTPUT RULE — IMPORTANT:
+- Whenever you provide ANY clickable URL, use ONLY this display-link format:
+  [LINK:https://example.com]Visible label →[/LINK]
+- NEVER use Markdown link syntax such as [label](https://example.com).
+- NEVER put a raw URL inside square brackets or parentheses.
+- For an Apex program, use the exact official URL above and a short visible label.
+- If the user asks to start/take the level test, use exactly:
+  [LINK:https://apex-english-placement-test.involve.me/apex-english-test]Ücretsiz Seviye Testini Başlat →[/LINK]
+  Translate only the visible label when needed; keep the URL unchanged.
+- If the user asks for program/course links, give only the relevant links unless they explicitly ask for all programs.
 
 10. COMMERCIAL INTENT / LEAD COLLECTION
 Do NOT ask for contact information during normal English practice.
@@ -257,7 +272,8 @@ The only fixed price reference is: Private lessons start from 1,000 TL for a 40-
 For pricing, offer WhatsApp first using:
 [LINK:https://wa.me/905313015894]WhatsApp’tan Güncel Fiyat Al →[/LINK]
 Translate only the visible label to ${responseLanguage}. Never display the phone number or raw wa.me URL as normal text.
-You may also offer the free level test: https://apex-english-placement-test.involve.me/apex-english-test
+You may also offer the free level test using:
+[LINK:https://apex-english-placement-test.involve.me/apex-english-test]Ücretsiz Seviye Testini Başlat →[/LINK]
 Do not invent discounts, packages, campaigns or prices.
 When a visitor voluntarily provides an email during a commercial-intent conversation, append [EMAIL]name@domain.com[/EMAIL] and do not show the marker as normal text.
 
@@ -275,11 +291,27 @@ Keep marker contents concise, do not invent weaknesses/strengths, and do not men
 }
 
 function sanitizeReply(value) {
-  const text = cleanText(value, 14_000);
-  // The legacy renderer auto-links raw http(s) text into a double-quoted href.
-  // Encoding quotes inside URL-like substrings prevents attribute breakout even
-  // before the frontend is migrated away from innerHTML rendering.
-  return text.replace(/https?:\/\/[^\s<]+/g, url => url.replace(/"/g, '%22'));
+  let text = cleanText(value, 14_000);
+
+  // Gemini may still choose Markdown link syntax even when instructed not to.
+  // Convert Markdown links into the widget's safe [LINK:url]label[/LINK] format
+  // BEFORE the legacy frontend auto-linker sees them. This prevents URLs such as
+  // ".../program](https://.../program)" from becoming the actual href.
+  text = text.replace(
+    /\[([^\]\n]{1,240})\]\((https?:\/\/[^\s)]+)\)/g,
+    (_, label, url) => `[LINK:${url}]${label}[/LINK]`
+  );
+
+  // Also normalize Markdown autolinks like <https://example.com>.
+  text = text.replace(
+    /<(https?:\/\/[^>\s]+)>/g,
+    (_, url) => `[LINK:${url}]${url}[/LINK]`
+  );
+
+  // The legacy renderer auto-links any remaining raw http(s) text into a
+  // double-quoted href. Encoding quotes inside URL-like substrings prevents
+  // attribute breakout while preserving normal URLs.
+  return text.replace(/https?:\/\/[^\s<\]]+/g, url => url.replace(/"/g, '%22'));
 }
 
 export default async function handler(req, res) {
