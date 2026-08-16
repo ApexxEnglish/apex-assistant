@@ -17,7 +17,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Inject mobile overrides into index.html
+      - name: Inject UI overrides and mobile pronunciation behavior
         shell: bash
         run: |
           python - <<'PY'
@@ -46,6 +46,15 @@ jobs:
               if marker not in html:
                   raise SystemExit('Could not find </style> in index.html')
               html = html.replace(marker, block + marker, 1)
+
+          # Opening the pronunciation coach used to focus its textarea on every
+          # device. On phones that immediately opens the keyboard / changes the
+          # visual viewport and makes the embedded widget look like it grew.
+          # Keep desktop focus, but do not auto-focus on mobile.
+          old_focus = "  pronunciationTarget.focus();"
+          new_focus = "  if(window.matchMedia('(min-width: 601px)').matches){\n    pronunciationTarget.focus({ preventScroll:true });\n  }"
+          if old_focus in html:
+              html = html.replace(old_focus, new_focus, 1)
 
           index_path.write_text(html, encoding='utf-8')
           PY
