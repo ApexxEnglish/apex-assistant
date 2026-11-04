@@ -2620,6 +2620,27 @@ border: 1px solid var(--line);
 #advisor-form-note{margin:0;font-size:11px;color:#697386;line-height:1.45}
 @media(max-width:480px){#advisor-form-layer{padding:6px}#advisor-form-card{padding:13px}#advisor-lead-form{grid-template-columns:1fr}}
 
+/* Compact lead form — unchanged API contract */
+#advisor-lead-form{grid-template-columns:1fr;gap:13px}
+#advisor-lead-form input:not([type=checkbox]):not([type=radio]){min-height:46px;font-size:14px}
+#advisor-form-head{margin-bottom:17px}
+#advisor-form-head p{font-size:12.5px}
+#advisor-lead-form .advisor-goals{min-width:0;padding:0;margin:0;border:0}
+#advisor-lead-form .advisor-goals legend{font-size:12px;font-weight:700;color:#283751;margin-bottom:9px}
+#advisor-lead-form .advisor-goals legend span{font-size:11px;font-weight:400;color:#728096}
+#advisor-lead-form .advisor-goal-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+#advisor-lead-form .advisor-goal-grid label{display:block;position:relative;min-width:0;cursor:pointer}
+#advisor-lead-form .advisor-goal-grid input{position:absolute;opacity:0;width:1px;height:1px}
+#advisor-lead-form .advisor-goal-grid span{display:flex;align-items:center;justify-content:center;min-height:44px;border:1px solid #d8dce4;border-radius:9px;background:#fff;color:#29374c;font-size:12.5px;font-weight:600;transition:border-color .15s,background .15s;white-space:nowrap}
+#advisor-lead-form .advisor-goal-grid input:checked+span{border:2px solid #1f6f66;background:#edf8f4;color:#16594e}
+#advisor-lead-form .advisor-goal-grid input:focus-visible+span{outline:2px solid #1f6f66;outline-offset:2px}
+#advisor-lead-form .advisor-consent{font-size:11px;font-weight:400}
+#advisor-lead-form #advisor-form-note{text-align:center;font-size:10.5px;color:#728096}
+#advisor-form-status:empty{display:none}
+#advisor-form-whatsapp{text-align:center;font-size:12px;color:#1f6f66;text-decoration:underline;padding:2px 0}
+#advisor-submit{min-height:48px}
+
+
 </style>
 </head>
 <body>
@@ -2688,24 +2709,29 @@ border: 1px solid var(--line);
   <div id="advisor-form-layer" role="dialog" aria-modal="true" aria-labelledby="advisor-form-title" aria-hidden="true">
     <div id="advisor-form-card">
       <div id="advisor-form-head">
-        <div><strong id="advisor-form-title">Ücretsiz demo dersi talebi</strong><p>Bilgilerinizi iletin, eğitim danışmanımız sizinle iletişime geçsin. Kesin randevu değildir.</p></div>
+        <div><strong id="advisor-form-title">İngilizcenize birlikte yön verelim ✨</strong><p>Ücretsiz tanışma dersi için kısa bir talep bırakın; size dönüş yapalım.</p></div>
         <button type="button" id="advisor-form-close" aria-label="Kapat">×</button>
       </div>
       <form id="advisor-lead-form" novalidate>
-        <label class="full">Ad soyad *<input name="fullName" autocomplete="name" maxlength="90" required placeholder="Adınız ve soyadınız"></label>
-        <label>Telefon / WhatsApp<input name="phone" type="tel" autocomplete="tel" maxlength="24" placeholder="05XX XXX XX XX"></label>
-        <label>E-posta<input name="email" type="email" autocomplete="email" maxlength="150" placeholder="ornek@eposta.com"></label>
-        <label>Eğitim programı *<select name="program" required><option value="">Seçiniz</option><option>Genel İngilizce</option><option>Konuşma İngilizcesi</option><option>İş İngilizcesi</option><option>Yönetici İngilizcesi</option><option>Kurumsal İngilizce</option><option>Mülakat Hazırlığı</option><option>IELTS / TOEFL / YDS</option><option>Kids & Teens</option><option>Diğer</option></select></label>
-        <label>İngilizce seviyesi<select name="level"><option value="Bilmiyorum">Bilmiyorum</option><option>A1</option><option>A2</option><option>B1</option><option>B2</option><option>C1</option><option>C2</option></select></label>
-        <label>Ders tercihi<select name="format"><option value="Fark etmez">Fark etmez</option><option>Online</option><option>Yüz yüze</option></select></label>
-        <label>Uygun zaman<input name="availability" maxlength="100" placeholder="Örn. hafta içi akşam"></label>
-        <label class="full">Hedefiniz (isteğe bağlı)<textarea name="goal" maxlength="500" placeholder="İngilizceyi hangi amaçla geliştirmek istiyorsunuz?"></textarea></label>
+        <label class="full">Adınız *<input name="fullName" autocomplete="name" maxlength="90" required placeholder="Adınız soyadınız"></label>
+        <label class="full">Telefon / WhatsApp *<input type="tel" name="phone" inputmode="tel" autocomplete="tel" maxlength="24" required placeholder="05XX XXX XX XX"></label>
+        <fieldset class="full advisor-goals">
+          <legend>İngilizce hedefiniz * <span>Birini seçin</span></legend>
+          <div class="advisor-goal-grid">
+            <label><input type="radio" name="program" value="Konuşma İngilizcesi" required><span>💬 Konuşma</span></label>
+            <label><input type="radio" name="program" value="İş İngilizcesi"><span>💼 İş</span></label>
+            <label><input type="radio" name="program" value="Mülakat Hazırlığı"><span>✈️ Mülakat</span></label>
+            <label><input type="radio" name="program" value="IELTS / TOEFL / YDS"><span>📚 Sınav</span></label>
+            <label><input type="radio" name="program" value="Kids & Teens"><span>🧒 Çocuğum için</span></label>
+            <label><input type="radio" name="program" value="Genel İngilizce"><span>🌍 Genel İngilizce</span></label>
+          </div>
+        </fieldset>
         <input name="website" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;height:1px;opacity:0" />
-        <label class="full advisor-consent"><input name="noticeRead" type="checkbox" required><span><a href="https://www.apexenglish.net/kvkk-aydinlatma-metni" target="_blank" rel="noopener noreferrer">KVKK Aydınlatma Metni</a>’ni okudum. Bilgilerimin talebime dönüş yapılması için kullanılacağı konusunda bilgilendirildim. *</span></label>
-        <label class="full advisor-consent"><input name="contactApproved" type="checkbox" required><span>Talebim hakkında telefon, WhatsApp veya e-postayla benimle iletişime geçilmesini istiyorum. *</span></label>
-        <p class="full" id="advisor-form-note">Telefon veya e-posta bilgilerinden en az birini yazın. Kampanya/duyuru izni istemiyoruz.</p>
+        <label class="full advisor-consent"><input name="noticeRead" type="checkbox" required><span><a href="https://www.apexenglish.net/kvkk-aydinlatma-metni" target="_blank" rel="noopener noreferrer">KVKK Aydınlatma Metni</a>’ni okudum; demo talebim hakkında benimle iletişime geçilmesini istiyorum. *</span></label>
         <div class="full" id="advisor-form-status" role="status" aria-live="polite"></div>
-        <button class="full" id="advisor-submit" type="submit">Ücretsiz demo talebi gönder</button>
+        <button class="full" id="advisor-submit" type="submit">Ücretsiz demo dersi iste →</button>
+        <p class="full" id="advisor-form-note">Ödeme yok · Kesin randevu değil · Reklam mesajı izni istemiyoruz</p>
+        <a class="full" id="advisor-form-whatsapp" href="https://wa.me/message/ULXJQQU4MULMA1" target="_blank" rel="noopener noreferrer">Form istemiyorum, WhatsApp’tan yazacağım</a>
       </form>
     </div>
   </div>
@@ -6320,9 +6346,6 @@ function closeAdvisorForm(){
 }
 function openAdvisorForm(){
   advisorFormStatus.textContent='';
-  if(session.level && session.level !== 'unknown' && advisorForm.elements.level.querySelector(`option[value="${session.level}"]`)){
-    advisorForm.elements.level.value=session.level;
-  }
   advisorFormLayer.classList.add('open');advisorFormLayer.setAttribute('aria-hidden','false');
   advisorForm.elements.fullName.focus();
 }
@@ -6333,35 +6356,32 @@ window.addEventListener('keydown',e=>{if(e.key==='Escape'&&advisorFormLayer.clas
 advisorForm.addEventListener('submit',async e=>{
   e.preventDefault();
   const fd=new FormData(advisorForm);
+  const phone=String(fd.get('phone')||'').trim();
+  const email='';
+  const checked=advisorForm.elements.noticeRead.checked;
   const body={
     fullName:String(fd.get('fullName')||'').trim(),
-    phone:String(fd.get('phone')||'').trim(),
-    email:String(fd.get('email')||'').trim(),
+    phone,email,
     program:String(fd.get('program')||'').trim(),
-    level:String(fd.get('level')||'Bilmiyorum'),
-    format:String(fd.get('format')||'Fark etmez'),
-    availability:String(fd.get('availability')||'').trim(),
-    goal:String(fd.get('goal')||'').trim(),
-    website:String(fd.get('website')||''),
-    lang:currentLang,
-    noticeRead:advisorForm.elements.noticeRead.checked,
-    contactApproved:advisorForm.elements.contactApproved.checked
+    level:'Bilmiyorum',
+    format:'Fark etmez',
+    availability:'',goal:'',
+    website:String(fd.get('website')||''),lang:currentLang,
+    noticeRead:checked,contactApproved:checked
   };
   const phoneDigits=body.phone.replace(/\D/g,'');
-  if(!body.fullName||!body.program||(!body.phone&&!body.email)||
-     (body.email&&!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(body.email))||
-     (body.phone&&(phoneDigits.length<9||phoneDigits.length>15))||
-     !body.noticeRead||!body.contactApproved){
-    advisorFormStatus.textContent='Lütfen ad, program, geçerli telefon veya e-posta ve gerekli onayları kontrol edin.';
+  if(body.fullName.length<2||!body.program||
+    phoneDigits.length<10||phoneDigits.length>15||!checked){
+    advisorFormStatus.textContent='Adınızı, telefon numaranızı, hedefinizi ve onayı kontrol edin.';
     return;
   }
   const submit=document.getElementById('advisor-submit');
-  submit.disabled=true;advisorFormStatus.textContent='Talebiniz güvenli şekilde kaydediliyor…';
+  submit.disabled=true;advisorFormStatus.textContent='Talebiniz kaydediliyor…';
   try{
     const response=await fetch('/api/leads',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
     const result=await response.json().catch(()=>({}));
     if(!response.ok||!result.ok)throw new Error(result.error||'Talep kaydedilemedi.');
-    closeAdvisorForm(); advisorForm.reset();
+    closeAdvisorForm();advisorForm.reset();
     addBotMessage(result.notified
       ? '✅ Ücretsiz demo talebiniz alındı. Eğitim ekibimiz verdiğiniz iletişim bilgileri üzerinden sizinle görüşecek. Saat, ekip onayından sonra kesinleşecektir.'
       : '✅ Ücretsiz demo talebiniz kaydedildi. Bildirim e-postası gönderilemedi; talebiniz kayıt sisteminde duruyor. Acil dönüş için WhatsApp bağlantımızı kullanabilirsiniz.');
