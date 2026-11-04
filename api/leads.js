@@ -15,9 +15,6 @@ export default async function handler(req, res) {
   if (req.method === 'OPTIONS') return res.status(204).end();
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed.' });
 
-  if (!enforceRateLimit(req, res, { scope: 'apex-lead-minute', max: 4, windowMs: 60_000 })) return;
-  if (!enforceRateLimit(req, res, { scope: 'apex-lead-day', max: 30, windowMs: 86_400_000 })) return;
-
   const raw = req.body || {};
   if (JSON.stringify(raw).length > 8_000) return res.status(413).json({ error: 'Form is too large.' });
   // Honeypot: pretend to accept automated submissions but do not save them.
@@ -43,6 +40,10 @@ export default async function handler(req, res) {
   if (raw.noticeRead !== true || raw.contactApproved !== true) {
     return res.status(400).json({ error: 'Gerekli aydınlatma ve iletişim onayı eksik.' });
   }
+
+  // Only valid, consented submissions consume the submission quota.
+  if (!enforceRateLimit(req, res, { scope: 'apex-lead-minute-v2', max: 10, windowMs: 60_000 })) return;
+  if (!enforceRateLimit(req, res, { scope: 'apex-lead-day-v2', max: 60, windowMs: 86_400_000 })) return;
 
   const hook = process.env.GOOGLE_LEADS_WEBHOOK_URL;
   const secret = process.env.GOOGLE_LEADS_WEBHOOK_SECRET;
@@ -73,6 +74,10 @@ export default async function handler(req, res) {
       });
       result = await response.json().catch(() => ({}));
       if (!response.ok || result.ok !== true || result.id !== lead.id) {
+        console.error('Google Sheets webhook rejected the lead:', {
+          status: response.status,
+          message: String(result.error || 'Invalid confirmation').slice(0, 160)
+        });
         throw new Error('Google Sheets did not confirm the save.');
       }
     } finally { clearTimeout(timeout); }
@@ -110,4 +115,3 @@ export default async function handler(req, res) {
     return res.status(502).json({ error: 'Talep kaydedilemedi. Lütfen tekrar deneyin.' });
   }
 }
-
