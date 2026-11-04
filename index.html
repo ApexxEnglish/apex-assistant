@@ -2589,6 +2589,38 @@ border: 1px solid var(--line);
 </style>
 
 
+<style>
+
+/* APEX AI Eğitim Danışmanı — sadece yeni bileşenler */
+#starters .starter[data-advisor='1']{background:#fff8de;border-color:#c9971a;color:#202a44;font-weight:800;grid-column:1/-1}
+#advisor-cta-row{display:none;padding:10px 14px;background:#fffaf0;border-top:1px solid #e5d7b1}
+#advisor-cta-row.visible{display:grid;gap:8px}
+#advisor-demo-btn{width:100%;min-height:43px;padding:10px 14px;border:0;border-radius:10px;background:#202a44;color:#fff;font:700 13px 'IBM Plex Sans',Arial,sans-serif;cursor:pointer}
+#advisor-demo-btn span{color:#e8b930}
+#advisor-whatsapp-link{display:flex;align-items:center;justify-content:center;width:100%;min-height:40px;padding:9px 14px;border:1px solid #168f60;border-radius:10px;background:#f1fbf5;color:#176c49;text-decoration:none;font:700 13px 'IBM Plex Sans',Arial,sans-serif}
+#advisor-whatsapp-link:hover{background:#e4f7eb}
+#advisor-form-layer{position:absolute;inset:0;z-index:110;display:none;overflow-y:auto;padding:13px;background:rgba(18,28,47,.63);align-items:flex-start;justify-content:center}
+#advisor-form-layer.open{display:flex}
+#advisor-form-card{width:100%;max-width:500px;padding:20px;background:#fff;border-radius:15px;box-shadow:0 14px 42px rgba(0,0,0,.18);color:#202a44}
+#advisor-form-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:12px}
+#advisor-form-head strong{display:block;font:700 20px 'IBM Plex Sans',Arial,sans-serif;color:#202a44}
+#advisor-form-head p{margin:4px 0 0;color:#566177;font-size:12px;line-height:1.5}
+#advisor-form-close{border:0;background:transparent;color:#202a44;font-size:22px;cursor:pointer;padding:0 4px}
+#advisor-lead-form{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+#advisor-lead-form label{display:flex;flex-direction:column;gap:4px;font-size:11.5px;font-weight:700;color:#283751}
+#advisor-lead-form .full{grid-column:1/-1}
+#advisor-lead-form input:not([type=checkbox]),#advisor-lead-form select,#advisor-lead-form textarea{width:100%;min-width:0;border:1px solid #d8dce4;border-radius:8px;padding:10px;font:400 13px 'IBM Plex Sans',Arial,sans-serif;color:#202a44;background:#fff}
+#advisor-lead-form textarea{resize:vertical;min-height:62px}
+#advisor-lead-form .advisor-consent{display:flex;flex-direction:row;align-items:flex-start;gap:8px;font-size:11px;font-weight:400;line-height:1.45}
+#advisor-lead-form .advisor-consent input{margin-top:3px;flex:0 0 auto}
+#advisor-lead-form .advisor-consent a{color:#1f6f66;text-decoration:underline}
+#advisor-submit{width:100%;border:0;border-radius:9px;background:#202a44;color:#fff;min-height:44px;font:700 13px 'IBM Plex Sans',Arial,sans-serif;cursor:pointer}
+#advisor-submit:disabled{opacity:.55;cursor:wait}
+#advisor-form-status{font-size:12px;color:#ae2525;min-height:18px;line-height:1.5}
+#advisor-form-note{margin:0;font-size:11px;color:#697386;line-height:1.45}
+@media(max-width:480px){#advisor-form-layer{padding:6px}#advisor-form-card{padding:13px}#advisor-lead-form{grid-template-columns:1fr}}
+
+</style>
 </head>
 <body>
 
@@ -2651,6 +2683,33 @@ border: 1px solid var(--line);
   </div>
   <div id="messages"></div>
   <div class="starter-row" id="starters"></div>
+
+  <div id="advisor-cta-row"><button id="advisor-demo-btn" type="button">🎓 Ücretsiz demo dersi için talep oluştur</button><a id="advisor-whatsapp-link" href="https://wa.me/message/ULXJQQU4MULMA1" target="_blank" rel="noopener noreferrer" aria-label="Apex English WhatsApp Business üzerinden yazın">💬 WhatsApp’tan Yazın</a></div>
+  <div id="advisor-form-layer" role="dialog" aria-modal="true" aria-labelledby="advisor-form-title" aria-hidden="true">
+    <div id="advisor-form-card">
+      <div id="advisor-form-head">
+        <div><strong id="advisor-form-title">Ücretsiz demo dersi talebi</strong><p>Bilgilerinizi iletin, eğitim danışmanımız sizinle iletişime geçsin. Kesin randevu değildir.</p></div>
+        <button type="button" id="advisor-form-close" aria-label="Kapat">×</button>
+      </div>
+      <form id="advisor-lead-form" novalidate>
+        <label class="full">Ad soyad *<input name="fullName" autocomplete="name" maxlength="90" required placeholder="Adınız ve soyadınız"></label>
+        <label>Telefon / WhatsApp<input name="phone" type="tel" autocomplete="tel" maxlength="24" placeholder="05XX XXX XX XX"></label>
+        <label>E-posta<input name="email" type="email" autocomplete="email" maxlength="150" placeholder="ornek@eposta.com"></label>
+        <label>Eğitim programı *<select name="program" required><option value="">Seçiniz</option><option>Genel İngilizce</option><option>Konuşma İngilizcesi</option><option>İş İngilizcesi</option><option>Yönetici İngilizcesi</option><option>Kurumsal İngilizce</option><option>Mülakat Hazırlığı</option><option>IELTS / TOEFL / YDS</option><option>Kids & Teens</option><option>Diğer</option></select></label>
+        <label>İngilizce seviyesi<select name="level"><option value="Bilmiyorum">Bilmiyorum</option><option>A1</option><option>A2</option><option>B1</option><option>B2</option><option>C1</option><option>C2</option></select></label>
+        <label>Ders tercihi<select name="format"><option value="Fark etmez">Fark etmez</option><option>Online</option><option>Yüz yüze</option></select></label>
+        <label>Uygun zaman<input name="availability" maxlength="100" placeholder="Örn. hafta içi akşam"></label>
+        <label class="full">Hedefiniz (isteğe bağlı)<textarea name="goal" maxlength="500" placeholder="İngilizceyi hangi amaçla geliştirmek istiyorsunuz?"></textarea></label>
+        <input name="website" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;height:1px;opacity:0" />
+        <label class="full advisor-consent"><input name="noticeRead" type="checkbox" required><span><a href="https://www.apexenglish.net/kvkk-aydinlatma-metni" target="_blank" rel="noopener noreferrer">KVKK Aydınlatma Metni</a>’ni okudum. Bilgilerimin talebime dönüş yapılması için kullanılacağı konusunda bilgilendirildim. *</span></label>
+        <label class="full advisor-consent"><input name="contactApproved" type="checkbox" required><span>Talebim hakkında telefon, WhatsApp veya e-postayla benimle iletişime geçilmesini istiyorum. *</span></label>
+        <p class="full" id="advisor-form-note">Telefon veya e-posta bilgilerinden en az birini yazın. Kampanya/duyuru izni istemiyoruz.</p>
+        <div class="full" id="advisor-form-status" role="status" aria-live="polite"></div>
+        <button class="full" id="advisor-submit" type="submit">Ücretsiz demo talebi gönder</button>
+      </form>
+    </div>
+  </div>
+
   <div id="voice-notice" role="status" aria-live="polite"></div>
   <div id="mode-toolbar">
   <button id="change-mode-btn" type="button">
@@ -2869,7 +2928,7 @@ const UI = {
     error: "You've sent quite a few messages in a row — let's take a short break and continue in a minute.",
     priceReply: `Private lessons start from **1,000 TL for 40 minutes**.
 
-[LINK:https://wa.me/905313015894]WhatsApp for Current Pricing →[/LINK]
+[LINK:https://wa.me/message/ULXJQQU4MULMA1]WhatsApp for Current Pricing →[/LINK]
 
 Pricing varies depending on the program and learning plan. General English, Business English, Speaking, IELTS and TOEFL programs may differ based on your current level, goal, lesson frequency and program duration.
 
@@ -2896,7 +2955,7 @@ If you prefer, leave your email address and the Apex team can contact you with t
     error: "Biraz fazla mesaj gönderdik gibi görünüyor — kısa bir mola verip birazdan devam edelim mi?",
     priceReply: `**Özel dersler 40 dakika için 1.000 TL’den başlamaktadır.**
 
-[LINK:https://wa.me/905313015894]WhatsApp’tan Güncel Fiyat Al →[/LINK]
+[LINK:https://wa.me/message/ULXJQQU4MULMA1]WhatsApp’tan Güncel Fiyat Al →[/LINK]
 
 Fiyatlar programa göre değişir. Genel İngilizce, İş İngilizcesi, Speaking, IELTS ve TOEFL programlarında ücret; mevcut seviyeniz, hedefiniz, ders sıklığı ve program süresine göre planlanır.
 
@@ -2923,7 +2982,7 @@ https://apex-english-placement-test.involve.me/apex-english-test
     error: "Похоже, мы отправили довольно много сообщений подряд — давай сделаем небольшую паузу и продолжим через минуту.",
     priceReply: `Индивидуальные занятия начинаются от **1 000 TL за 40 минут**.
 
-[LINK:https://wa.me/905313015894]Узнать актуальную цену в WhatsApp →[/LINK]
+[LINK:https://wa.me/message/ULXJQQU4MULMA1]Узнать актуальную цену в WhatsApp →[/LINK]
 
 Стоимость зависит от программы и учебного плана. General English, Business English, Speaking, IELTS и TOEFL могут отличаться по цене в зависимости от вашего уровня, цели, частоты занятий и продолжительности программы.
 
@@ -2950,7 +3009,7 @@ https://apex-english-placement-test.involve.me/apex-english-test
     error: "به نظر می‌رسد چند پیام پشت سر هم فرستادیم — بیایید کمی استراحت کنیم.",
     priceReply: `هزینه کلاس خصوصی از **۱۰۰۰ لیر برای ۴۰ دقیقه** شروع می‌شود.
 
-[LINK:https://wa.me/905313015894]دریافت قیمت به‌روز در واتس‌اپ ←[/LINK]
+[LINK:https://wa.me/message/ULXJQQU4MULMA1]دریافت قیمت به‌روز در واتس‌اپ ←[/LINK]
 
 هزینه نهایی بسته به نوع برنامه و برنامه آموزشی متفاوت است. قیمت دوره‌های General English، Business English، Speaking، IELTS و TOEFL بر اساس سطح فعلی، هدف، تعداد جلسات و مدت دوره تعیین می‌شود.
 
@@ -2977,7 +3036,7 @@ https://apex-english-placement-test.involve.me/apex-english-test
     error: "Hemos enviado bastantes mensajes seguidos — tomemos un breve descanso.",
     priceReply: `Las clases privadas empiezan desde **1.000 TL por 40 minutos**.
 
-[LINK:https://wa.me/905313015894]Consultar precio actual por WhatsApp →[/LINK]
+[LINK:https://wa.me/message/ULXJQQU4MULMA1]Consultar precio actual por WhatsApp →[/LINK]
 
 El precio varía según el programa y el plan de aprendizaje. General English, Business English, Speaking, IELTS y TOEFL pueden tener precios distintos según tu nivel actual, objetivo, frecuencia de clases y duración del programa.
 
@@ -3004,7 +3063,7 @@ Si lo prefieres, también puedes dejar tu correo y el equipo de Apex se pondrá 
     error: "On a envoyé pas mal de messages d'affilée — faisons une courte pause.",
     priceReply: `Les cours particuliers commencent à **1 000 TL pour 40 minutes**.
 
-[LINK:https://wa.me/905313015894]Voir le tarif actuel sur WhatsApp →[/LINK]
+[LINK:https://wa.me/message/ULXJQQU4MULMA1]Voir le tarif actuel sur WhatsApp →[/LINK]
 
 Le tarif varie selon le programme et le plan d’apprentissage. General English, Business English, Speaking, IELTS et TOEFL peuvent avoir des tarifs différents selon votre niveau actuel, votre objectif, la fréquence des cours et la durée du programme.
 
@@ -3031,7 +3090,7 @@ Si vous préférez, vous pouvez aussi laisser votre e-mail afin que l’équipe 
     error: "我们已经连续发送了不少消息——稍作休息，一分钟后继续吧。",
     priceReply: `一对一课程 **40 分钟 1,000 TL 起**。
 
-[LINK:https://wa.me/905313015894]通过 WhatsApp 获取最新价格 →[/LINK]
+[LINK:https://wa.me/message/ULXJQQU4MULMA1]通过 WhatsApp 获取最新价格 →[/LINK]
 
 具体价格会根据课程类型和学习计划而变化。General English、Business English、Speaking、IELTS 和 TOEFL 的费用会根据当前水平、学习目标、上课频率和课程周期进行规划。
 
@@ -3058,7 +3117,7 @@ https://apex-english-placement-test.involve.me/apex-english-test
     error: "続けてメッセージを送りすぎたようです。少し休憩しましょう。",
     priceReply: `マンツーマンレッスンは **40分 1,000 TLから**です。
 
-[LINK:https://wa.me/905313015894]WhatsAppで最新料金を確認 →[/LINK]
+[LINK:https://wa.me/message/ULXJQQU4MULMA1]WhatsAppで最新料金を確認 →[/LINK]
 
 料金はプログラムと学習プランによって異なります。General English、Business English、Speaking、IELTS、TOEFL は、現在のレベル、目標、受講頻度、プログラム期間に応じて料金が決まります。
 
@@ -4021,7 +4080,7 @@ General English, Business English, Speaking, IELTS and TOEFL, and can depend on:
 
 For a pricing question, give the starting-price reference first.
 Immediately after that, offer WhatsApp as the FIRST contact option using this hidden display-link format:
-[LINK:https://wa.me/905313015894]WhatsApp’tan Güncel Fiyat Al →[/LINK]
+[LINK:https://wa.me/message/ULXJQQU4MULMA1]WhatsApp’tan Güncel Fiyat Al →[/LINK]
 
 Translate only the visible label naturally to the selected UI language.
 Never display the phone number or the raw wa.me URL as conversational text.
@@ -5304,12 +5363,14 @@ function addChoiceLabel(text){
 }
 
 function showLevelSelection(){
+  hideAdvisorCta();
   session.phase = 'level';
   modeToolbar.classList.remove('visible');
   clearStarters();
 
   const f = FLOW_UI[currentLang] || FLOW_UI.en;
   addChoiceLabel(f.chooseLevel);
+  addChoice(advisorUi().choose, { advisor: "1" });
 
   ['A1','A2','B1','B2','C1'].forEach(level => {
     addChoice(level, { level });
@@ -5319,12 +5380,14 @@ function showLevelSelection(){
 }
 
 function showModeSelection(){
+  hideAdvisorCta();
   modeToolbar.classList.add('visible');
   session.phase = 'mode';
   clearStarters();
 
   const f = FLOW_UI[currentLang] || FLOW_UI.en;
   addChoiceLabel(f.chooseMode);
+  addChoice(advisorUi().choose, { advisor: "1" });
 
   addChoice(f.correction, { mode: 'correction' });
   addChoice(f.teach, { mode: 'teach' });
@@ -5395,6 +5458,7 @@ function showPracticeTopics(){
 }
 
 function renderCurrentChoices(){
+  if(session.mode === 'advisor') { clearStarters(); updateAdvisorCta(); return; }
   if(!session.level || session.phase === 'level'){
     showLevelSelection();
     return;
@@ -5456,6 +5520,8 @@ starters.addEventListener('click', (e) => {
   resetComposer();
 
   const f = FLOW_UI[currentLang] || FLOW_UI.en;
+
+  if(target.dataset.advisor === '1'){ activateAdvisor(); return; }
 
   const selectedLevel = target.dataset.level;
   if(selectedLevel){
@@ -6216,6 +6282,94 @@ function notifyOwner(visitorEmail, contextMessage){
   }).catch(() => {});
 }
 
+
+
+/* === APEX AI Eğitim Danışmanı: mevcut öğrenme modlarına dokunmaz === */
+const ADVISOR_TEXT={
+ tr:{choose:'🎓 AI Eğitim Danışmanı · Ücretsiz demo',greet:'Merhaba! 👋 Apex English eğitim danışmanıyım. Size uygun programı belirleyelim. İngilizceyi en çok hangi amaçla geliştirmek istiyorsunuz: konuşma, iş, sınav veya mülakat?',demo:'Ücretsiz demo dersi talep et'},
+ en:{choose:'🎓 AI Education Advisor · Free demo',greet:'Welcome! 👋 I am the Apex English education advisor. What is your main goal: conversation, work, exams or interviews?',demo:'Request a free demo lesson'},
+ ru:{choose:'🎓 AI консультант · Демо',greet:'Здравствуйте! 👋 Для какой цели вам нужен английский: общение, работа, экзамены или собеседования?',demo:'Запросить бесплатный демо-урок'},
+ fa:{choose:'🎓 مشاور آموزش · جلسه آزمایشی',greet:'سلام! 👋 هدف اصلی شما از یادگیری انگلیسی چیست: مکالمه، کار، آزمون یا مصاحبه؟',demo:'درخواست جلسه آزمایشی رایگان'},
+ es:{choose:'🎓 Asesor educativo · Demo',greet:'¡Hola! 👋 ¿Para qué quieres mejorar tu inglés: conversación, trabajo, exámenes o entrevistas?',demo:'Solicitar clase de prueba gratuita'},
+ fr:{choose:'🎓 Conseiller pédagogique · Démo',greet:'Bonjour ! 👋 Quel est votre objectif : conversation, travail, examens ou entretien ?',demo:'Demander un cours d’essai gratuit'},
+ zh:{choose:'🎓 AI 课程顾问 · 免费试听',greet:'您好！👋 您学习英语的主要目标是什么：日常交流、工作、考试还是面试？',demo:'申请免费试听课'},
+ ja:{choose:'🎓 AI 教育アドバイザー · 無料体験',greet:'こんにちは！👋 英語学習の目的は、会話、仕事、試験、面接のどれですか？',demo:'無料体験レッスンを申し込む'}
+};
+function advisorUi(){return ADVISOR_TEXT[currentLang] || ADVISOR_TEXT.tr;}
+function updateAdvisorCta(){
+  const active=session.mode==='advisor';
+  const row=document.getElementById('advisor-cta-row');
+  row.classList.toggle('visible',active);
+  if(active) document.getElementById('advisor-demo-btn').textContent='🎓 '+advisorUi().demo;
+}
+function hideAdvisorCta(){document.getElementById('advisor-cta-row').classList.remove('visible');}
+function activateAdvisor(){
+  modeToolbar.classList.add('visible');
+  session.mode='advisor'; session.topic=null; session.phase='active';
+  clearStarters(); updateAdvisorCta();
+  const message=advisorUi().greet;
+  addBotMessage(message);
+  history.push({role:'assistant',content:message});
+  input.focus();
+}
+const advisorFormLayer=document.getElementById('advisor-form-layer');
+const advisorForm=document.getElementById('advisor-lead-form');
+const advisorFormStatus=document.getElementById('advisor-form-status');
+function closeAdvisorForm(){
+  advisorFormLayer.classList.remove('open');advisorFormLayer.setAttribute('aria-hidden','true');
+}
+function openAdvisorForm(){
+  advisorFormStatus.textContent='';
+  if(session.level && session.level !== 'unknown' && advisorForm.elements.level.querySelector(`option[value="${session.level}"]`)){
+    advisorForm.elements.level.value=session.level;
+  }
+  advisorFormLayer.classList.add('open');advisorFormLayer.setAttribute('aria-hidden','false');
+  advisorForm.elements.fullName.focus();
+}
+document.getElementById('advisor-demo-btn').addEventListener('click',openAdvisorForm);
+document.getElementById('advisor-form-close').addEventListener('click',closeAdvisorForm);
+advisorFormLayer.addEventListener('click',e=>{if(e.target===advisorFormLayer)closeAdvisorForm();});
+window.addEventListener('keydown',e=>{if(e.key==='Escape'&&advisorFormLayer.classList.contains('open'))closeAdvisorForm();});
+advisorForm.addEventListener('submit',async e=>{
+  e.preventDefault();
+  const fd=new FormData(advisorForm);
+  const body={
+    fullName:String(fd.get('fullName')||'').trim(),
+    phone:String(fd.get('phone')||'').trim(),
+    email:String(fd.get('email')||'').trim(),
+    program:String(fd.get('program')||'').trim(),
+    level:String(fd.get('level')||'Bilmiyorum'),
+    format:String(fd.get('format')||'Fark etmez'),
+    availability:String(fd.get('availability')||'').trim(),
+    goal:String(fd.get('goal')||'').trim(),
+    website:String(fd.get('website')||''),
+    lang:currentLang,
+    noticeRead:advisorForm.elements.noticeRead.checked,
+    contactApproved:advisorForm.elements.contactApproved.checked
+  };
+  const phoneDigits=body.phone.replace(/\D/g,'');
+  if(!body.fullName||!body.program||(!body.phone&&!body.email)||
+     (body.email&&!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(body.email))||
+     (body.phone&&(phoneDigits.length<9||phoneDigits.length>15))||
+     !body.noticeRead||!body.contactApproved){
+    advisorFormStatus.textContent='Lütfen ad, program, geçerli telefon veya e-posta ve gerekli onayları kontrol edin.';
+    return;
+  }
+  const submit=document.getElementById('advisor-submit');
+  submit.disabled=true;advisorFormStatus.textContent='Talebiniz güvenli şekilde kaydediliyor…';
+  try{
+    const response=await fetch('/api/leads',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+    const result=await response.json().catch(()=>({}));
+    if(!response.ok||!result.ok)throw new Error(result.error||'Talep kaydedilemedi.');
+    closeAdvisorForm(); advisorForm.reset();
+    addBotMessage(result.notified
+      ? '✅ Ücretsiz demo talebiniz alındı. Eğitim ekibimiz verdiğiniz iletişim bilgileri üzerinden sizinle görüşecek. Saat, ekip onayından sonra kesinleşecektir.'
+      : '✅ Ücretsiz demo talebiniz kaydedildi. Bildirim e-postası gönderilemedi; talebiniz kayıt sisteminde duruyor. Acil dönüş için WhatsApp bağlantımızı kullanabilirsiniz.');
+  }catch(error){
+    advisorFormStatus.textContent=error.message||'Bağlantı hatası. Lütfen tekrar deneyin.';
+  }finally{submit.disabled=false;}
+});
+
 restoreLevelMemory();
 loadCloudAuth();
 loadLearningProfile();
@@ -6477,7 +6631,7 @@ async function sendMessage(options = {}){
     addBotMessage(levelResult.cleaned);
     history.push({ role: 'assistant', content: levelResult.cleaned });
 
-    if(emailResult.email){
+    if(emailResult.email && session.mode !== 'advisor'){
       notifyOwner(emailResult.email, text);
     }
 
