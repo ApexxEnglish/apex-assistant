@@ -1,5 +1,4 @@
 import crypto from 'node:crypto';
-import nodemailer from 'nodemailer';
 import { applyCors, cleanText, enforceRateLimit, isValidEmail } from '../lib/security.js';
 
 const PROGRAMS = new Set([
@@ -62,7 +61,7 @@ export default async function handler(req, res) {
   try {
     // The Google Sheets write is the source of truth. Don't claim success unless it succeeds.
     const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 12000);
+    const timeout = setTimeout(() => controller.abort(), 25000);
     let result;
     try {
       const response = await fetch(hook, {
@@ -82,34 +81,13 @@ export default async function handler(req, res) {
       }
     } finally { clearTimeout(timeout); }
 
-    let notified = false;
-    const gmailUser = process.env.GMAIL_USER;
-    const gmailPassword = process.env.GMAIL_APP_PASSWORD;
-    const notifyTo = String(process.env.NOTIFY_TO_EMAIL || gmailUser || '').trim();
-    if (gmailUser && gmailPassword && isValidEmail(notifyTo)) {
-      try {
-        const mailer = nodemailer.createTransport({
-          service: 'gmail', auth: { user: gmailUser, pass: gmailPassword }
-        });
-        await mailer.sendMail({
-          from: gmailUser,
-          to: notifyTo,
-          subject: `Apex English — Yeni Demo Talebi: ${name}`,
-          text: [
-            'Apex English AI Eğitim Danışmanı üzerinden yeni demo talebi:', '',
-            `Ad soyad: ${name}`, `Telefon: ${phone || '—'}`, `E-posta: ${email || '—'}`,
-            `Program: ${program}`, `Seviye (beyan): ${level}`, `Ders tercihi: ${format}`,
-            `Uygun zaman: ${availability || '—'}`, `Hedef: ${goal || '—'}`,
-            `Kayıt ID: ${lead.id}`, `Tarih: ${lead.createdAt}`, '',
-            'Google Sheets kayıtlarına işlendi. Demo saati ekip tarafından onaylanmalıdır.'
-          ].join('\n')
-        });
-        notified = true;
-      } catch (error) {
-        console.error('Lead saved but owner email failed:', error.message);
-      }
-    }
-    return res.status(200).json({ ok: true, id: lead.id, notified });
+    // Google Apps Script hem Sheets kaydını hem MailApp bildirimini yapar.
+    // Vercel'den aynı bildirimi tekrar göndermiyoruz.
+    return res.status(200).json({
+      ok: true,
+      id: lead.id,
+      notified: result.notified === true
+    });
   } catch (error) {
     console.error('Lead storage error:', error.message);
     return res.status(502).json({ error: 'Talep kaydedilemedi. Lütfen tekrar deneyin.' });
